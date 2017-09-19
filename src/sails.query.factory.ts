@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import * as SocketIOClient from "socket.io-client";
 import * as SailsIOClient from "sails.io.js";
 import { Component, OnInit, Injectable } from "@angular/core";
-import { Endpoint } from "./sails.model.decorator";
+// import { Endpoint } from "./sails.model.decorator";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import * as _ from "lodash";

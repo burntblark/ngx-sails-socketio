@@ -21,8 +21,8 @@ export class Criteria {
             return null;
         }
         if (!_.isEmpty(this.orCriteria)) {
-            if (_.isArray(this.orCriteria['or'])) {
-                this.orCriteria['or'].push(this.criteria);
+            if (_.isArray(this.orCriteria["or"])) {
+                this.orCriteria["or"].push(this.criteria);
             }
             return "where=" + JSON.stringify(this.orCriteria);
         }
@@ -70,7 +70,7 @@ export class Criteria {
         let wherePart = this.whereFunction();
         if (wherePart != null) {
             if (!_.isEmpty(queryBuilder)) {
-                queryBuilder += '&';
+                queryBuilder += "&";
             }
             queryBuilder += wherePart;
         }
@@ -78,7 +78,7 @@ export class Criteria {
         let limitPart = this.limitFunction();
         if (limitPart != null) {
             if (!_.isEmpty(queryBuilder)) {
-                queryBuilder += '&';
+                queryBuilder += "&";
             }
             queryBuilder += limitPart;
         }
@@ -86,7 +86,7 @@ export class Criteria {
         let skipPart = this.skipFunction();
         if (skipPart != null) {
             if (!_.isEmpty(queryBuilder)) {
-                queryBuilder += '&';
+                queryBuilder += "&";
             }
             queryBuilder += skipPart;
         }
@@ -94,28 +94,28 @@ export class Criteria {
         let populatePart = this.populateFunction();
         if (populatePart != null) {
             if (!_.isEmpty(queryBuilder)) {
-                queryBuilder += '&';
+                queryBuilder += "&";
             }
             queryBuilder += populatePart;
         }
 
-        if (queryBuilder.charAt(0) != '?') {
-            queryBuilder = '?' + queryBuilder;
+        if (queryBuilder.charAt(0) !== "?") {
+            queryBuilder = "?" + queryBuilder;
         }
         return queryBuilder.toString();
     }
 
 
     public or(): Criteria {
-        if (_.isUndefined(this.orCriteria['or'])) {
-            this.orCriteria['or'] = [this.criteria];
+        if (_.isUndefined(this.orCriteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
             this.criteria = {};
             return this;
         }
-        if (_.isArray(this.orCriteria['or'])) {
-            this.orCriteria['or'].push(this.criteria);
-        } else if (_.isObject(this.criteria['or'])) {
-            this.orCriteria['or'] = [this.criteria];
+        if (_.isArray(this.orCriteria["or"])) {
+            this.orCriteria["or"].push(this.criteria);
+        } else if (_.isObject(this.criteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
         }
         this.criteria = {};
         return this;
@@ -132,16 +132,16 @@ export class Criteria {
         if (this.population == null || _.isEmpty(this.population)) {
             return null;
         }
-        return 'populate=[' + _.join(this.population, ',') + ']';
+        return "populate=[" + _.join(this.population, ",") + "]";
     }
 
     public whereNotEqualTo(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '!': value };
+            this.criteria[key] = { "!": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['!'])) {
-            this.criteria[key]['!'] = value;
+        if (_.isUndefined(this.criteria[key]["!"])) {
+            this.criteria[key]["!"] = value;
             return this;
         }
         throw new Error("DuplicateError: ! clause, use whereNotIn instead");
@@ -149,11 +149,11 @@ export class Criteria {
 
     public whereLike(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { 'like': value };
+            this.criteria[key] = { "like": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['like'])) {
-            this.criteria[key]['like'] = value;
+        if (_.isUndefined(this.criteria[key]["like"])) {
+            this.criteria[key]["like"] = value;
             return this;
         }
         throw new Error("DuplicateError: like clause has already been used in this query");
@@ -161,11 +161,11 @@ export class Criteria {
 
     public whereContains(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { 'contains': value };
+            this.criteria[key] = { "contains": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['contains'])) {
-            this.criteria[key]['contains'] = value;
+        if (_.isUndefined(this.criteria[key]["contains"])) {
+            this.criteria[key]["contains"] = value;
             return this;
         }
         throw new Error("DuplicateError: contains clause has already been used in this query");
@@ -173,11 +173,11 @@ export class Criteria {
 
     public whereStartsWith(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { 'startsWith': value };
+            this.criteria[key] = { "startsWith": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['startsWith'])) {
-            this.criteria[key]['startsWith'] = value;
+        if (_.isUndefined(this.criteria[key]["startsWith"])) {
+            this.criteria[key]["startsWith"] = value;
             return this;
         }
         throw new Error("DuplicateError: startsWith clause has already been used in this query");
@@ -185,11 +185,11 @@ export class Criteria {
 
     public whereEndsWith(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { 'endsWith': value };
+            this.criteria[key] = { "endsWith": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['endsWith'])) {
-            this.criteria[key]['endsWith'] = value;
+        if (_.isUndefined(this.criteria[key]["endsWith"])) {
+            this.criteria[key]["endsWith"] = value;
             return this;
         }
         throw new Error("DuplicateError: endsWith clause has already been used in this query");
@@ -197,28 +197,28 @@ export class Criteria {
 
     public whereNotIn(key: string, value: string): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '!': [value] };
+            this.criteria[key] = { "!": [value] };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['!'])) {
-            this.criteria[key]['!'] = [value];
+        if (_.isUndefined(this.criteria[key]["!"])) {
+            this.criteria[key]["!"] = [value];
             return this;
         }
-        if (_.isArray(this.criteria[key]['!'])) {
-            this.criteria[key]['!'].push(value);
+        if (_.isArray(this.criteria[key]["!"])) {
+            this.criteria[key]["!"].push(value);
         } else {
-            this.criteria[key]['!'] = [this.criteria[key]['!'], value];
+            this.criteria[key]["!"] = [this.criteria[key]["!"], value];
         }
         return this;
     }
 
     public whereLessThan(key: string, value: string | number | boolean | Date): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '<': value };
+            this.criteria[key] = { "<": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['<'])) {
-            this.criteria[key]['<'] = value;
+        if (_.isUndefined(this.criteria[key]["<"])) {
+            this.criteria[key]["<"] = value;
             return this;
         }
         throw new Error("DuplicateError: < clause has already been used in this query");
@@ -226,11 +226,11 @@ export class Criteria {
 
     public whereLessThanOrEqualTo(key: string, value: string | number | boolean | Date): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '<=': value };
+            this.criteria[key] = { "<=": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['<='])) {
-            this.criteria[key]['<='] = value;
+        if (_.isUndefined(this.criteria[key]["<="])) {
+            this.criteria[key]["<="] = value;
             return this;
         }
         throw new Error("DuplicateError: <= clause has already been used in this query");
@@ -238,11 +238,11 @@ export class Criteria {
 
     public whereGreaterThan(key: string, value: string | number | boolean | Date): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '>': value };
+            this.criteria[key] = { ">": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['>'])) {
-            this.criteria[key]['>'] = value;
+        if (_.isUndefined(this.criteria[key][">"])) {
+            this.criteria[key][">"] = value;
             return this;
         }
         throw new Error("DuplicateError: > clause has already been used in this query");
@@ -250,11 +250,11 @@ export class Criteria {
 
     public whereGreaterThanOrEqualTo(key: string, value: string | number | boolean | Date): Criteria {
         if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { '>=': value };
+            this.criteria[key] = { ">=": value };
             return this;
         }
-        if (_.isUndefined(this.criteria[key]['>='])) {
-            this.criteria[key]['>='] = value;
+        if (_.isUndefined(this.criteria[key][">="])) {
+            this.criteria[key][">="] = value;
             return this;
         }
         throw new Error("DuplicateError: >= clause has already been used in this query");
