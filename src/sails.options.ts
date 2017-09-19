@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import * as _ from "lodash";
 import { SailsResponse } from "./sails.response";
+import * as SocketIOClient from "socket.io-client";
 
 @Injectable()
-export class SailsOptions {
+export class SailsOptions implements SocketIOClient.ConnectOpts {
     private url: string;
-    private autoConnect: boolean;
-    private transports: [string];
+    public autoConnect: boolean;
+    public transports: [string];
     private useCORSRouteToGetCookie: boolean;
     private headers: object;
     private prefix: string;
@@ -39,7 +40,7 @@ export class SailsOptions {
         this.transports = transports;
     }
     public getTransports(): [string] {
-        return this.transports || ['websocket'];
+        return this.transports || ["websocket"];
     }
     public setUseCORSRouteToGetCookie(useCORSRouteToGetCookie): void {
         this.useCORSRouteToGetCookie = useCORSRouteToGetCookie;
@@ -57,7 +58,7 @@ export class SailsOptions {
         this.prefix = _prefix;
     }
     public getPrefix(): string {
-        return this.prefix || '';
+        return this.prefix || "";
     }
     public setSocketInterceptor(interceptor: (response: SailsResponse) => Promise<SailsResponse>): void {
         this.socketInterceptor.push(interceptor);
