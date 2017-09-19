@@ -1,50 +1,14 @@
 {
-  "_from": "angular2-sails@latest",
-  "_id": "angular2-sails@1.4.4",
-  "_inBundle": false,
-  "_integrity": "sha512-4EtpD2k5x0OW61JIE9Y9AQEIbAWY63jWp8+ORBiIFa5/gJoEGTf7oRFOUnRxdlZbDZshsu+ktmuaQLlWFJzHuQ==",
-  "_location": "/angular2-sails",
-  "_phantomChildren": {
-    "tslib": "1.7.1"
-  },
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "angular2-sails@latest",
-    "name": "angular2-sails",
-    "escapedName": "angular2-sails",
-    "rawSpec": "latest",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/angular2-sails/-/angular2-sails-1.4.4.tgz",
-  "_shasum": "a172da5095c6be17ab5186f464f75fd1d7d36e5f",
-  "_spec": "angular2-sails@latest",
-  "_where": "/Users/mac/Documents/projects/nodejs/angular2-sails",
-  "author": {
-    "name": "toniton"
-  },
-  "bugs": {
-    "url": "https://github.com/burntblark/angular2-sails/issues"
-  },
-  "bundleDependencies": false,
-  "dependencies": {
-    "@angular/core": "^4.2.3",
-    "lodash": "^4.17.4",
-    "rxjs": "^5.4.1",
-    "sails.io.js": "^1.1.12"
-  },
-  "deprecated": false,
+  "name": "ngx-sails-socketio",
+  "version": "0.0.1",
+  "main": "index.ts",
   "description": "An angular2 module for using the sails socket.io api",
-  "devDependencies": {
-    "tslint": "^5.4.3",
-    "typescript": "latest"
-  },
+  "license": "MIT",
   "homepage": "https://github.com/burntblark/angular2-sails#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burntblark/angular2-sails.git"
+  },
   "keywords": [
     "Angular2",
     "Sails",
@@ -54,16 +18,30 @@
     "Easy",
     "API"
   ],
-  "license": "MIT",
-  "main": "index.ts",
-  "name": "angular2-sails",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/burntblark/angular2-sails.git"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/tsc -p ."
+    "build": "rm -r ./dist && ./node_modules/.bin/tsc -p .",
+    "demo": "npm run build && cd ./demo && npm i --save ../"
   },
-  "version": "1.4.4"
+  "contributors": [
+    "Jeremiah Ogbomo"
+  ],
+  "author": {
+    "name": "burntblark"
+  },
+  "bugs": {
+    "url": "https://github.com/burntblark/angular2-sails/issues"
+  },
+  "dependencies": {
+    "@angular/core": "^4.2.3",
+    "lodash": "^4.17.4",
+    "rxjs": "^5.4.1",
+    "sails.io.js": "^1.1.12"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.4.2",
+    "@types/socket.io-client": "^1.4.30",
+    "tslint": "^5.4.3",
+    "typescript": "latest"
+  }
 }
