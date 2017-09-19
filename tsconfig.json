@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      "allowJs": true,
+      "baseUrl": "",
+      "declaration": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [
+        "es2016",
+        "dom"
+      ],
+      "mapRoot": "./",
+      "module": "es2015",
+      "moduleResolution": "node",
+      "outDir": "../dist/out-tsc",
+      "sourceMap": true,
+      "target": "ES5",
+      "typeRoots": [
+        "../node_modules/@types"
+      ],
+      "paths": {
+        "@angular/*": [
+          "../node_modules/@angular/*"
+        ]
+      }
+    }
+  }
