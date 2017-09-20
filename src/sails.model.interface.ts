@@ -3,7 +3,5 @@ export interface SailsModelInterface<T> {
     createdAt: Date;
     updatedAt: Date;
 
-    // new(): T;
-
     getEndPoint();
 }

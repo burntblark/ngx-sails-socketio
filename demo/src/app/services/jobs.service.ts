@@ -1,13 +1,16 @@
-import { SailsModel, Sails } from "ngx-sails-socketio";
+import { SailsModel, Sails, SailsQuery } from "ngx-sails-socketio";
 import { Injectable } from "@angular/core";
-import { Endpoint } from "ngx-sails-socketio/src/sails.decorator.endpoint";
+import { JobModel } from "../models/job.model";
 
 @Injectable()
-@Endpoint("jobs")
-export class JobsService extends SailsModel {
+export class JobsService {
+    private query: SailsQuery<JobModel>;
 
-  // For now
-  constructor(sails: Sails) {
-    super(sails);
-  }
+    constructor(private sails: Sails) {
+        this.query = new SailsQuery<JobModel>(this.sails, JobModel);
+    }
+
+    getActiveJobs() {
+        return this.query.findAll();
+    }
 }

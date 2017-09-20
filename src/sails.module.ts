@@ -1,15 +1,19 @@
-
 import { NgModule, ModuleWithProviders } from "@angular/core";
-import { Sails } from "./sails";
-import { SailsOptions } from "./sails.options";
-import { SailsQueryFactory } from "./sails.query.factory";
+import { Sails, SAILS_OPTIONS, SailsOptions } from "./sails";
 
 @NgModule({})
 export class SailsModule {
-    static forRoot(): ModuleWithProviders {
+    static forRoot(url: string, options: SailsOptions): ModuleWithProviders {
+
         return {
             ngModule: SailsModule,
-            providers: [Sails, SailsQueryFactory, SailsOptions]
+            providers: [
+                Sails,
+                {
+                    provide: SAILS_OPTIONS,
+                    useValue: Object.assign({}, options, { url })
+                },
+            ]
         }
     }
 }

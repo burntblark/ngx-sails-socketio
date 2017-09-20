@@ -1,11 +1,86 @@
-import { Injectable } from "@angular/core";
-import { connect } from "socket.io-client";
+import * as SocketIO from "socket.io-client";
+import * as SailsIO from "sails.io.js";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
+import { SailsOptionsFactory } from "./sails.options";
+import { Injectable, Inject, OpaqueToken } from "@angular/core";
 
-@Injectable()
+export let SAILS_OPTIONS = new OpaqueToken("sails.io.options");
+
+export interface SailsOptions extends SailsIOClient.Options {
+    prefix?: string;
+};
+
+export declare namespace SailsIOClient {
+    interface IO {
+        socket: Socket;
+        sails: SailsSocket;
+    }
+
+    interface Options {
+        url?: string;
+        query: string;
+        reconnection: boolean;
+        autoConnect?: boolean;
+        environment?: string;
+        useCORSRouteToGetCookie?: boolean;
+        transports?: string[];
+        path?: string;
+        headers?: { [name: string]: string };
+        timeout?: number;
+        initialConnectionHeaders?: { [name: string]: string };
+        multiplex?: any;
+        reconnectionAttempts?: number;
+        reconnectionDelay?: number;
+        reconnectionDelayMax?: number;
+        rejectUnauthorized?: boolean;
+        randomizationFactor?: number;
+    }
+
+    interface SailsSocket extends Options {
+        connect: (url, opts) => Socket;
+    }
+
+    interface JWRBody {
+        code: string;
+        data: any;
+        message: string;
+    }
+
+    interface JWR {
+        error: any;
+        body: JWRBody;
+        statusCode: number;
+        headers: { [key: string]: string | boolean };
+        toString: () => string;
+        toPOJO: () => object;
+        pipe: () => Error;
+    }
+
+    interface Socket {
+        _connect(): void;
+        reconnect(): any;
+        disconnect(): SocketIOClient.Socket;
+        isConnected(): boolean;
+        isConnecting(): boolean;
+        mightBeAboutToAutoConnect(): boolean;
+        replay(): Socket;
+        on(eventName, callback: (response) => void): Socket;
+        off(eventName, callback: (response) => void): Socket;
+        removeAllListeners(): Socket;
+        get(url: string, data: object, callback: (response) => void): void;
+        post(url: string, data: object, callback: (response) => void): void;
+        put(url: string, data: object, callback: (response) => void): void;
+        patch(url: string, data: object, callback: (response) => void): void;
+        delete(url: string, data: object, callback: (response) => void): void;
+        request(options: { url: string, method?: string, params?: object, headers?: object }, callback: (response, JWR?) => void): void;
+    }
+}
+
+// @Injectable()
 export class Sails {
-    private _socketInstance: SocketIOClient.Socket;
+    private _socketInstance: SailsIOClient.Socket;
+    private config: SailsOptionsFactory;
     private listeners: { [eventName: string]: ((JSONData: any) => void)[] } = {
         connect: [],
         connect_error: [],
@@ -17,40 +92,64 @@ export class Sails {
     requestOptions;
     requestToken = "";
 
-    private get socket(): SocketIOClient.Socket {
+    private get socket(): SailsIOClient.Socket {
         return this._socketInstance;
     }
 
-    private set socket(_socketInstance: SocketIOClient.Socket) {
+    private set socket(_socketInstance: SailsIOClient.Socket) {
         this._socketInstance = _socketInstance;
     }
 
-    constructor(private url: string, private sailsOptions: SocketIOClient.ConnectOpts) {
+    constructor( @Inject(SAILS_OPTIONS) private ioOptions: SailsOptionsFactory) {
         const handleListeners = eventName => data => this.listeners[eventName].forEach(callback => callback(data));
+        const options = new SailsOptionsFactory(ioOptions);
 
-        this.socket = connect(url, sailsOptions);
-        this.socket.on("connect", (data) => {
-            console.log("==== CONNECTED ====")
-            console.log(data);
-        });
+        const io: SailsIOClient.IO = SailsIO(SocketIO);
+        io.sails.url = options.url;
+        io.sails.query = options.query;
+        io.sails.autoConnect = options.autoConnect;
+        io.sails.transports = options.transports;
+        io.sails.useCORSRouteToGetCookie = options.useCORSRouteToGetCookie;
+        io.sails.headers = options.headers;
+        io.sails.timeout = options.timeout;
+        io.sails.reconnection = options.reconnection;
+        io.sails.environment = options.environment;
+        io.sails.path = options.path;
+        io.sails.initialConnectionHeaders = options.initialConnectionHeaders;
+        io.sails.multiplex = options.multiplex;
+        io.sails.reconnectionAttempts = options.reconnectionAttempts;
+        io.sails.reconnectionDelay = options.reconnectionDelay;
+        io.sails.reconnectionDelayMax = options.reconnectionDelayMax;
+        io.sails.rejectUnauthorized = options.rejectUnauthorized;
+        io.sails.randomizationFactor = options.randomizationFactor;
 
-        this.socket.on("connect", handleListeners("connect"));
-        this.socket.on("connect_error", handleListeners("connect_error"));
-        this.socket.on("connect_timeout", handleListeners("connect_timeout"));
-        this.socket.on("connecting", handleListeners("connecting"));
-        this.socket.on("reconnect", handleListeners("reconnect"));
-        this.socket.on("disconnect", handleListeners("disconnect"));
-    }
+        const socket = io.socket;
 
-    private connected(): boolean {
-        return this.socket.connected;
+        socket.on("connect", handleListeners("connect"));
+        socket.on("connect_error", handleListeners("connect_error"));
+        socket.on("connect_timeout", handleListeners("connect_timeout"));
+        socket.on("connecting", handleListeners("connecting"));
+        socket.on("reconnect", handleListeners("reconnect"));
+        socket.on("disconnect", handleListeners("disconnect"));
+
+        this.socket = socket;
+        this.config = options;
     }
 
     public connect(): Sails {
         if (!this.connected()) {
-            this.socket.connect();
+            this.socket._connect();
         }
 
+        return this;
+    }
+
+    private connected(): boolean {
+        return this.socket.isConnected();
+    }
+
+    public isConnecting(): Sails {
+        this.socket.isConnecting();
         return this;
     }
 
@@ -64,7 +163,7 @@ export class Sails {
 
     public addEventListener(eventName, callback: (data: string) => void) {
         if (!this.listeners[eventName]) {
-            return new Error(`The event [${eventName}] has not yet been supported by this library.`);
+            throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
         }
         this.listeners[eventName].push(callback);
     }
@@ -93,30 +192,14 @@ export class Sails {
         this.request("delete", url, {}, (response) => callback(response));
     }
 
-    public request(method: string, url: string, data: object, callback: (response: SailsResponse) => void) {
-        if (!this.connected()) {
-            this.connect();
-        }
+    public request(method: string, url: string, params: object, callback: SailsResponseCallback) {
         const headers = {
             Authorization: "Bearer " + this.requestToken
         };
-
-        const payload = {
-            method,
-            url,
-            headers,
-            data
-        };
-
-        if (!callback) {
-            this.socket.emit(method, payload);
-        }
-        else {
-            this.socket.emit(method, payload, (data: any) => {
-                console.log("==== RESPONSE =====", data);
-                callback(data);
-            });
-        }
+        url = this.config.prefix + url;
+        this.socket.request({ url, method, headers, params }, (body, response) => {
+            return callback(new SailsResponse(response));
+        });
     }
 
     public on(eventName: string, callback: SailsResponseCallback): Sails {
@@ -130,6 +213,7 @@ export class Sails {
     }
 
     private _intercept(callback: SailsResponseCallback, response) {
+        return callback;
         // const state = this.sailsOptions.getSocketInterceptor().reduce(
         //     (acc, interceptor) => {
         //         return acc && interceptor(response);
