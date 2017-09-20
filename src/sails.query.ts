@@ -1,10 +1,5 @@
 import { SailsModelInterface } from "./sails.model.interface";
-import { SailsOptions } from "./sails.options";
 import { Observable } from "rxjs";
-import * as SocketIOClient from "socket.io-client";
-import * as SailsIOClient from "sails.io.js";
-import { Component, OnInit, Injectable } from "@angular/core";
-import { Endpoint } from "./sails.decorator.endpoint";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import * as _ from "lodash";
@@ -102,10 +97,10 @@ export class SailsQuery<T extends SailsModel> {
             } else {
                 url += "?limit=1000";
             }
-            let that = this;
+
             this.sails.get(url, (res: SailsResponse): void => {
                 if (res.getCode() === "OK") {
-                    let results = that.castResponseToModel(res.getData());
+                    let results = this.castResponseToModel(res.getData());
                     resolve(results);
                 }
                 reject(res);

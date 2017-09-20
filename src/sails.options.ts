@@ -1,79 +1,29 @@
-import { Injectable } from "@angular/core";
-import * as _ from "lodash";
-import { SailsResponse } from "./sails.response";
-import * as SocketIOClient from "socket.io-client";
+import { SailsIOClient, SailsOptions } from "./sails";
 
-@Injectable()
-export class SailsOptions implements SocketIOClient.ConnectOpts {
-    private url: string;
-    public autoConnect: boolean;
-    public transports: [string];
-    private useCORSRouteToGetCookie: boolean;
-    private headers: object;
-    private prefix: string;
-    private socketInterceptor: Array<(response: SailsResponse) => Promise<SailsResponse>> = new Array<(response: SailsResponse) => Promise<SailsResponse>>();
-    private connectedCallback: any;
-    private disConnectedCallback: any;
-    private timeoutDuration: number;
+const __SAILS_VERSION__ = "0.11.0";
+const __OS_PLATFORM__ = "windows";
 
-    public setWebsocketUrl(_webSocketUrl) {
-        this.url = _webSocketUrl;
-    }
+export class SailsOptionsFactory implements SailsOptions {
+    public url = "ws://localhost:1337";
+    public query = `__sails_io_sdk_version=${__SAILS_VERSION__}&__sails_io_sdk_platform=${__OS_PLATFORM__}&__sails_io_sdk_language=javascript`;
+    public reconnection = true;
+    public autoConnect = true;
+    public transports = ["websocket"];
+    public useCORSRouteToGetCookie = false;
+    public headers = {};
+    public timeout = 20000;
+    public path = "";
+    public prefix = "";
+    public initialConnectionHeaders;
+    public multiplex;
+    public reconnectionAttempts;
+    public reconnectionDelay;
+    public reconnectionDelayMax;
+    public rejectUnauthorized;
+    public randomizationFactor;
+    public environment;
 
-    public getWebsocketUrl(): string {
-        return this.url || "ws://localhost:1337";
+    public constructor(options: SailsOptions) {
+        Object.assign(this, options);
     }
-
-    public setAutoConnect(autoConnect): void {
-        this.autoConnect = autoConnect;
-    }
-    public getAutoConnect(): boolean {
-        return this.autoConnect;
-    }
-    public setTimeOut(duration: number){
-        this.timeoutDuration = duration || 20000;
-    }
-    public getTimeOut(): number{
-        return this.timeoutDuration || 20000;
-    }
-    public setTransports(transports): void {
-        this.transports = transports;
-    }
-    public getTransports(): [string] {
-        return this.transports || ["websocket"];
-    }
-    public setUseCORSRouteToGetCookie(useCORSRouteToGetCookie): void {
-        this.useCORSRouteToGetCookie = useCORSRouteToGetCookie;
-    }
-    public getUseCORSRouteToGetCookie(): boolean {
-        return this.useCORSRouteToGetCookie || false;
-    }
-    public setHeaders(_headers: object): void {
-        this.headers = _headers;
-    }
-    public getHeaders(): object {
-        return this.headers || {};
-    }
-    public setPrefix(_prefix) {
-        this.prefix = _prefix;
-    }
-    public getPrefix(): string {
-        return this.prefix || "";
-    }
-    public setSocketInterceptor(interceptor: (response: SailsResponse) => Promise<SailsResponse>): void {
-        this.socketInterceptor.push(interceptor);
-    }
-    public getSocketInterceptor(): any {
-        return this.socketInterceptor || [];
-    }
-    public setConnectionCallbacks(connectedCallback, disConnectedCallback): void {
-        this.connectedCallback = connectedCallback;
-        this.disConnectedCallback = disConnectedCallback;
-    };
-    public getOnConnectCallback(): void {
-        return this.connectedCallback;
-    };
-    public getOnDisconnectCallback(): void {
-        return this.disConnectedCallback;
-    };
 }
