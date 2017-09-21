@@ -3,5 +3,5 @@ export interface SailsModelInterface {
     createdAt: Date;
     updatedAt: Date;
 
-    getEndPoint?: () => string;
+    getEndPoint: () => string;
 }

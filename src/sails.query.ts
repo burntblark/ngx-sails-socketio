@@ -1,65 +1,35 @@
-import { SailsModelInterface } from "./sails.model.interface";
-import { Observable } from "rxjs";
-import { SailsResponseCallback } from "./sails.response.callback";
-import { SailsResponse } from "./sails.response";
-import * as _ from "lodash";
 import { Sails } from "./sails";
-import { SailsModel } from "./sails.model";
 import { Criteria } from "./sails.query.criteria";
-
-export enum METHOD {
-    POST,
-    GET,
-    DELETE,
-    UPDATE
-}
+import { SailsResponse } from "./sails.response";
+import { SailsModelInterface } from "./sails.model.interface";
+import { clone, isArray, isObject, isEmpty } from "lodash";
 
 export class SailsQuery<T extends SailsModelInterface> {
-    private _model: SailsModelInterface;
-    private criteria: object = {};
-    private orCriteria: object = {};
-    private where: string = "";
+    private _model: T;
+    private criteria: Criteria;
     private limit: number = 30;
     private sort: string = "";
     private skip: number = 0;
     private population: string[] = [];
 
-    private get model(): SailsModelInterface {
+    private set model(model: T) {
+        this._model = model;
+    }
+
+    private get model(): T {
         return this._model;
     }
 
-    constructor(private sails: Sails, type: typeof SailsModel) {
-        this._model = new type();
-        // this._model = new type(this.sails);
+    constructor(private sails: Sails, model: { new (sails: Sails): T }) {
+        this.model = new model(this.sails);
     }
 
     find(): Promise<SailsResponse | T | T[]> {
         return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url = `/${this.model.getEndPoint()}`;
-            let query = this.buildQuery();
-            if (query) {
-                url += query;
-            }
-            this.sails.get(url, (res: SailsResponse): void => {
-                if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
-                }
-                reject(res);
-            })
-        });
-    }
+            let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}`);
+            console.log(url);
 
-    findById(id: string, populate?: string[]): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url =  `/${this.model.getEndPoint().toLowerCase()}/${id}`;
-            if (populate) {
-                if (url.includes("?")) {
-                    url += `&populate=[${populate.join(",")}]`;
-                } else {
-                    url += `?populate=[${populate.join(",")}]`;
-                }
-            }
-            this.sails.get(url, (res: SailsResponse): void => {
+            this.sails.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
                     resolve(this.marshalData(res.getData()));
                 }
@@ -68,97 +38,10 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    findAll(populate?: string[]): Promise<SailsResponse | T | T[]> {
+    findById(id: string): Promise<SailsResponse | T | T[]> {
         return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url =  `/${this.model.getEndPoint().toLowerCase()}`;
-            if (populate) {
-                if (url.includes("?")) {
-                    url += `&populate=[${populate.join(",")}]`;
-                } else {
-                    url += `?populate=[${populate.join(",")}]`;
-                }
-            }
-            if (url.includes("?")) {
-                url += "&limit=1000";
-            } else {
-                url += "?limit=1000";
-            }
-
-            this.sails.get(url, (res: SailsResponse): void => {
-                if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
-                }
-                reject(res);
-            });
-        });
-    }
-
-    save(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}`;
-            this.sails.post(url, model, (res: SailsResponse): void => {
-                if (res.getCode() === "CREATED") {
-                    resolve(this.marshalData(res.getData()));
-                }
-                reject(res);
-            });
-        });
-    }
-
-    update(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
-            delete model.createdAt;
-            delete model.updatedAt;
-            this.sails.put(url, model, (res: SailsResponse): void => {
-                if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
-                }
-                reject(res);
-            });
-        });
-    }
-
-    remove(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
-            this.sails.delete(url, (res: SailsResponse): void => {
-                if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
-                }
-                reject(res);
-            });
-        });
-    }
-
-    action(path: string, method: METHOD, data?: any | SailsQuery<T>): Promise<SailsResponse | T | T[]> {
-        let url = `/${this.model.getEndPoint().toLowerCase()}/${path}`;
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            if (method === METHOD.POST) {
-                this.sails.post(url, data || {}, (res: SailsResponse): void => {
-                    if (res.getCode() === "OK") {
-                        resolve(this.marshalData(res.getData()));
-                    }
-                    reject(res);
-                });
-            } else {
-                if (data instanceof SailsQuery) {
-                    url += data.buildQuery();
-                }
-                this.sails.get(url, (res: SailsResponse): void => {
-                    if (res.getCode() === "OK") {
-                        resolve(this.marshalData(res.getData()));
-                    }
-                    reject(res);
-                });
-            }
-        });
-    }
-
-    on(): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
-            let eventName = this.model.getEndPoint().toLowerCase();
-            this.sails.on(eventName, (res: SailsResponse): void => {
+            let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}/${id}`);
+            this.sails.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
                     resolve(this.marshalData(res.getData()));
                 }
@@ -169,25 +52,12 @@ export class SailsQuery<T extends SailsModelInterface> {
 
     private marshalData(data: any): T | T[] {
         const callFn = (model: T): T => {
-            let clone = _.clone(this.model);
-            // delete clone.sails;
-            return Object.assign(clone, model);
+            const cloned = clone(this.model);
+            // delete cloned.sails;
+            return Object.assign(cloned, model);
         };
 
-        return _.isArray(data) ? data.map(callFn) : _.isObject(data) ? callFn(data) : data;
-    }
-
-    private whereFunction(): string {
-        if (_.isEmpty(this.criteria)) {
-            return null;
-        }
-        if (!_.isEmpty(this.orCriteria)) {
-            if (_.isArray(this.orCriteria["or"])) {
-                this.orCriteria["or"].push(this.criteria);
-            }
-            return "where=" + JSON.stringify(this.orCriteria);
-        }
-        return "where=" + JSON.stringify(this.criteria);
+        return isArray(data) ? data.map(callFn) : isObject(data) ? callFn(data) : data;
     }
 
     public setLimit(limit: number): SailsQuery<T> {
@@ -195,8 +65,8 @@ export class SailsQuery<T extends SailsModelInterface> {
         return this;
     }
 
-    public limitFunction(): string {
-        if (this.limit == null) {
+    private getLimit(): string {
+        if (this.limit === null) {
             return null;
         }
         return "limit=" + this.limit.toString();
@@ -207,54 +77,88 @@ export class SailsQuery<T extends SailsModelInterface> {
         return this;
     }
 
-    public sortFunction(): string {
-        if (this.sort == null || _.isEmpty(this.sort)) {
+    private getSort(): string {
+        if (this.sort == null || isEmpty(this.sort)) {
             return null;
         }
         return "sort=" + this.sort;
     }
 
-    public setSkip(skip: number): SailsQuery<T> {
+    public setSkip(skip: number): SailsQuery<T > {
         this.skip = skip;
         return this;
     }
 
-    public skipFunction(): string {
+    private getSkip(): string {
         if (this.skip == null) {
             return null;
         }
         return "skip=" + this.skip.toString();
     }
 
-    public buildQuery(): string {
-        let queryBuilder = "";
-        let wherePart = this.whereFunction();
-        if (wherePart != null) {
-            if (!_.isEmpty(queryBuilder)) {
-                queryBuilder += "&";
-            }
-            queryBuilder += wherePart;
+    public addPopulation(... value: string[]): SailsQuery<T > {
+        if (isArray(this.population)) {
+            this.population.push(... value);
         }
+        return this;
+    }
 
-        let limitPart = this.limitFunction();
+    private getPopulation() {
+        if (this.population === null || isEmpty(this.population)) {
+            return null;
+        }
+        return `populate=[${this.population.join(",")}]`;
+    }
+
+    /*
+    private orCriteria: object = {};
+    public or(): SailsQuery<T> {
+        if (isUndefined(this.orCriteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
+            this.criteria = {};
+            return this;
+        }
+        if (isArray(this.orCriteria["or"])) {
+            this.orCriteria["or"].push(this.criteria);
+        } else if (isObject(this.criteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
+        }
+        this.criteria = {};
+        return this;
+    }
+    */
+
+    public setCriteria(criteria: Criteria) {
+        this.criteria = criteria;
+        return this;
+    }
+
+    private getCriteria(): Criteria {
+        return this.criteria;
+    }
+
+    private buildQuery(url: string): string {
+        let queryBuilder = this.criteria.build();
+
+        let limitPart = this.getLimit();
         if (limitPart != null) {
-            if (!_.isEmpty(queryBuilder)) {
+            if (!isEmpty(queryBuilder)) {
                 queryBuilder += "&";
             }
             queryBuilder += limitPart;
         }
 
-        let skipPart = this.skipFunction();
+        let skipPart = this.getSkip();
         if (skipPart != null) {
-            if (!_.isEmpty(queryBuilder)) {
+            if (!isEmpty(queryBuilder)) {
                 queryBuilder += "&";
             }
             queryBuilder += skipPart;
         }
 
-        let populatePart = this.populateFunction();
+        let populatePart = this.getPopulation();
         if (populatePart != null) {
-            if (!_.isEmpty(queryBuilder)) {
+            if (!isEmpty(queryBuilder)) {
                 queryBuilder += "&";
             }
             queryBuilder += populatePart;
@@ -263,162 +167,7 @@ export class SailsQuery<T extends SailsModelInterface> {
         if (queryBuilder.charAt(0) !== "?") {
             queryBuilder = "?" + queryBuilder;
         }
-        return queryBuilder.toString();
+
+        return url + queryBuilder.toString();
     }
-
-
-    public or(): SailsQuery<T> {
-        if (_.isUndefined(this.orCriteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
-            this.criteria = {};
-            return this;
-        }
-        if (_.isArray(this.orCriteria["or"])) {
-            this.orCriteria["or"].push(this.criteria);
-        } else if (_.isObject(this.criteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
-        }
-        this.criteria = {};
-        return this;
-    }
-
-    public populate(value: string): SailsQuery<T> {
-        if (_.isArray(this.population)) {
-            this.population.push(value);
-        }
-        return this;
-    }
-
-    private populateFunction() {
-        if (this.population == null || _.isEmpty(this.population)) {
-            return null;
-        }
-        return "populate=[" + _.join(this.population, ",") + "]";
-    }
-
-    public whereNotEqualTo(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "!": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["!"])) {
-            this.criteria[key]["!"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: ! clause, use whereNotIn instead");
-    }
-
-    public whereLike(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "like": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["like"])) {
-            this.criteria[key]["like"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: like clause has already been used in this query");
-    }
-
-    public whereContains(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "contains": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["contains"])) {
-            this.criteria[key]["contains"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: contains clause has already been used in this query");
-    }
-
-    public whereStartsWith(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "startsWith": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["startsWith"])) {
-            this.criteria[key]["startsWith"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: startsWith clause has already been used in this query");
-    }
-
-    public whereEndsWith(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "endsWith": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["endsWith"])) {
-            this.criteria[key]["endsWith"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: endsWith clause has already been used in this query");
-    }
-
-    public whereNotIn(key: string, value: string): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "!": [value] };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["!"])) {
-            this.criteria[key]["!"] = [value];
-            return this;
-        }
-        if (_.isArray(this.criteria[key]["!"])) {
-            this.criteria[key]["!"].push(value);
-        } else {
-            this.criteria[key]["!"] = [this.criteria[key]["!"], value];
-        }
-        return this;
-    }
-
-    public whereLessThan(key: string, value: string | number | boolean | Date): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "<": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["<"])) {
-            this.criteria[key]["<"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: < clause has already been used in this query");
-    }
-
-    public whereLessThanOrEqualTo(key: string, value: string | number | boolean | Date): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { "<=": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key]["<="])) {
-            this.criteria[key]["<="] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: <= clause has already been used in this query");
-    }
-
-    public whereGreaterThan(key: string, value: string | number | boolean | Date): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { ">": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key][">"])) {
-            this.criteria[key][">"] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: > clause has already been used in this query");
-    }
-
-    public whereGreaterThanOrEqualTo(key: string, value: string | number | boolean | Date): SailsQuery<T> {
-        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
-            this.criteria[key] = { ">=": value };
-            return this;
-        }
-        if (_.isUndefined(this.criteria[key][">="])) {
-            this.criteria[key][">="] = value;
-            return this;
-        }
-        throw new Error("DuplicateError: >= clause has already been used in this query");
-    }
-
 }
