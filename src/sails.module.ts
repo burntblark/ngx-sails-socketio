@@ -1,5 +1,6 @@
 import { NgModule, ModuleWithProviders } from "@angular/core";
-import { Sails, SAILS_OPTIONS, SailsOptions } from "./sails";
+import { Sails, SAILS_OPTIONS } from "./sails";
+import { SailsOptions } from "./sails.options";
 
 @NgModule({})
 export class SailsModule {
