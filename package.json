@@ -4,10 +4,10 @@
   "main": "index.ts",
   "description": "An angular2 module for using the sails socket.io api",
   "license": "MIT",
-  "homepage": "https://github.com/burntblark/angular2-sails#readme",
+  "homepage": "https://github.com/burntblark/ngx-sails-socketio#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/burntblark/angular2-sails.git"
+    "url": "git+https://github.com/burntblark/ngx-sails-socketio.git"
   },
   "keywords": [
     "Angular2",
@@ -30,7 +30,7 @@
     "name": "burntblark"
   },
   "bugs": {
-    "url": "https://github.com/burntblark/angular2-sails/issues"
+    "url": "https://github.com/burntblark/ngx-sails-socketio/issues"
   },
   "dependencies": {
     "@angular/core": "^4.2.3",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@angular/cli": "^1.4.2",
     "@types/socket.io-client": "^1.4.30",
+    "@types/lodash": "^4.14.74",
     "tslint": "^5.4.3",
     "typescript": "latest"
   }
