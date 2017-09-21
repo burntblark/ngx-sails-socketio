@@ -2,82 +2,12 @@ import * as SocketIO from "socket.io-client";
 import * as SailsIO from "sails.io.js";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
-import { SailsOptionsFactory } from "./sails.options";
-import { Injectable, Inject, OpaqueToken } from "@angular/core";
+import { SailsOptionsFactory } from "./sails.options.factory";
+import { Inject, OpaqueToken } from "@angular/core";
+import { SailsIOClient } from "./sails.io.client";
 
 export let SAILS_OPTIONS = new OpaqueToken("sails.io.options");
 
-export interface SailsOptions extends SailsIOClient.Options {
-    prefix?: string;
-};
-
-export declare namespace SailsIOClient {
-    interface IO {
-        socket: Socket;
-        sails: SailsSocket;
-    }
-
-    interface Options {
-        url?: string;
-        query: string;
-        reconnection: boolean;
-        autoConnect?: boolean;
-        environment?: string;
-        useCORSRouteToGetCookie?: boolean;
-        transports?: string[];
-        path?: string;
-        headers?: { [name: string]: string };
-        timeout?: number;
-        initialConnectionHeaders?: { [name: string]: string };
-        multiplex?: any;
-        reconnectionAttempts?: number;
-        reconnectionDelay?: number;
-        reconnectionDelayMax?: number;
-        rejectUnauthorized?: boolean;
-        randomizationFactor?: number;
-    }
-
-    interface SailsSocket extends Options {
-        connect: (url, opts) => Socket;
-    }
-
-    interface JWRBody {
-        code: string;
-        data: any;
-        message: string;
-    }
-
-    interface JWR {
-        error: any;
-        body: JWRBody;
-        statusCode: number;
-        headers: { [key: string]: string | boolean };
-        toString: () => string;
-        toPOJO: () => object;
-        pipe: () => Error;
-    }
-
-    interface Socket {
-        _connect(): void;
-        reconnect(): any;
-        disconnect(): SocketIOClient.Socket;
-        isConnected(): boolean;
-        isConnecting(): boolean;
-        mightBeAboutToAutoConnect(): boolean;
-        replay(): Socket;
-        on(eventName, callback: (response) => void): Socket;
-        off(eventName, callback: (response) => void): Socket;
-        removeAllListeners(): Socket;
-        get(url: string, data: object, callback: (response) => void): void;
-        post(url: string, data: object, callback: (response) => void): void;
-        put(url: string, data: object, callback: (response) => void): void;
-        patch(url: string, data: object, callback: (response) => void): void;
-        delete(url: string, data: object, callback: (response) => void): void;
-        request(options: { url: string, method?: string, params?: object, headers?: object }, callback: (response, JWR?) => void): void;
-    }
-}
-
-// @Injectable()
 export class Sails {
     private _socketInstance: SailsIOClient.Socket;
     private config: SailsOptionsFactory;
@@ -101,7 +31,7 @@ export class Sails {
     }
 
     constructor( @Inject(SAILS_OPTIONS) private ioOptions: SailsOptionsFactory) {
-        const handleListeners = eventName => data => this.listeners[eventName].forEach(callback => callback(data));
+        const handleListeners = (eventName: string) => data => this.listeners[eventName].forEach(callback => callback(data));
         const options = new SailsOptionsFactory(ioOptions);
 
         const io: SailsIOClient.IO = SailsIO(SocketIO);
@@ -168,12 +98,14 @@ export class Sails {
         this.listeners[eventName].push(callback);
     }
 
-    /**
-     * @todo
-     * @param eventName
-     */
-    public removeEventListener(eventName) {
-
+    public removeEventListener(eventName, callback) {
+        if (!this.listeners[eventName]) {
+            throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
+        }
+        const listeners = this.listeners[eventName];
+        const index = listeners.findIndex(cb => cb === callback);
+        const newListeners = [...listeners.slice(0, index - 1), ...listeners.slice(index + 1)]
+        this.listeners[eventName] = newListeners;
     }
 
     public get(url: string, callback: SailsResponseCallback): void {
@@ -197,9 +129,11 @@ export class Sails {
             Authorization: "Bearer " + this.requestToken
         };
         url = this.config.prefix + url;
-        this.socket.request({ url, method, headers, params }, (body, response) => {
-            return callback(new SailsResponse(response));
-        });
+        this.socket.request(
+            { url, method, headers, params },
+            (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
+                return callback(new SailsResponse(response));
+            });
     }
 
     public on(eventName: string, callback: SailsResponseCallback): Sails {

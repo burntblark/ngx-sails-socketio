@@ -1,16 +1,7 @@
 import { SailsModelInterface } from "./sails.model.interface";
-import { Sails } from "./sails";
 
-// export class SailsModel implements SailsModelInterface<SailsModel> {
-export class SailsModel {
-
+export class SailsModel implements SailsModelInterface {
     id: string | number;
     createdAt: Date;
     updatedAt: Date;
-
-    constructor (private sails: Sails) {}
-
-    getEndPoint(): string {
-        return "endpoint";
-    }
 }
