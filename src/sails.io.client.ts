@@ -5,7 +5,7 @@ export declare namespace SailsIOClient {
     }
 
     interface Options {
-        url?: string;
+        url: string;
         query: string;
         reconnection: boolean;
         autoConnect?: boolean;
@@ -47,7 +47,7 @@ export declare namespace SailsIOClient {
     interface Socket {
         _connect(): void;
         reconnect(): any;
-        disconnect(): SocketIOClient.Socket;
+        disconnect(): any;
         isConnected(): boolean;
         isConnecting(): boolean;
         mightBeAboutToAutoConnect(): boolean;

@@ -1,5 +1,7 @@
-.vscode
 node_modules/
-dist/
+demo/
+src/
 *.log
 package-lock.json
+.vscode
+.gitignore

@@ -17,8 +17,8 @@ export class AppComponent implements OnInit {
         const a = this.jobs.getActiveJobs();
 
         a.then(data => {
-            console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉", "", "", "");
-            console.log(data);
+            console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉");
+            console.log(data[0]);
         });
     }
 }

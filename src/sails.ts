@@ -1,13 +1,14 @@
+import SailsIO from "sails.io.js";
 import * as SocketIO from "socket.io-client";
-import * as SailsIO from "sails.io.js";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import { SailsOptionsFactory } from "./sails.options.factory";
-import { Inject, OpaqueToken } from "@angular/core";
+import { Inject, InjectionToken, Injectable } from "@angular/core";
 import { SailsIOClient } from "./sails.io.client";
 
-export let SAILS_OPTIONS = new OpaqueToken("sails.io.options");
+export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 
+@Injectable()
 export class Sails {
     private _socketInstance: SailsIOClient.Socket;
     private config: SailsOptionsFactory;
@@ -30,7 +31,7 @@ export class Sails {
         this._socketInstance = _socketInstance;
     }
 
-    constructor( @Inject(SAILS_OPTIONS) private ioOptions: SailsOptionsFactory) {
+    constructor( @Inject(SAILS_OPTIONS) ioOptions: SailsOptionsFactory) {
         const handleListeners = (eventName: string) => data => this.listeners[eventName].forEach(callback => callback(data));
         const options = new SailsOptionsFactory(ioOptions);
 
@@ -104,7 +105,7 @@ export class Sails {
         }
         const listeners = this.listeners[eventName];
         const index = listeners.findIndex(cb => cb === callback);
-        const newListeners = [...listeners.slice(0, index - 1), ...listeners.slice(index + 1)]
+        const newListeners = [...listeners.slice(0, index - 1), ...listeners.slice(index + 1)];
         this.listeners[eventName] = newListeners;
     }
 

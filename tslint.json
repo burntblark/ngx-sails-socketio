@@ -5,7 +5,7 @@
 		"no-unused-variable": true,
 		"curly": true,
 		"class-name": true,
-		"semicolon": ["always"],
+		"semicolon": true,
         "triple-equals": [
             true,
             "allow-null-check"
@@ -29,7 +29,7 @@
         "no-var-keyword": true,
         "radix": false,
         "switch-default": true,
-        "indent": [false],
+        "indent": [true],
         "no-require-imports": false,
         "no-trailing-whitespace": true,
         "object-literal-sort-keys": false,

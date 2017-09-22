@@ -1,4 +1,4 @@
-import { SailsIOClient } from "./sails.io.client.d";
+import { SailsIOClient } from "./sails.io.client";
 
 /**
  * Library specific configuration options
@@ -6,4 +6,4 @@ import { SailsIOClient } from "./sails.io.client.d";
  */
 export interface SailsOptions extends SailsIOClient.Options {
     prefix?: string;
-};
+}
