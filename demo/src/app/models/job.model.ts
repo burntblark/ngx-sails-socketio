@@ -1,7 +1,11 @@
-import { SailsModel } from "ngx-sails-socketio";
-import { Endpoint } from "ngx-sails-socketio/src/sails.decorator.endpoint";
+import { SailsModel, Property, Endpoint } from "ngx-sails-socketio";
+
+class CustomerModel extends SailsModel {
+}
 
 @Endpoint("verification")
 export class JobModel extends SailsModel {
-
+    @Property({ type: CustomerModel })
+    customer: CustomerModel = null;
 }
+

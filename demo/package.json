@@ -22,7 +22,7 @@
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
     "core-js": "^2.4.1",
-    "ngx-sails-socketio": "file:///Users/apple/Desktop/ANGULAR/ngx-sails-socketio",
+    "ngx-sails-socketio": "../",
     "rxjs": "^5.1.0",
     "zone.js": "^0.8.4"
   },
