@@ -26,8 +26,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/.bin/ngc -p .",
-    "dist": "npm run build && npm run rollup",
-    "rollup": "rollup -c",
     "lint": "tslint --project ./tsconfig.json --type-check --fix",
     "demo": "npm run build && cd ./demo && npm i ../"
   },
@@ -54,8 +52,6 @@
     "@angular/core": "^4.2.3",
     "@types/lodash": "^4.14.74",
     "@types/socket.io-client": "^1.4.30",
-    "rollup": "~0.50.0",
-    "rollup-plugin-typescript": "~0.8.1",
     "tslint": "^5.4.3",
     "typescript": "latest",
     "typings": "^0.8.1"
