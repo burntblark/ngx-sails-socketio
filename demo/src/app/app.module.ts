@@ -11,6 +11,9 @@ const options: SailsOptions = {
     query: "__sails_io_sdk_version=0.11.0&__sails_io_sdk_platform=windows&__sails_io_sdk_language=javascript",
     reconnection: true,
     autoConnect: false,
+    headers: {
+        Authorization: "Bearer " + "token"
+    },
     // timeout: 3000,
 };
 

@@ -3,12 +3,11 @@ import * as SocketIO from "socket.io-client";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import { SailsOptionsFactory } from "./sails.options.factory";
-import { Inject, InjectionToken, Injectable } from "@angular/core";
+import { Inject, InjectionToken } from "@angular/core";
 import { SailsIOClient } from "./sails.io.client";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 
-@Injectable()
 export class Sails {
     private _socketInstance: SailsIOClient.Socket;
     private config: SailsOptionsFactory;
@@ -20,8 +19,6 @@ export class Sails {
         reconnect: [],
         disconnect: []
     };
-    requestOptions;
-    requestToken = "";
 
     private get socket(): SailsIOClient.Socket {
         return this._socketInstance;
@@ -125,13 +122,9 @@ export class Sails {
         this.request("delete", url, {}, (response) => callback(response));
     }
 
-    public request(method: string, url: string, params: object, callback: SailsResponseCallback) {
-        const headers = {
-            Authorization: "Bearer " + this.requestToken
-        };
-        url = this.config.prefix + url;
-        this.socket.request(
-            { url, method, headers, params },
+    public request(method: string, url: string, params: object, callback: SailsResponseCallback): void {
+        return this.socket.request(
+            { url: this.config.prefix + url, method, params },
             (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
                 return callback(new SailsResponse(response));
             });
