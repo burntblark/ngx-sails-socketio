@@ -1,27 +1,33 @@
 {
   "name": "ngx-sails-socketio",
   "version": "0.0.1",
-  "main": "index.ts",
-  "description": "An angular2 module for using the sails socket.io api",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "description": "An Angular module for connecting SailsJs backend through SocketIO.",
   "license": "MIT",
-  "homepage": "https://github.com/burntblark/angular2-sails#readme",
+  "homepage": "https://github.com/burntblark/ngx-sails-socketio#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/burntblark/angular2-sails.git"
+    "url": "git+https://github.com/burntblark/ngx-sails-socketio.git"
   },
   "keywords": [
+    "Ng",
+    "Ngx",
+    "Angular",
     "Angular2",
+    "IO",
     "Sails",
+    "WebSocket",
+    "Socket",
     "SocketIO",
-    "Models",
-    "Query",
-    "Easy",
-    "API"
+    "Model",
+    "Query"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -r ./dist && ./node_modules/.bin/tsc -p .",
-    "demo": "npm run build && cd ./demo && npm i --save ../"
+    "build": "./node_modules/.bin/ngc -p .",
+    "lint": "tslint --project ./tsconfig.json --type-check --fix",
+    "demo": "npm run build && cd ./demo && npm i ../"
   },
   "contributors": [
     "Jeremiah Ogbomo"
@@ -30,18 +36,24 @@
     "name": "burntblark"
   },
   "bugs": {
-    "url": "https://github.com/burntblark/angular2-sails/issues"
+    "url": "https://github.com/burntblark/ngx-sails-socketio/issues"
   },
   "dependencies": {
-    "@angular/core": "^4.2.3",
-    "lodash": "^4.17.4",
-    "rxjs": "^5.4.1",
+    "json-object-mapper": "^1.5.1",
     "sails.io.js": "^1.1.12"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.2.3"
   },
   "devDependencies": {
     "@angular/cli": "^1.4.2",
+    "@angular/compiler": "^4.2.3",
+    "@angular/compiler-cli": "^4.2.3",
+    "@angular/core": "^4.2.3",
+    "@types/lodash": "^4.14.74",
     "@types/socket.io-client": "^1.4.30",
     "tslint": "^5.4.3",
-    "typescript": "latest"
+    "typescript": "latest",
+    "typings": "^0.8.1"
   }
 }

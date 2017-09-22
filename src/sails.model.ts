@@ -1,21 +1,12 @@
 import { SailsModelInterface } from "./sails.model.interface";
-import { Endpoint } from "./sails.decorator.endpoint";
-import { Sails } from "./sails";
+import { Property } from "./sails.marshall";
 
-// export class SailsModel implements SailsModelInterface<SailsModel> {
-export class SailsModel {
-
-    id: string | number;
-    createdAt: Date;
-    updatedAt: Date;
-
-    constructor (
-        private sails: Sails
-    ) {
-
-    }
+export class SailsModel implements SailsModelInterface {
+    @Property() id: string = null;
+    @Property({ type: Date }) createdAt: Date = null;
+    @Property({ type: Date }) updatedAt: Date = null;
 
     getEndPoint(): string {
-        return "endpoint";
+        return this.getEndPoint();
     }
 }

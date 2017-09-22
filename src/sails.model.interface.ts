@@ -1,9 +1,7 @@
-export interface SailsModelInterface<T> {
-    id: string | number;
+export interface SailsModelInterface {
+    id: string;
     createdAt: Date;
     updatedAt: Date;
 
-    // new(): T;
-
-    getEndPoint();
+    getEndPoint: () => string;
 }

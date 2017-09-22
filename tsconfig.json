@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-    "allowJs": true,
+    "rootDir": "./src",
+    "outDir": "dist",
     "baseUrl": ".",
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
       "es2016",
       "dom"
     ],
-    "mapRoot": "./",
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "./dist",
-    "sourceMap": true,
-    "target": "ES5",
+    "sourceMap": false,
+    "target": "es5",
     "typeRoots": [
       "../node_modules/@types"
     ],
@@ -24,8 +23,17 @@
       ]
     }
   },
+  "angularCompilerOptions": {
+    "genDir": "./dist",
+    "strictMetadataEmit": true,
+    "skipTemplateCodegen": true
+  },
+  "files": [
+    "./src/index.ts"
+  ],
   "exclude": [
     "node_modules",
-    "demo"
+    "demo",
+    "bin"
   ]
 }
