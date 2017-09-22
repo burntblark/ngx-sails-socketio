@@ -2,7 +2,7 @@ import { NgModule, ModuleWithProviders } from "@angular/core";
 import { Sails, SAILS_OPTIONS } from "./sails";
 import { SailsOptions } from "./sails.options";
 
-@NgModule({})
+@NgModule()
 export class SailsModule {
     static forRoot(options: SailsOptions): ModuleWithProviders {
         return {
@@ -12,12 +12,7 @@ export class SailsModule {
                     provide: SAILS_OPTIONS,
                     useValue: options
                 },
-                // Sails,
-                {
-                    provide: Sails,
-                    useClass: Sails,
-                    deps: [SAILS_OPTIONS]
-                },
+                Sails
             ]
         };
     }
