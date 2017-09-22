@@ -5,3 +5,4 @@ export { SailsModule } from "./sails.module";
 export { SailsOptions } from "./sails.options"
 export { SailsResponse } from "./sails.response";
 export { Endpoint } from "./sails.decorator.endpoint";
+export { Property, Ignore } from "./sails.marshall";

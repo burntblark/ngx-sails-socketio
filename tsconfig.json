@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "baseUrl": ".",
-    "declaration": false,
+    "allowJs": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [

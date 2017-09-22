@@ -1,0 +1,9 @@
+node_modules/
+src/
+demo/
+index.ts
+index.d.ts
+*.log
+package-lock.json
+.vscode
+.gitignore

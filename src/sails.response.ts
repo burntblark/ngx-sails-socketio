@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import { SailsIOClient } from "./sails.io.client.d";
+import { SailsIOClient } from "./sails.io.client";
 /**
  *
  * @author Tunde

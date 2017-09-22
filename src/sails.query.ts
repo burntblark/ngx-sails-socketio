@@ -2,7 +2,15 @@ import { Sails } from "./sails";
 import { Criteria } from "./sails.query.criteria";
 import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
-import { clone, isArray, isObject, isEmpty } from "lodash";
+import { marshalData } from "./sails.marshall";
+
+export enum Method {
+    POST,
+    GET,
+    DELETE,
+    PUT,
+    PATCH,
+}
 
 export class SailsQuery<T extends SailsModelInterface> {
     private _model: T;
@@ -20,18 +28,18 @@ export class SailsQuery<T extends SailsModelInterface> {
         return this._model;
     }
 
-    constructor(private sails: Sails, model: { new (sails: Sails): T }) {
-        this.model = new model(this.sails);
+    constructor(private sails: Sails, private modelClass: { new(): T }) {
+        this.model = new modelClass();
+        // console.log(this.model)
     }
 
     find(): Promise<SailsResponse | T | T[]> {
         return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
             let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}`);
-            console.log(url);
 
             this.sails.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()));
                 }
                 reject(res);
             });
@@ -43,21 +51,11 @@ export class SailsQuery<T extends SailsModelInterface> {
             let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}/${id}`);
             this.sails.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(this.marshalData(res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()));
                 }
                 reject(res);
             });
         });
-    }
-
-    private marshalData(data: any): T | T[] {
-        const callFn = (model: T): T => {
-            const cloned = clone(this.model);
-            // delete cloned.sails;
-            return Object.assign(cloned, model);
-        };
-
-        return isArray(data) ? data.map(callFn) : isObject(data) ? callFn(data) : data;
     }
 
     public setLimit(limit: number): SailsQuery<T> {
@@ -78,13 +76,13 @@ export class SailsQuery<T extends SailsModelInterface> {
     }
 
     private getSort(): string {
-        if (this.sort == null || isEmpty(this.sort)) {
+        if (this.sort === null || this.sort.length === 0) {
             return null;
         }
         return "sort=" + this.sort;
     }
 
-    public setSkip(skip: number): SailsQuery<T > {
+    public setSkip(skip: number): SailsQuery<T> {
         this.skip = skip;
         return this;
     }
@@ -96,15 +94,15 @@ export class SailsQuery<T extends SailsModelInterface> {
         return "skip=" + this.skip.toString();
     }
 
-    public addPopulation(... value: string[]): SailsQuery<T > {
-        if (isArray(this.population)) {
-            this.population.push(... value);
+    public addPopulation(...value: string[]): SailsQuery<T> {
+        if (Array.isArray(this.population)) {
+            this.population.push(...value);
         }
         return this;
     }
 
     private getPopulation() {
-        if (this.population === null || isEmpty(this.population)) {
+        if (this.population === null || this.population.length === 0) {
             return null;
         }
         return `populate=[${this.population.join(",")}]`;
@@ -118,7 +116,7 @@ export class SailsQuery<T extends SailsModelInterface> {
             this.criteria = {};
             return this;
         }
-        if (isArray(this.orCriteria["or"])) {
+        if (Array.isArray(this.orCriteria["or"])) {
             this.orCriteria["or"].push(this.criteria);
         } else if (isObject(this.criteria["or"])) {
             this.orCriteria["or"] = [this.criteria];
@@ -138,11 +136,11 @@ export class SailsQuery<T extends SailsModelInterface> {
     }
 
     private buildQuery(url: string): string {
-        let queryBuilder = this.criteria.build();
+        let queryBuilder = this.criteria && this.criteria.build() || "";
 
         let limitPart = this.getLimit();
         if (limitPart != null) {
-            if (!isEmpty(queryBuilder)) {
+            if (queryBuilder.length) {
                 queryBuilder += "&";
             }
             queryBuilder += limitPart;
@@ -150,7 +148,7 @@ export class SailsQuery<T extends SailsModelInterface> {
 
         let skipPart = this.getSkip();
         if (skipPart != null) {
-            if (!isEmpty(queryBuilder)) {
+            if (queryBuilder.length) {
                 queryBuilder += "&";
             }
             queryBuilder += skipPart;
@@ -158,7 +156,7 @@ export class SailsQuery<T extends SailsModelInterface> {
 
         let populatePart = this.getPopulation();
         if (populatePart != null) {
-            if (!isEmpty(queryBuilder)) {
+            if (queryBuilder.length) {
                 queryBuilder += "&";
             }
             queryBuilder += populatePart;
@@ -170,4 +168,89 @@ export class SailsQuery<T extends SailsModelInterface> {
 
         return url + queryBuilder.toString();
     }
+
+    save(model: T): Promise<SailsResponse | T | T[]> {
+        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+            let url = `/${model.getEndPoint().toLowerCase()}`;
+            const data = Object.assign({}, model);
+
+            if (model.id === null) {
+                this.sails.post(url, data, (res: SailsResponse) => {
+                    if (res.getCode() === "CREATED") {
+                        resolve(marshalData<T>(this.modelClass, res.getData()));
+                    }
+                    reject(res);
+                });
+            } else {
+                this.sails.put(url.concat(`/${model.id}`), data, (res: SailsResponse) => {
+                    console.log(url, data, res.getCode());
+                    if (res.getCode() === "CREATED") {
+                        resolve(marshalData<T>(this.modelClass, res.getData()));
+                    }
+                    reject(res);
+                });
+            }
+        });
+    }
+
+    update(model: T): Promise<SailsResponse | T | T[]> {
+        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+            delete model.createdAt;
+            delete model.updatedAt;
+            this.sails.put(url, Object.assign({}, this), (res: SailsResponse) => {
+                if (res.getCode() === "OK") {
+                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                }
+                reject(res);
+            });
+        });
+    }
+
+    remove(model: T): Promise<SailsResponse | T | T[]> {
+        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+            this.sails.delete(url, (res: SailsResponse) => {
+                if (res.getCode() === "OK") {
+                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                }
+                reject(res);
+            });
+        });
+    }
+
+    action(path: string, method: Method, data?: any): Promise<SailsResponse | T | T[]> {
+        let url = `/${this.model.getEndPoint().toLowerCase()}/${path}`;
+        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+            switch (method) {
+                case Method.GET:
+                case Method.DELETE:
+                case Method.POST:
+                case Method.PUT: {
+                    this.sails.post(url, data || {}, (res: SailsResponse) => {
+                        if (res.getCode() === "OK") {
+                            resolve(marshalData<T>(this.modelClass, res.getData()));
+                        }
+                        reject(res);
+                    });
+                    break;
+                }
+
+                default: { }
+            }
+        });
+    }
+
+    on(): Promise<SailsResponse | T | T[]> {
+        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+            const eventName = this.model.getEndPoint().toLowerCase();
+            this.sails.on(eventName, (res: SailsResponse) => {
+                if (res.getCode() === "OK") {
+                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                }
+                reject(res);
+            });
+        });
+    }
+
 }
