@@ -6,4 +6,4 @@ import { SailsIOClient } from "./sails.io.client";
  */
 export interface SailsOptions extends SailsIOClient.Options {
     prefix?: string;
-};
+}

@@ -1,8 +1,29 @@
 import { Sails } from "./sails";
-import { Criteria } from "./sails.query.criteria";
+import { QueryCriteria } from "./sails.query.criteria";
 import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
 import { marshalData } from "./sails.marshall";
+
+export class QueryBuilder {
+    constructor(private query: string = "") { }
+
+    append(criteria: string) {
+        if (typeof criteria === "string") {
+            if (this.query.length) {
+                this.query += "&";
+            }
+            this.query += criteria;
+        }
+        return this;
+    }
+
+    toString() {
+        if (this.query.charAt(0) !== "?") {
+            this.query = "?" + this.query;
+        }
+        return this.query;
+    }
+}
 
 export enum Method {
     POST,
@@ -14,7 +35,7 @@ export enum Method {
 
 export class SailsQuery<T extends SailsModelInterface> {
     private _model: T;
-    private criteria: Criteria;
+    private criteria: QueryCriteria;
     private limit: number = 30;
     private sort: string = "";
     private skip: number = 0;
@@ -75,7 +96,7 @@ export class SailsQuery<T extends SailsModelInterface> {
         return this;
     }
 
-    private getSort(): string {
+    protected getSort(): string {
         if (this.sort === null || this.sort.length === 0) {
             return null;
         }
@@ -108,6 +129,15 @@ export class SailsQuery<T extends SailsModelInterface> {
         return `populate=[${this.population.join(",")}]`;
     }
 
+    public setCriteria(criteria: QueryCriteria) {
+        this.criteria = criteria;
+        return this;
+    }
+
+    private getCriteria(): QueryCriteria {
+        return this.criteria || new QueryCriteria();
+    }
+
     /*
     private orCriteria: object = {};
     public or(): SailsQuery<T> {
@@ -126,45 +156,12 @@ export class SailsQuery<T extends SailsModelInterface> {
     }
     */
 
-    public setCriteria(criteria: Criteria) {
-        this.criteria = criteria;
-        return this;
-    }
-
-    private getCriteria(): Criteria {
-        return this.criteria;
-    }
-
     private buildQuery(url: string): string {
-        let queryBuilder = this.criteria && this.criteria.build() || "";
-
-        let limitPart = this.getLimit();
-        if (limitPart != null) {
-            if (queryBuilder.length) {
-                queryBuilder += "&";
-            }
-            queryBuilder += limitPart;
-        }
-
-        let skipPart = this.getSkip();
-        if (skipPart != null) {
-            if (queryBuilder.length) {
-                queryBuilder += "&";
-            }
-            queryBuilder += skipPart;
-        }
-
-        let populatePart = this.getPopulation();
-        if (populatePart != null) {
-            if (queryBuilder.length) {
-                queryBuilder += "&";
-            }
-            queryBuilder += populatePart;
-        }
-
-        if (queryBuilder.charAt(0) !== "?") {
-            queryBuilder = "?" + queryBuilder;
-        }
+        let queryBuilder = (new QueryBuilder(this.getCriteria().build()))
+            .append(this.getLimit())
+            .append(this.getSkip())
+            .append(this.getPopulation())
+            .append(this.getSort());
 
         return url + queryBuilder.toString();
     }

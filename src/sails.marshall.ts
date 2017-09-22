@@ -9,4 +9,8 @@ export function marshalData<T>(clazz, data: any): T | T[] {
     return Array.isArray(data) ? data.map(callFn) : data instanceof Object ? callFn(data) : data;
 }
 
+export function unmarshalData<T>(instance: T): String {
+    return ObjectMapper.serialize(instance);
+}
+
 export { JsonIgnore as Ignore, JsonProperty as Property } from "json-object-mapper";
