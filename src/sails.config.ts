@@ -3,7 +3,7 @@ import { SailsOptions } from "./sails.options";
 const __SAILS_VERSION__ = "0.11.0";
 const __OS_PLATFORM__ = "windows";
 
-export class SailsOptionsFactory implements SailsOptions {
+export class SailsConfig implements SailsOptions {
     public url = "ws://localhost:1337";
     public query = `__sails_io_sdk_version=${__SAILS_VERSION__}&__sails_io_sdk_platform=${__OS_PLATFORM__}&__sails_io_sdk_language=javascript`;
     public reconnection = true;
