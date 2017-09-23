@@ -1,6 +1,10 @@
-import { SailsResponse } from "ngx-sails-socketio";
+import { SailsResponse, SailsInterceptorInterface } from "ngx-sails-socketio";
+import { Router } from "@angular/router";
 
-export function AuthIntercept(response: SailsResponse): boolean {
-    console.log(response);
-    return true;
+export class AuthInterceptor implements SailsInterceptorInterface {
+
+    canIntercept(response: SailsResponse): boolean {
+        console.log(response);
+        return true;
+    }
 }
