@@ -5,7 +5,7 @@ export * from "./sails.module";
 export * from "./sails.options";
 export * from "./sails.response";
 export * from "./sails.marshall";
-export * from "./sails.query.criteria";
+export * from "./sails.request.criteria";
 export * from "./sails.response.callback";
 export * from "./sails.decorator.endpoint";
 export * from "./sails.interceptor.interface";

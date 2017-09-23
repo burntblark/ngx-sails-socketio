@@ -117,22 +117,6 @@ export class Sails {
         this.Listeners[eventName] = newListeners;
     }
 
-    public get(url: string, callback: SailsResponseCallback): void {
-        this.request("get", url, {}, (response) => callback(response));
-    }
-
-    public post(url: string, data: object, callback: SailsResponseCallback): void {
-        this.request("post", url, data, (response) => callback(response));
-    }
-
-    public put(url: string, data: object, callback: SailsResponseCallback): void {
-        this.request("put", url, data, (response) => callback(response));
-    }
-
-    public delete(url: string, callback: SailsResponseCallback): void {
-        this.request("delete", url, {}, (response) => callback(response));
-    }
-
     public request(method: string, url: string, params: object, callback: SailsResponseCallback): void {
         return this.socket.request(
             { url: this.Config.prefix + url, method, params },

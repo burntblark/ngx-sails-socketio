@@ -1,5 +1,4 @@
 import { SailsResponse } from "./sails.response";
-import { Router } from "@angular/router";
 
 export interface SailsInterceptorConstructor {
     /**
