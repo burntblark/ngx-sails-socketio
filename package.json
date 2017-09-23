@@ -27,6 +27,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/.bin/ngc -p .",
     "lint": "tslint --project ./tsconfig.json --type-check --fix",
+    "demo:watch": "watch 'npm run demo' ./src",
     "demo": "npm run build && cd ./demo && npm i ../"
   },
   "contributors": [
@@ -54,6 +55,7 @@
     "@types/socket.io-client": "^1.4.30",
     "tslint": "^5.4.3",
     "typescript": "latest",
-    "typings": "^0.8.1"
+    "typings": "^0.8.1",
+    "watch": "^1.0.2"
   }
 }
