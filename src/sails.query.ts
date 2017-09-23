@@ -138,24 +138,6 @@ export class SailsQuery<T extends SailsModelInterface> {
         return this.criteria || new QueryCriteria();
     }
 
-    /*
-    private orCriteria: object = {};
-    public or(): SailsQuery<T> {
-        if (isUndefined(this.orCriteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
-            this.criteria = {};
-            return this;
-        }
-        if (Array.isArray(this.orCriteria["or"])) {
-            this.orCriteria["or"].push(this.criteria);
-        } else if (isObject(this.criteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
-        }
-        this.criteria = {};
-        return this;
-    }
-    */
-
     private buildQuery(url: string): string {
         let queryBuilder = (new QueryBuilder(this.getCriteria().build()))
             .append(this.getLimit())

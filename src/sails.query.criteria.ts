@@ -51,7 +51,7 @@ export class QueryCriteria {
         throw new Error("DuplicateError: like clause has already been used in this query");
     }
 
-    public whereContains(key: string, value: string): QueryCriteria {
+    public whereEqualTo(key: string, value: string): QueryCriteria {
         if (isUndefined(this.criteria[key]) || isString(this.criteria[key])) {
             this.criteria[key] = { "contains": value };
             return this;
@@ -61,6 +61,13 @@ export class QueryCriteria {
             return this;
         }
         throw new Error("DuplicateError: contains clause has already been used in this query");
+    }
+
+    /**
+     * @alias whereEqualTo
+     */
+    public whereContains(key: string, value: string): QueryCriteria {
+        return this.whereEqualTo(key, value);
     }
 
     public whereStartsWith(key: string, value: string): QueryCriteria {

@@ -10,3 +10,7 @@ export function isEmptyObject(value) {
     return !!Object.keys(value).length;
 }
 
+export function isObject(value) {
+    return value instanceof Object;
+}
+
