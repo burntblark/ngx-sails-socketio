@@ -4,6 +4,7 @@ import { NgModule } from "@angular/core";
 import { AppComponent } from "./app.component";
 import { SERVICES } from "./services/index";
 import { SailsModule, SailsOptions } from "ngx-sails-socketio";
+import { AuthIntercept } from "./interceptors/auth.interceptor";
 
 const options: SailsOptions = {
     url: "ws://52.36.91.56:8081",
@@ -17,14 +18,13 @@ const options: SailsOptions = {
     // timeout: 3000,
 };
 
-
 @NgModule({
     declarations: [
         AppComponent
     ],
     imports: [
         BrowserModule,
-        SailsModule.forRoot(options)
+        SailsModule.forRoot(options, [AuthIntercept])
     ],
     providers: SERVICES,
     bootstrap: [AppComponent]
