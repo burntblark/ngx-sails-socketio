@@ -1,23 +1,18 @@
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { Sails, SAILS_OPTIONS, SAILS_INTERCEPTORS } from "./sails";
 import { SailsOptions } from "./sails.options";
-import { SailsInterceptorInterface } from "./sails.interceptor.interface";
+import { SailsInterceptorConstructor } from "./sails.interceptor.interface";
 
 @NgModule()
 export class SailsModule {
-    static forRoot(options: SailsOptions, interceptors: ({ new(): SailsInterceptorInterface })[] = []): ModuleWithProviders {
+    static forRoot(options: SailsOptions, interceptors: SailsInterceptorConstructor[] = []): ModuleWithProviders {
         return {
             ngModule: SailsModule,
             providers: [
-                {
-                    provide: SAILS_INTERCEPTORS,
-                    useValue: interceptors
-                },
-                {
-                    provide: SAILS_OPTIONS,
-                    useValue: options
-                },
-                Sails
+                Sails,
+                ...interceptors,
+                { provide: SAILS_OPTIONS, useValue: options },
+                { provide: SAILS_INTERCEPTORS, useValue: interceptors },
             ]
         };
     }
