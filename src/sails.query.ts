@@ -54,8 +54,8 @@ export class SailsQuery<T extends SailsModelInterface> {
         // console.log(this.model)
     }
 
-    find(): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    find(): Promise<T | T[]> {
+        return new Promise<T | T[]>((resolve, reject) => {
             let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}`);
 
             this.sails.get(url, (res: SailsResponse) => {
@@ -67,12 +67,12 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    findById(id: string): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    findById(id: string): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
             let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}/${id}`);
             this.sails.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
                 }
                 reject(res);
             });
@@ -148,15 +148,15 @@ export class SailsQuery<T extends SailsModelInterface> {
         return url + queryBuilder.toString();
     }
 
-    save(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    save(model: T): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
             let url = `/${model.getEndPoint().toLowerCase()}`;
             const data = Object.assign({}, model);
 
             if (model.id === null) {
                 this.sails.post(url, data, (res: SailsResponse) => {
                     if (res.getCode() === "CREATED") {
-                        resolve(marshalData<T>(this.modelClass, res.getData()));
+                        resolve(marshalData<T>(this.modelClass, res.getData()) as T);
                     }
                     reject(res);
                 });
@@ -164,7 +164,7 @@ export class SailsQuery<T extends SailsModelInterface> {
                 this.sails.put(url.concat(`/${model.id}`), data, (res: SailsResponse) => {
                     console.log(url, data, res.getCode());
                     if (res.getCode() === "CREATED") {
-                        resolve(marshalData<T>(this.modelClass, res.getData()));
+                        resolve(marshalData<T>(this.modelClass, res.getData()) as T);
                     }
                     reject(res);
                 });
@@ -172,35 +172,35 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    update(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    update(model: T): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
             let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
             delete model.createdAt;
             delete model.updatedAt;
             this.sails.put(url, Object.assign({}, this), (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
                 }
                 reject(res);
             });
         });
     }
 
-    remove(model: T): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    remove(model: T): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
             let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
             this.sails.delete(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
                 }
                 reject(res);
             });
         });
     }
 
-    action(path: string, method: Method, data?: any): Promise<SailsResponse | T | T[]> {
+    action(path: string, method: Method, data?: any): Promise<any> {
         let url = `/${this.model.getEndPoint().toLowerCase()}/${path}`;
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             switch (method) {
                 case Method.GET:
                 case Method.DELETE:
@@ -208,7 +208,7 @@ export class SailsQuery<T extends SailsModelInterface> {
                 case Method.PUT: {
                     this.sails.post(url, data || {}, (res: SailsResponse) => {
                         if (res.getCode() === "OK") {
-                            resolve(marshalData<T>(this.modelClass, res.getData()));
+                            resolve(marshalData<any>(this.modelClass, res.getData()));
                         }
                         reject(res);
                     });
@@ -220,12 +220,12 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    on(): Promise<SailsResponse | T | T[]> {
-        return new Promise<SailsResponse | T | T[]>((resolve, reject) => {
+    on(): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
             const eventName = this.model.getEndPoint().toLowerCase();
             this.sails.on(eventName, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                    resolve(marshalData<any>(this.modelClass, res.getData()));
                 }
                 reject(res);
             });
