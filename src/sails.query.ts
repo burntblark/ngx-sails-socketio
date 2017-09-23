@@ -99,27 +99,27 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         });
     }
 
-    public setLimit(limit: number): SailsRequest {
+    public setLimit(limit: number): this {
         this.addParam("limit", limit);
         return this;
     }
 
-    public setSort(sort: string): SailsRequest {
+    public setSort(sort: string): this {
         this.addParam("sort", sort);
         return this;
     }
 
-    public setSkip(skip: number): SailsRequest {
+    public setSkip(skip: number): this {
         this.addParam("skip", skip);
         return this;
     }
 
-    public setPopulation(...population: string[]): SailsRequest {
+    public setPopulation(...population: string[]): this {
         this.addParam("populate", `[${population.join(",")}]`);
         return this;
     }
 
-    public setRequestCriteria(criteria: RequestCriteria) {
+    public setRequestCriteria(criteria: RequestCriteria): this {
         this.criteria = criteria;
         return this;
     }
