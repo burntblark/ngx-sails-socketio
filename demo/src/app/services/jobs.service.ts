@@ -1,4 +1,4 @@
-import { SailsModel, Sails, SailsQuery, QueryCriteria } from "ngx-sails-socketio";
+import { SailsModel, Sails, SailsQuery, RequestCriteria } from "ngx-sails-socketio";
 import { Injectable } from "@angular/core";
 import { JobModel } from "../models/job.model";
 
@@ -10,8 +10,8 @@ export class JobsService {
 
     getActiveJobs() {
         const query = new SailsQuery<JobModel>(this.sails, JobModel);
-        // const criteria = (new Criteria()).whereContains("token", "677487");
-        // query.setCriteria(criteria);
+        // const criteria = (new RequestCriteria()).whereContains("token", "677487");
+        // query.setRequestCriteria(criteria);
         query.addPopulation("customer");
         return query.find();
     }
