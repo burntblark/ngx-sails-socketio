@@ -1,8 +1,8 @@
 import { SailsResponse } from "./sails.response";
 
-export interface CanIntercept {
+export interface SailsInterceptorInterface {
     /**
      * @returns boolean True if was intercepted else False
      */
-    (response: SailsResponse): boolean;
+    canIntercept: (response: SailsResponse) => boolean;
 }

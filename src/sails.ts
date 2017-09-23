@@ -5,7 +5,7 @@ import { SailsResponse } from "./sails.response";
 import { SailsOptionsFactory } from "./sails.options.factory";
 import { Inject, InjectionToken } from "@angular/core";
 import { SailsIOClient } from "./sails.io.client";
-import { CanIntercept } from "./sails.interceptor.interface";
+import { SailsInterceptorInterface } from "./sails.interceptor.interface";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -21,6 +21,7 @@ export class Sails {
         reconnect: [],
         disconnect: []
     };
+    private Interceptors: SailsInterceptorInterface[] = [];
 
     private get socket(): SailsIOClient.Socket {
         return this._socketInstance;
@@ -32,8 +33,12 @@ export class Sails {
 
     constructor(
         @Inject(SAILS_OPTIONS) Options: SailsOptionsFactory,
-        @Inject(SAILS_INTERCEPTORS) private Interceptors: CanIntercept[]) {
+        @Inject(SAILS_INTERCEPTORS) Interceptors: ({ new(): SailsInterceptorInterface })[]) {
+        // Set up interceptors
+        this.Interceptors = Interceptors.map(clazz => new clazz);
+        // Helper function for Listeners
         const handleListeners = (eventName: string) => data => this.listeners[eventName].forEach(callback => callback(data));
+        // Setup options
         const options = new SailsOptionsFactory(Options);
 
         const io: SailsIOClient.IO = SailsIO(SocketIO);
@@ -148,7 +153,7 @@ export class Sails {
         const response = new SailsResponse(JWR);
         const canIntercept = this.Interceptors.reduce(
             (acc, interceptor) => {
-                return acc && interceptor(response);
+                return acc && interceptor.canIntercept(response);
             }, true);
 
         if (canIntercept === true) {
