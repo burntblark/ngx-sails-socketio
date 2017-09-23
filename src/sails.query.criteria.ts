@@ -1,5 +1,5 @@
 import { QueryBuilder } from "./sails.query";
-import { isUndefined, isString, isEmptyObject } from "./utils";
+import { isUndefined, isString, isEmptyObject, isObject } from "./utils";
 
 export class QueryCriteria {
     private criteria: object = {};
@@ -53,6 +53,14 @@ export class QueryCriteria {
 
     public whereEqualTo(key: string, value: string): QueryCriteria {
         if (isUndefined(this.criteria[key]) || isString(this.criteria[key])) {
+            this.criteria[key] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: contains clause has already been used in this query");
+    }
+
+    public whereContains(key: string, value: string): QueryCriteria {
+        if (isUndefined(this.criteria[key]) || isString(this.criteria[key])) {
             this.criteria[key] = { "contains": value };
             return this;
         }
@@ -61,13 +69,6 @@ export class QueryCriteria {
             return this;
         }
         throw new Error("DuplicateError: contains clause has already been used in this query");
-    }
-
-    /**
-     * @alias whereEqualTo
-     */
-    public whereContains(key: string, value: string): QueryCriteria {
-        return this.whereEqualTo(key, value);
     }
 
     public whereStartsWith(key: string, value: string): QueryCriteria {
@@ -157,5 +158,20 @@ export class QueryCriteria {
             return this;
         }
         throw new Error("DuplicateError: >= clause has already been used in this query");
+    }
+
+    public or(): QueryCriteria {
+        if (isUndefined(this.orCriteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
+            this.criteria = {};
+            return this;
+        }
+        if (Array.isArray(this.orCriteria["or"])) {
+            this.orCriteria["or"].push(this.criteria);
+        } else if (isObject(this.criteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
+        }
+        this.criteria = {};
+        return this;
     }
 }

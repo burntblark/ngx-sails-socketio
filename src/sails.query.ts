@@ -129,17 +129,17 @@ export class SailsQuery<T extends SailsModelInterface> {
         return `populate=[${this.population.join(",")}]`;
     }
 
-    public setCriteria(criteria: QueryCriteria) {
+    public setQueryCriteria(criteria: QueryCriteria) {
         this.criteria = criteria;
         return this;
     }
 
-    private getCriteria(): QueryCriteria {
+    private getQueryCriteria(): QueryCriteria {
         return this.criteria || new QueryCriteria();
     }
 
     private buildQuery(url: string): string {
-        let queryBuilder = (new QueryBuilder(this.getCriteria().build()))
+        let queryBuilder = (new QueryBuilder(this.getQueryCriteria().build()))
             .append(this.getLimit())
             .append(this.getSkip())
             .append(this.getPopulation())
@@ -231,5 +231,4 @@ export class SailsQuery<T extends SailsModelInterface> {
             });
         });
     }
-
 }
