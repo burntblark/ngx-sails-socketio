@@ -10,6 +10,6 @@ export class ExtraInterceptor implements SailsInterceptorInterface {
 
     canIntercept(response: SailsResponse): boolean {
         console.log("Extra: ", response);
-        return true;
+        return false;
     }
 }

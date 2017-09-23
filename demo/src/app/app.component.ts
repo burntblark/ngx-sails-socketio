@@ -15,11 +15,14 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-        const a = this.jobs.getActiveJobs();
-
-        a.then(data => {
-            console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉");
-            console.log(data[0]);
-        });
+        this.jobs.getActiveJobs()
+            .catch(e => {
+                console.log(e);
+                return [];
+            })
+            .then(data => {
+                console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉");
+                console.log(data);
+            });
     }
 }
