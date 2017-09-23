@@ -1,10 +1,11 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
+import { RouterModule } from "@angular/router";
 
 import { AppComponent } from "./app.component";
 import { SERVICES } from "./services/index";
 import { SailsModule, SailsOptions } from "ngx-sails-socketio";
-import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { INTERCEPTORS } from "./interceptors";
 
 const options: SailsOptions = {
     url: "ws://52.36.91.56:8081",
@@ -24,7 +25,8 @@ const options: SailsOptions = {
     ],
     imports: [
         BrowserModule,
-        SailsModule.forRoot(options, [AuthInterceptor])
+        RouterModule.forRoot([]),
+        SailsModule.forRoot(options, INTERCEPTORS)
     ],
     providers: SERVICES,
     bootstrap: [AppComponent]
