@@ -2,6 +2,7 @@ export * from "./sails";
 export * from "./sails.model";
 export * from "./sails.query";
 export * from "./sails.module";
+export * from "./sails.request";
 export * from "./sails.options";
 export * from "./sails.response";
 export * from "./sails.marshall";
