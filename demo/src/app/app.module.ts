@@ -4,6 +4,7 @@ import { NgModule } from "@angular/core";
 import { AppComponent } from "./app.component";
 import { SERVICES } from "./services/index";
 import { SailsModule, SailsOptions } from "ngx-sails-socketio";
+import { AuthIntercept } from "./interceptors/auth.interceptor";
 
 const options: SailsOptions = {
     url: "ws://52.36.91.56:8081",
@@ -11,9 +12,11 @@ const options: SailsOptions = {
     query: "__sails_io_sdk_version=0.11.0&__sails_io_sdk_platform=windows&__sails_io_sdk_language=javascript",
     reconnection: true,
     autoConnect: false,
+    headers: {
+        Authorization: "Bearer " + "token"
+    },
     // timeout: 3000,
 };
-
 
 @NgModule({
     declarations: [
@@ -21,7 +24,7 @@ const options: SailsOptions = {
     ],
     imports: [
         BrowserModule,
-        SailsModule.forRoot(options)
+        SailsModule.forRoot(options, [AuthIntercept])
     ],
     providers: SERVICES,
     bootstrap: [AppComponent]

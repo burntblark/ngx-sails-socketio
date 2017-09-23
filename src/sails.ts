@@ -3,12 +3,13 @@ import * as SocketIO from "socket.io-client";
 import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import { SailsOptionsFactory } from "./sails.options.factory";
-import { Inject, InjectionToken, Injectable } from "@angular/core";
+import { Inject, InjectionToken } from "@angular/core";
 import { SailsIOClient } from "./sails.io.client";
+import { CanIntercept } from "./sails.interceptor.interface";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
+export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 
-@Injectable()
 export class Sails {
     private _socketInstance: SailsIOClient.Socket;
     private config: SailsOptionsFactory;
@@ -20,8 +21,6 @@ export class Sails {
         reconnect: [],
         disconnect: []
     };
-    requestOptions;
-    requestToken = "";
 
     private get socket(): SailsIOClient.Socket {
         return this._socketInstance;
@@ -31,9 +30,11 @@ export class Sails {
         this._socketInstance = _socketInstance;
     }
 
-    constructor( @Inject(SAILS_OPTIONS) ioOptions: SailsOptionsFactory) {
+    constructor(
+        @Inject(SAILS_OPTIONS) Options: SailsOptionsFactory,
+        @Inject(SAILS_INTERCEPTORS) private Interceptors: CanIntercept[]) {
         const handleListeners = (eventName: string) => data => this.listeners[eventName].forEach(callback => callback(data));
-        const options = new SailsOptionsFactory(ioOptions);
+        const options = new SailsOptionsFactory(Options);
 
         const io: SailsIOClient.IO = SailsIO(SocketIO);
         io.sails.url = options.url;
@@ -125,15 +126,11 @@ export class Sails {
         this.request("delete", url, {}, (response) => callback(response));
     }
 
-    public request(method: string, url: string, params: object, callback: SailsResponseCallback) {
-        const headers = {
-            Authorization: "Bearer " + this.requestToken
-        };
-        url = this.config.prefix + url;
-        this.socket.request(
-            { url, method, headers, params },
+    public request(method: string, url: string, params: object, callback: SailsResponseCallback): void {
+        return this.socket.request(
+            { url: this.config.prefix + url, method, params },
             (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
-                return callback(new SailsResponse(response));
+                return this._intercept(callback, response);
             });
     }
 
@@ -147,15 +144,15 @@ export class Sails {
         return this;
     }
 
-    private _intercept(callback: SailsResponseCallback, response) {
-        return callback;
-        // const state = this.sailsOptions.getSocketInterceptor().reduce(
-        //     (acc, interceptor) => {
-        //         return acc && interceptor(response);
-        //     }, true);
+    private _intercept(callback: SailsResponseCallback, JWR: SailsIOClient.JWR): void {
+        const response = new SailsResponse(JWR);
+        const canIntercept = this.Interceptors.reduce(
+            (acc, interceptor) => {
+                return acc && interceptor(response);
+            }, true);
 
-        // if (state === true) {
-        //     callback(new SailsResponse(response));
-        // }
+        if (canIntercept === true) {
+            callback(response);
+        }
     }
 }
