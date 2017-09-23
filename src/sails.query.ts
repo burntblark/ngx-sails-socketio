@@ -3,9 +3,11 @@ import { SailsRequest, Method } from "./sails.request";
 import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
 import { marshalData } from "./sails.marshall";
+import { RequestCriteria } from "./sails.request.criteria";
 
 export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     private _model: T;
+    private criteria: RequestCriteria;
 
     private set model(model: T) {
         this._model = model;
@@ -20,13 +22,14 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         this.model = new modelClass();
     }
 
-    find(): Promise<T | T[]> {
-        return new Promise<T | T[]>((resolve, reject) => {
-            let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}`);
+    find(): Promise<T[]> {
+        this.addParam("where", this.getRequestCriteria().build());
+        return new Promise<T[]>((resolve, reject) => {
+            let url = `/${this.model.getEndPoint().toLowerCase()}`;
 
             this.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()));
+                    resolve(marshalData<T>(this.modelClass, res.getData()) as T[]);
                 }
                 reject(res);
             });
@@ -34,8 +37,9 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     }
 
     findById(id: string): Promise<T> {
+        this.addParam("where", this.getRequestCriteria().build());
         return new Promise<T>((resolve, reject) => {
-            let url = this.buildQuery(`/${this.model.getEndPoint().toLowerCase()}/${id}`);
+            let url = `/${this.model.getEndPoint().toLowerCase()}/${id}`;
             this.get(url, (res: SailsResponse) => {
                 if (res.getCode() === "OK") {
                     resolve(marshalData<T>(this.modelClass, res.getData()) as T);
@@ -95,28 +99,32 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         });
     }
 
-    /**
-     * @deprecated Use SailsRequest
-     */
-    action(path: string, method: Method, data?: any): Promise<any> {
-        let url = `/${this.model.getEndPoint().toLowerCase()}/${path}`;
-        return new Promise<any>((resolve, reject) => {
-            switch (method) {
-                case Method.GET:
-                case Method.DELETE:
-                case Method.POST:
-                case Method.PUT: {
-                    this.post(url, data || {}, (res: SailsResponse) => {
-                        if (res.getCode() === "OK") {
-                            resolve(res.getData());
-                        }
-                        reject(res);
-                    });
-                    break;
-                }
+    public setLimit(limit: number): SailsRequest {
+        this.addParam("limit", limit);
+        return this;
+    }
 
-                default: { }
-            }
-        });
+    public setSort(sort: string): SailsRequest {
+        this.addParam("sort", sort);
+        return this;
+    }
+
+    public setSkip(skip: number): SailsRequest {
+        this.addParam("skip", skip);
+        return this;
+    }
+
+    public setPopulation(...population: string[]): SailsRequest {
+        this.addParam("populate", `[${population.join(",")}]`);
+        return this;
+    }
+
+    public setRequestCriteria(criteria: RequestCriteria) {
+        this.criteria = criteria;
+        return this;
+    }
+
+    private getRequestCriteria(): RequestCriteria {
+        return this.criteria || new RequestCriteria();
     }
 }

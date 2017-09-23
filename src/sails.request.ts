@@ -3,7 +3,7 @@ import { SailsResponseCallback } from "./sails.response.callback";
 import { RequestCriteria } from "./sails.request.criteria";
 import { SailsResponse } from "./sails.response";
 
-export class QueryBuilder {
+class QueryBuilder {
     constructor(private query: string = "") { }
 
     append(criteria: string) {
@@ -17,9 +17,10 @@ export class QueryBuilder {
     }
 
     toString() {
-        if (this.query.charAt(0) !== "?") {
+        if (this.query && this.query.charAt(0) !== "?") {
             this.query = "?" + this.query;
         }
+        console.log(this.query);
         return this.query;
     }
 }
@@ -33,11 +34,7 @@ export class Method {
 }
 
 export class SailsRequest {
-    private criteria: RequestCriteria;
-    private limit: number = 30;
-    private sort: string = "";
-    private skip: number = 0;
-    private population: string[] = [];
+    private parameters: string[] = [];
 
     constructor(private sails: Sails) { }
 
@@ -68,72 +65,20 @@ export class SailsRequest {
         });
     }
 
-    public setRequestCriteria(criteria: RequestCriteria) {
-        this.criteria = criteria;
-        return this;
-    }
-
-    private getRequestCriteria(): RequestCriteria {
-        return this.criteria || new RequestCriteria();
-    }
-
     protected buildQuery(url: string): string {
-        let queryBuilder = (new QueryBuilder(this.getRequestCriteria().build()))
-            .append(this.getLimit())
-            .append(this.getSkip())
-            .append(this.getPopulation())
-            .append(this.getSort());
-
+        let queryBuilder = new QueryBuilder(this.getParams());
+        console.log("URL: " + url + queryBuilder.toString());
         return url + queryBuilder.toString();
     }
 
-    public setLimit(limit: number): SailsRequest {
-        this.limit = limit;
-        return this;
-    }
-
-    private getLimit(): string {
-        if (this.limit === null) {
-            return null;
-        }
-        return "limit=" + this.limit.toString();
-    }
-
-    public setSort(sort: string): SailsRequest {
-        this.sort = sort;
-        return this;
-    }
-
-    private getSort(): string {
-        if (this.sort === null || this.sort.length === 0) {
-            return null;
-        }
-        return "sort=" + this.sort;
-    }
-
-    public setSkip(skip: number): SailsRequest {
-        this.skip = skip;
-        return this;
-    }
-
-    private getSkip(): string {
-        if (this.skip == null) {
-            return null;
-        }
-        return "skip=" + this.skip.toString();
-    }
-
-    public addPopulation(...value: string[]): SailsRequest {
-        if (Array.isArray(this.population)) {
-            this.population.push(...value);
+    public addParam(name: string, value: boolean | number | string): this {
+        if (value) {
+            this.parameters.push(`${name}=${"" + value}`);
         }
         return this;
     }
 
-    private getPopulation() {
-        if (this.population === null || this.population.length === 0) {
-            return null;
-        }
-        return `populate=[${this.population.join(",")}]`;
+    public getParams(): string {
+        return this.parameters.join("&");
     }
 }

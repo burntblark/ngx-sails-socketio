@@ -1,4 +1,3 @@
-import { QueryBuilder } from "./sails.request";
 import { isUndefined, isString, isEmptyObject, isObject } from "./utils";
 
 export class RequestCriteria {
@@ -6,17 +5,10 @@ export class RequestCriteria {
     private orCriteria: object = {};
 
     public build(): string {
-        const queryBuilder = (new QueryBuilder())
-            .append(this.whereFunction());
-
-        return queryBuilder.toString();
-    }
-
-    private whereFunction(): string {
         if (isEmptyObject(this.criteria)) {
-            return null;
+            return "";
         }
-        const stringify = criteria => "where=" + JSON.stringify(criteria);
+        const stringify = criteria => JSON.stringify(criteria);
 
         if (!isEmptyObject(this.orCriteria)) {
             if (Array.isArray(this.orCriteria["or"])) {
