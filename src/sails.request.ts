@@ -20,7 +20,6 @@ class QueryBuilder {
         if (this.query && this.query.charAt(0) !== "?") {
             this.query = "?" + this.query;
         }
-        console.log(this.query);
         return this.query;
     }
 }
@@ -67,7 +66,6 @@ export class SailsRequest {
 
     protected buildQuery(url: string): string {
         let queryBuilder = new QueryBuilder(this.getParams());
-        console.log("URL: " + url + queryBuilder.toString());
         return url + queryBuilder.toString();
     }
 
