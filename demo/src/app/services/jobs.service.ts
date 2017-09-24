@@ -2,7 +2,7 @@ import { SailsModel, Sails, SailsQuery, RequestCriteria } from "ngx-sails-socket
 import { Injectable } from "@angular/core";
 import { JobModel } from "../models/job.model";
 import { BoqModel } from "../models/boq.model";
-import { SailsRequest } from "ngx-sails-socketio";
+import { SailsRequest, SailsResponse } from "ngx-sails-socketio";
 
 @Injectable()
 export class JobsService {
@@ -10,25 +10,29 @@ export class JobsService {
     constructor(private sails: Sails) {
     }
 
-    getActiveJobs(): Promise<BoqModel[]> {
+    getQueried(): Promise<BoqModel[]> {
         const req = new SailsRequest(this.sails);
-        const criteria = (new RequestCriteria());
-        req.addParam("where", criteria.build());
+        // const criteria = (new RequestCriteria())
+        //     .whereGreaterThan("createdAt", new Date(0))
+        //     .or()
+        //     .whereLessThanOrEqualTo("createdAt", new Date);
 
-        return new Promise<BoqModel[]>((resolve, reject) => {
-            // req.get("/boq", (response) => {
-            req.get("/boq", (response) => {
-                if (response.getStatusCode() === 200) {
-                    return resolve(response.getBody().data);
-                }
-                reject(response);
-            });
+        // req.addParam("where", criteria.build());
+        req.addParam("populate", `"${["customer", "job", "category", "fixer"].join(",")}`)
+            .addParam("limit", 25);
+
+        return req.get("/boq").then<BoqModel[]>((response: SailsResponse) => {
+            if (response.getStatusCode() === 200) {
+                return response.getData();
+            }
+            throw response;
         });
     }
 
-    getNoCriteria() {
+    getJobs() {
         const query = new SailsQuery<JobModel>(this.sails, JobModel);
-        query.find();
+        query.setPopulation("customer", "fixer", "category");
+        return query.find();
     }
 
     getBoqs() {
@@ -40,7 +44,7 @@ export class JobsService {
             .or()
             .whereLessThanOrEqualTo("createdAt", new Date);
 
-        query.setRequestCriteria(criteria).setPopulation("customer").setLimit(25);
+        query.setRequestCriteria(criteria).setPopulation("customer", "job", "category", "fixer").setLimit(25);
         return query.find();
     }
 }
