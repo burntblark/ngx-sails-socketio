@@ -7,6 +7,10 @@ export function isString(value) {
 }
 
 export function isEmptyObject(value) {
-    return !!Object.keys(value).length;
+    return !Object.keys(value).length;
+}
+
+export function isObject(value) {
+    return value instanceof Object;
 }
 
