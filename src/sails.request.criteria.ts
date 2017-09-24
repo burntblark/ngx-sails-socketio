@@ -4,7 +4,7 @@ export class RequestCriteria {
     private criteria: object = {};
     private orCriteria: object = {};
 
-    public build(): string {
+    private build(): string {
         if (isEmptyObject(this.criteria)) {
             return "";
         }
@@ -165,5 +165,9 @@ export class RequestCriteria {
         }
         this.criteria = {};
         return this;
+    }
+
+    public toString() {
+        return this.build();
     }
 }

@@ -1,5 +1,5 @@
 import { Sails } from "./sails";
-import { SailsRequest, Method } from "./sails.request";
+import { SailsRequest } from "./sails.request";
 import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
 import { marshalData } from "./sails.marshall";
@@ -23,79 +23,68 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     }
 
     find(): Promise<T[]> {
-        this.addParam("where", this.getRequestCriteria().build());
-        return new Promise<T[]>((resolve, reject) => {
-            let url = `/${this.model.getEndPoint().toLowerCase()}`;
-
-            this.get(url, (res: SailsResponse) => {
-                if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()) as T[]);
-                }
-                reject(res);
-            });
+        this.addParam("where", this.getRequestCriteria());
+        let url = `/${this.model.getEndPoint().toLowerCase()}`;
+        return this.get(url).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return marshalData<T>(this.modelClass, res.getData()) as T[];
+            }
+            throw res;
         });
     }
 
     findById(id: string): Promise<T> {
-        this.addParam("where", this.getRequestCriteria().build());
-        return new Promise<T>((resolve, reject) => {
-            let url = `/${this.model.getEndPoint().toLowerCase()}/${id}`;
-            this.get(url, (res: SailsResponse) => {
-                if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
-                }
-                reject(res);
-            });
+        this.addParam("where", this.getRequestCriteria());
+        let url = `/${this.model.getEndPoint().toLowerCase()}/${id}`;
+        return this.get(url).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return marshalData<T>(this.modelClass, res.getData()) as T;
+            }
+            throw res;
         });
     }
 
     save(model: T): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}`;
-            const data = Object.assign({}, model);
+        let url = `/${model.getEndPoint().toLowerCase()}`;
+        const data = Object.assign({}, model);
 
-            if (model.id === null) {
-                this.post(url, data, (res: SailsResponse) => {
-                    if (res.getCode() === "CREATED") {
-                        resolve(marshalData<T>(this.modelClass, res.getData()) as T);
-                    }
-                    reject(res);
-                });
-            } else {
-                this.put(url.concat(`/${model.id}`), data, (res: SailsResponse) => {
-                    console.log(url, data, res.getCode());
-                    if (res.getCode() === "CREATED") {
-                        resolve(marshalData<T>(this.modelClass, res.getData()) as T);
-                    }
-                    reject(res);
-                });
-            }
-        });
+        if (model.id === null) {
+            return this.post(url, data).then((res: SailsResponse) => {
+                if (res.getCode() === "CREATED") {
+                    return marshalData<T>(this.modelClass, res.getData()) as T;
+                }
+                throw res;
+            });
+        } else {
+            return this.put(url.concat(`/${model.id}`), data).then((res: SailsResponse) => {
+                console.log(url, data, res.getCode());
+                if (res.getCode() === "CREATED") {
+                    return marshalData<T>(this.modelClass, res.getData()) as T;
+                }
+                throw res;
+            });
+        }
     }
 
     update(model: T): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
-            delete model.createdAt;
-            delete model.updatedAt;
-            this.put(url, Object.assign({}, this), (res: SailsResponse) => {
-                if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
-                }
-                reject(res);
-            });
+        let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+        delete model.createdAt;
+        delete model.updatedAt;
+        return this.put(url, Object.assign({}, this)).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return marshalData<T>(this.modelClass, res.getData()) as T;
+            }
+            throw res;
         });
     }
 
     remove(model: T): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
-            this.delete(url, (res: SailsResponse) => {
-                if (res.getCode() === "OK") {
-                    resolve(marshalData<T>(this.modelClass, res.getData()) as T);
-                }
-                reject(res);
-            });
+        let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+        return this.delete(url).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return marshalData<T>(this.modelClass, res.getData()) as T;
+            }
+            throw res;
         });
     }
 

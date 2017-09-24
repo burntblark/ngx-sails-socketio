@@ -1,6 +1,5 @@
 import SailsIO from "sails.io.js";
 import * as SocketIO from "socket.io-client";
-import { SailsResponseCallback } from "./sails.response.callback";
 import { SailsResponse } from "./sails.response";
 import { SailsConfig } from "./sails.config";
 import { Inject, InjectionToken, Injector } from "@angular/core";
@@ -100,50 +99,66 @@ export class Sails {
         return this;
     }
 
-    public addEventListener(eventName, callback: (data: string) => void) {
+    public addEventListener(eventName, callback: (data: string) => void): this {
         if (!this.Listeners[eventName]) {
             throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
         }
         this.Listeners[eventName].push(callback);
+        return this;
     }
 
-    public removeEventListener(eventName, callback) {
+    public removeEventListener(eventName, callback): this {
         if (!this.Listeners[eventName]) {
             throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
         }
-        const listeners = this.Listeners[eventName];
-        const index = listeners.findIndex(cb => cb === callback);
-        const newListeners = [...listeners.slice(0, index - 1), ...listeners.slice(index + 1)];
-        this.Listeners[eventName] = newListeners;
+        if (this.Listeners[eventName].indexOf(callback) > -1) {
+            this.Listeners[eventName].splice(this.Listeners[eventName].indexOf(callback), 1);
+        }
+        return this;
     }
 
-    public request(method: string, url: string, params: object, callback: SailsResponseCallback): void {
-        return this.socket.request(
-            { url: this.Config.prefix + url, method, params },
-            (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
-                return this.intercept(callback, response);
+    public request(method: string, url: string, params?: object): Promise<SailsResponse> {
+        return new Promise(resolve => {
+            this.socket.request(
+                { url: this.Config.prefix + url, method, params },
+                (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
+                    const resolved = this.intercept(response);
+                    if (resolved) {
+                        resolve(resolved);
+                    }
+                });
+        });
+    }
+
+    public on(eventName: string): Promise<SailsResponse> {
+        return new Promise(resolve => {
+            this.socket.on(eventName, response => {
+                const resolved = this.intercept(response);
+                if (resolved) {
+                    resolve(resolved);
+                }
             });
+        });
     }
 
-    public on(eventName: string, callback: SailsResponseCallback): Sails {
-        this.socket.on(eventName, (response) => this.intercept(callback, response));
-        return this;
+    public off(eventName: string): Promise<SailsResponse> {
+        return new Promise(resolve => {
+            this.socket.off(eventName, response => {
+                const resolved = this.intercept(response);
+                if (resolved) {
+                    resolve(resolved);
+                }
+            });
+        });
     }
 
-    public off(eventName: string, callback: SailsResponseCallback): Sails {
-        this.socket.off(eventName, (response) => this.intercept(callback, response));
-        return this;
-    }
-
-    private intercept(callback: SailsResponseCallback, JWR: SailsIOClient.JWR): void {
+    private intercept(JWR: SailsIOClient.JWR): SailsResponse | void {
         const response = new SailsResponse(JWR);
         const canContinue = this.Interceptors.reduce(
             (acc, interceptor) => {
                 return acc && !interceptor.canIntercept(response);
             }, true);
 
-        if (canContinue === true) {
-            callback(response);
-        }
+        return canContinue === true ? response : void 0;
     }
 }

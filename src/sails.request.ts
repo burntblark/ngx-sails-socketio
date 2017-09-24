@@ -1,6 +1,4 @@
 import { Sails } from "./sails";
-import { SailsResponseCallback } from "./sails.response.callback";
-import { RequestCriteria } from "./sails.request.criteria";
 import { SailsResponse } from "./sails.response";
 
 class QueryBuilder {
@@ -37,46 +35,53 @@ export class SailsRequest {
 
     constructor(private sails: Sails) { }
 
-    public get(url: string, callback: SailsResponseCallback): void {
-        return this.sails.request(Method.GET, this.buildQuery(url), {}, (response) => callback(response));
+    public get(url: string): Promise<SailsResponse | void> {
+        return this.sails.request(Method.GET, this.buildQuery(url));
     }
 
-    public post(url: string, data: object, callback: SailsResponseCallback): void {
-        return this.sails.request(Method.POST, this.buildQuery(url), data, (response) => callback(response));
+    public post(url: string, data: object): Promise<SailsResponse | void> {
+        return this.sails.request(Method.POST, this.buildQuery(url), data);
     }
 
-    public put(url: string, data: object, callback: SailsResponseCallback): void {
-        return this.sails.request(Method.PUT, this.buildQuery(url), data, (response) => callback(response));
+    public put(url: string, data: object): Promise<SailsResponse | void> {
+        return this.sails.request(Method.PUT, this.buildQuery(url), data);
     }
 
-    public delete(url: string, callback: SailsResponseCallback): void {
-        return this.sails.request(Method.DELETE, this.buildQuery(url), {}, (response) => callback(response));
+    public delete(url: string): Promise<SailsResponse | void> {
+        return this.sails.request(Method.DELETE, this.buildQuery(url));
     }
 
     public on(eventName): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            this.sails.on(eventName.toLowerCase(), (res: SailsResponse) => {
-                if (res.getCode() === "OK") {
-                    resolve(res.getData());
-                }
-                reject(res);
-            });
+        return this.sails.on(eventName.toLowerCase()).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return res.getData();
+            }
+            return res;
         });
     }
 
-    protected buildQuery(url: string): string {
-        let queryBuilder = new QueryBuilder(this.getParams());
-        return url + queryBuilder.toString();
+    public off(eventName): Promise<any> {
+        return this.sails.off(eventName.toLowerCase()).then((res: SailsResponse) => {
+            if (res.getCode() === "OK") {
+                return res.getData();
+            }
+            return res;
+        });
     }
 
-    public addParam(name: string, value: boolean | number | string): this {
+    public addParam(name: string, value: boolean | number | string | { toString(): string }): this {
         if (value) {
-            this.parameters.push(`${name}=${"" + value}`);
+            this.parameters.push(`${name}=${value.toString()}`);
         }
         return this;
     }
 
-    public getParams(): string {
+    private getParams(): string {
         return this.parameters.join("&");
+    }
+
+    private buildQuery(url: string): string {
+        let queryBuilder = new QueryBuilder(this.getParams());
+        return url + queryBuilder.toString();
     }
 }

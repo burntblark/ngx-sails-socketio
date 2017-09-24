@@ -55,11 +55,11 @@ export declare namespace SailsIOClient {
         on(eventName, callback: (response) => void): Socket;
         off(eventName, callback: (response) => void): Socket;
         removeAllListeners(): Socket;
-        get(url: string, data: any, callback: (response) => void): void;
-        post(url: string, data: any, callback: (response) => void): void;
-        put(url: string, data: any, callback: (response) => void): void;
-        patch(url: string, data: any, callback: (response) => void): void;
-        delete(url: string, data: any, callback: (response) => void): void;
+        get(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
+        post(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
+        put(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
+        patch(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
+        delete(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
         request(options: { url: string, method?: string, params?: object, headers?: object }, callback: (body: JWRBody, JWR: JWR) => void): void;
     }
 }
