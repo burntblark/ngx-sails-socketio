@@ -57,8 +57,8 @@ export class SailsRequest {
         return this._request(Method.PATCH, url);
     }
 
-    private _request(method: Method, url: string, data?: Object) {
-        return this.sails.request(Method.DELETE, this.buildQuery(url), data, this.getHeaders());
+    private _request(method: string, url: string, data?: Object) {
+        return this.sails.request(method, this.buildQuery(url), data, this.getHeaders());
     }
 
     public on(eventName): Promise<SailsResponse> {
