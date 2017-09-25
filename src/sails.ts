@@ -39,36 +39,22 @@ export class Sails {
         this.Interceptors = interceptors.map(interceptor => injector.get(interceptor));
         // Helper function for Listeners
         const handleListeners = (eventName: string) => data => this.Listeners[eventName].forEach(callback => callback(data));
-        // Setup Config
-        const Config = new SailsConfig(options);
 
         const io: SailsIOClient.IO = SailsIO(SocketIO);
-        io.sails.url = Config.url;
-        io.sails.query = Config.query;
-        io.sails.autoConnect = Config.autoConnect;
-        io.sails.transports = Config.transports;
-        io.sails.useCORSRouteToGetCookie = Config.useCORSRouteToGetCookie;
-        io.sails.headers = Config.headers;
-        io.sails.timeout = Config.timeout;
-        io.sails.reconnection = Config.reconnection;
-        io.sails.environment = Config.environment;
-        io.sails.path = Config.path;
-        io.sails.initialConnectionHeaders = Config.initialConnectionHeaders;
-        io.sails.multiplex = Config.multiplex;
-        io.sails.reconnectionAttempts = Config.reconnectionAttempts;
-        io.sails.reconnectionDelay = Config.reconnectionDelay;
-        io.sails.reconnectionDelayMax = Config.reconnectionDelayMax;
-        io.sails.rejectUnauthorized = Config.rejectUnauthorized;
-        io.sails.randomizationFactor = Config.randomizationFactor;
-
         const socket = io.socket;
 
+        // Set up Event Listeners
         socket.on("connect", handleListeners("connect"));
         socket.on("connect_error", handleListeners("connect_error"));
         socket.on("connect_timeout", handleListeners("connect_timeout"));
         socket.on("connecting", handleListeners("connecting"));
         socket.on("reconnect", handleListeners("reconnect"));
         socket.on("disconnect", handleListeners("disconnect"));
+
+        // Setup Config
+        const Config = new SailsConfig(options);
+        // Merge Config with Sails
+        Object.assign(io.sails, Config);
 
         this.socket = socket;
         this.Config = Config;
@@ -117,11 +103,11 @@ export class Sails {
         return this;
     }
 
-    public request(method: string, url: string, params?: object): Promise<SailsResponse> {
+    public request(method: string, url: string, params?: object, headers?: SailsIOClient.JWR.Header): Promise<SailsResponse> {
         return new Promise(resolve => {
             this.socket.request(
-                { url: this.Config.prefix + url, method, params },
-                (body: SailsIOClient.JWRBody, response: SailsIOClient.JWR) => {
+                { url: this.Config.prefix + url, method, params, headers: Object.assign({}, this.Config.headers, headers) },
+                (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
                     const resolved = this.intercept(response);
                     if (resolved) {
                         resolve(resolved);
@@ -152,7 +138,7 @@ export class Sails {
         });
     }
 
-    private intercept(JWR: SailsIOClient.JWR): SailsResponse | void {
+    private intercept(JWR: SailsIOClient.JWR.Response): SailsResponse | void {
         const response = new SailsResponse(JWR);
         const canContinue = this.Interceptors.reduce(
             (acc, interceptor) => {
