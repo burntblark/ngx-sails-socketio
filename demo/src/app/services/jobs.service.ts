@@ -30,13 +30,15 @@ export class JobsService {
     }
 
     getJobs() {
-        const query = new SailsQuery<JobModel>(this.sails, JobModel);
+        const query = new SailsQuery(this.sails, JobModel);
+        // const query = new SailsQuery<JobModel>(this.sails, JobModel);
         query.setPopulation("customer", "fixer", "category");
         return query.find();
     }
 
     getBoqs() {
-        const query = new SailsQuery<BoqModel>(this.sails, BoqModel);
+        // const query = new SailsQuery<BoqModel>(this.sails, BoqModel);
+        const query = new SailsQuery(this.sails, BoqModel);
 
         const criteria = (new RequestCriteria())
             .whereContains("status", "pending")

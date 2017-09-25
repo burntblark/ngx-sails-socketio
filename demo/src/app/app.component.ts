@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.jobs.getJobs()
+        this.jobs.getBoqs()
             .catch(e => {
                 console.log(e);
                 return [];
