@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import { SailsIOClient } from "./sails.io.client";
-/**
- *
- * @author Tunde
- */
 
 export class SailsResponse {
-    constructor(private JWR: SailsIOClient.JWR) {}
+    constructor(private JWR: SailsIOClient.JWR.Response) { }
 
     public getCode(): string {
         return this.getBody().code;
@@ -24,11 +15,11 @@ export class SailsResponse {
         return this.getBody().message;
     }
 
-    public getBody(): SailsIOClient.JWRBody {
+    public getBody(): SailsIOClient.JWR.Body {
         return this.JWR.body;
     }
 
-    public getHeaders(): { [key: string]: string|boolean } {
+    public getHeaders(): SailsIOClient.JWR.Header {
         return this.JWR.headers;
     }
 

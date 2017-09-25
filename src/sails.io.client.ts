@@ -28,20 +28,42 @@ export declare namespace SailsIOClient {
         connect: (url, opts) => Socket;
     }
 
-    interface JWRBody {
-        code: string;
-        data: any;
-        message: string;
+    namespace JWR {
+
+        interface Body {
+            code: string;
+            data: any;
+            message: string;
+        }
+
+        interface Header {
+            [key: string]: string | boolean;
+        }
+
+        interface Response {
+            error: any;
+            body: Body;
+            headers: Header;
+            statusCode: number;
+            toString: () => string;
+            toPOJO: () => object;
+            pipe: () => Error;
+        }
     }
 
-    interface JWR {
-        error: any;
-        body: JWRBody;
-        statusCode: number;
-        headers: { [key: string]: string | boolean };
-        toString: () => string;
-        toPOJO: () => object;
-        pipe: () => Error;
+    interface RequestOptions {
+        url: string;
+        method?: string;
+        params?: object;
+        headers?: JWR.Header;
+    }
+
+    interface EventCallback {
+        (response): void;
+    }
+
+    interface ResponseCallback {
+        (body: JWR.Body, JWR: JWR.Response): void;
     }
 
     interface Socket {
@@ -52,14 +74,14 @@ export declare namespace SailsIOClient {
         isConnecting(): boolean;
         mightBeAboutToAutoConnect(): boolean;
         replay(): Socket;
-        on(eventName, callback: (response) => void): Socket;
-        off(eventName, callback: (response) => void): Socket;
+        on(eventName, callback: EventCallback): Socket;
+        off(eventName, callback: EventCallback): Socket;
         removeAllListeners(): Socket;
-        get(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
-        post(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
-        put(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
-        patch(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
-        delete(url: string, data: any, callback: (body: JWRBody, JWR: JWR) => void): void;
-        request(options: { url: string, method?: string, params?: object, headers?: object }, callback: (body: JWRBody, JWR: JWR) => void): void;
+        get(url: string, data: any, callback: ResponseCallback): void;
+        post(url: string, data: any, callback: ResponseCallback): void;
+        put(url: string, data: any, callback: ResponseCallback): void;
+        patch(url: string, data: any, callback: ResponseCallback): void;
+        delete(url: string, data: any, callback: ResponseCallback): void;
+        request(options: RequestOptions, callback: ResponseCallback): void;
     }
 }

@@ -1,22 +1,20 @@
 import { isUndefined, isString, isEmptyObject, isObject } from "./utils";
 
 export class RequestCriteria {
-    private criteria: object = {};
-    private orCriteria: object = {};
 
-    private build(): string {
-        if (isEmptyObject(this.criteria)) {
-            return "";
+    public or(): RequestCriteria {
+        if (isUndefined(this.orCriteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
+            this.criteria = {};
+            return this;
         }
-        const stringify = criteria => JSON.stringify(criteria);
-
-        if (!isEmptyObject(this.orCriteria)) {
-            if (Array.isArray(this.orCriteria["or"])) {
-                this.orCriteria["or"].push(this.criteria);
-            }
-            return stringify(this.orCriteria);
+        if (Array.isArray(this.orCriteria["or"])) {
+            this.orCriteria["or"].push(this.criteria);
+        } else if (isObject(this.criteria["or"])) {
+            this.orCriteria["or"] = [this.criteria];
         }
-        return stringify(this.criteria);
+        this.criteria = {};
+        return this;
     }
 
     public whereNotEqualTo(key: string, value: string): RequestCriteria {
@@ -152,19 +150,22 @@ export class RequestCriteria {
         throw new Error("DuplicateError: >= clause has already been used in this query");
     }
 
-    public or(): RequestCriteria {
-        if (isUndefined(this.orCriteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
-            this.criteria = {};
-            return this;
+    private criteria: object = {};
+    private orCriteria: object = {};
+
+    private build(): string {
+        if (isEmptyObject(this.criteria)) {
+            return "";
         }
-        if (Array.isArray(this.orCriteria["or"])) {
-            this.orCriteria["or"].push(this.criteria);
-        } else if (isObject(this.criteria["or"])) {
-            this.orCriteria["or"] = [this.criteria];
+        const stringify = criteria => JSON.stringify(criteria);
+
+        if (!isEmptyObject(this.orCriteria)) {
+            if (Array.isArray(this.orCriteria["or"])) {
+                this.orCriteria["or"].push(this.criteria);
+            }
+            return stringify(this.orCriteria);
         }
-        this.criteria = {};
-        return this;
+        return stringify(this.criteria);
     }
 
     public toString() {

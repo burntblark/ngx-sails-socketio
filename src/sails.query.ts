@@ -57,7 +57,6 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
             });
         } else {
             return this.put(url.concat(`/${model.id}`), data).then((res: SailsResponse) => {
-                console.log(url, data, res.getCode());
                 if (res.getCode() === "CREATED") {
                     return marshalData<T>(this.modelClass, res.getData()) as T;
                 }
