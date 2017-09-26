@@ -4,12 +4,13 @@ import { RouterModule } from "@angular/router";
 
 import { AppComponent } from "./app.component";
 import { SERVICES } from "./services/index";
-import { SailsModule, SailsOptions } from "ngx-sails-socketio";
+import { SailsModule, SailsOptions, SailsEnvironment } from "ngx-sails-socketio";
 import { INTERCEPTORS } from "./interceptors";
 
 const options: SailsOptions = {
     url: "ws://52.36.91.56:8081",
     prefix: "/api",
+    environment: SailsEnvironment.DEV,
     query: "__sails_io_sdk_version=0.11.0&__sails_io_sdk_platform=windows&__sails_io_sdk_language=javascript",
     reconnection: true,
     autoConnect: false,
