@@ -1,4 +1,28 @@
 export declare namespace SailsIOClient {
+
+    namespace JWR {
+
+        interface Body {
+            data: any;
+            code: string;
+            message: string;
+        }
+
+        interface Header {
+            [key: string]: string | boolean;
+        }
+
+        interface Response {
+            body: Body;
+            error: any;
+            headers: Header;
+            statusCode: number;
+            toString: () => string;
+            toPOJO: () => object;
+            pipe: () => Error;
+        }
+    }
+
     interface IO {
         socket: Socket;
         sails: SailsSocket;
@@ -8,8 +32,8 @@ export declare namespace SailsIOClient {
         url: string;
         query: string;
         reconnection: boolean;
+        environment: string;
         autoConnect?: boolean;
-        environment?: string;
         useCORSRouteToGetCookie?: boolean;
         transports?: string[];
         path?: string;
@@ -26,29 +50,6 @@ export declare namespace SailsIOClient {
 
     interface SailsSocket extends Options {
         connect: (url, opts) => Socket;
-    }
-
-    namespace JWR {
-
-        interface Body {
-            code: string;
-            data: any;
-            message: string;
-        }
-
-        interface Header {
-            [key: string]: string | boolean;
-        }
-
-        interface Response {
-            error: any;
-            body: Body;
-            headers: Header;
-            statusCode: number;
-            toString: () => string;
-            toPOJO: () => object;
-            pipe: () => Error;
-        }
     }
 
     interface RequestOptions {

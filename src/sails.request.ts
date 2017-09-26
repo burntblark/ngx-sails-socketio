@@ -23,13 +23,13 @@ class QueryBuilder {
     }
 }
 
-export class Method {
-    static GET = "get";
-    static POST = "post";
-    static PUT = "put";
-    static DELETE = "delete";
-    static PATCH = "patch";
-}
+export const Method = {
+    GET: "get",
+    POST: "post",
+    PUT: "put",
+    DELETE: "delete",
+    PATCH: "patch",
+};
 
 export class SailsRequest {
     private headers: SailsIOClient.JWR.Header = {};
@@ -79,7 +79,7 @@ export class SailsRequest {
     }
 
     public addParam(name: string, value: boolean | number | string | { toString(): string }): this {
-        if (value) {
+        if (value.toString().length) {
             this.parameters.push(`${name}=${value}`);
         }
         return this;
