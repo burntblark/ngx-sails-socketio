@@ -1,5 +1,9 @@
 export declare namespace SailsIOClient {
 
+    interface Headers {
+        [key: string]: string | boolean;
+    }
+
     namespace JWR {
 
         interface Body {
@@ -8,14 +12,10 @@ export declare namespace SailsIOClient {
             message: string;
         }
 
-        interface Header {
-            [key: string]: string | boolean;
-        }
-
         interface Response {
             body: Body;
             error: any;
-            headers: Header;
+            headers: Headers;
             statusCode: number;
             toString: () => string;
             toPOJO: () => object;
@@ -37,9 +37,9 @@ export declare namespace SailsIOClient {
         useCORSRouteToGetCookie?: boolean;
         transports?: string[];
         path?: string;
-        headers?: { [name: string]: string };
+        headers?: Headers;
         timeout?: number;
-        initialConnectionHeaders?: { [name: string]: string };
+        initialConnectionHeaders?: Headers;
         multiplex?: any;
         reconnectionAttempts?: number;
         reconnectionDelay?: number;
@@ -56,7 +56,7 @@ export declare namespace SailsIOClient {
         url: string;
         method?: string;
         params?: object;
-        headers?: JWR.Header;
+        headers?: Headers;
     }
 
     interface EventCallback {

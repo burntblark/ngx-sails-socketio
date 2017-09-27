@@ -19,7 +19,7 @@ export class SailsResponse {
         return this.JWR.body;
     }
 
-    public getHeaders(): SailsIOClient.JWR.Header {
+    public getHeaders(): SailsIOClient.Headers {
         return this.JWR.headers;
     }
 

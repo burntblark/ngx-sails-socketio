@@ -118,7 +118,7 @@ export class Sails {
         return this;
     }
 
-    public request(method: string, url: string, params?: object, headers?: SailsIOClient.JWR.Header): Promise<SailsResponse> {
+    public request(method: string, url: string, params?: object, headers?: SailsIOClient.Headers): Promise<SailsResponse> {
         const request = { url: this.Config.prefix + url, method, params, headers: Object.assign({}, this.Config.headers, headers) };
         return new Promise(resolve => {
             this.socket.request(request, (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {

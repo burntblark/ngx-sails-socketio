@@ -1,5 +1,4 @@
 import { Property, serialize, unserialize } from "./sails.serialize";
-import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
 import { Endpoint } from "./sails.decorator.endpoint";
 import { isObject } from "./utils";

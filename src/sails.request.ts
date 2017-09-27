@@ -32,7 +32,7 @@ export const Method = {
 };
 
 export class SailsRequest {
-    private headers: SailsIOClient.JWR.Header = {};
+    private headers: SailsIOClient.Headers = {};
     private parameters: string[] = [];
 
     constructor(private sails: Sails) { }
@@ -74,7 +74,7 @@ export class SailsRequest {
         return this;
     }
 
-    private getHeaders(): SailsIOClient.JWR.Header {
+    private getHeaders(): SailsIOClient.Headers {
         return this.headers;
     }
 
