@@ -1,13 +1,15 @@
 import { Sails } from "./sails";
+import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
 import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
-import { marshalData } from "./sails.marshall";
 import { RequestCriteria } from "./sails.request.criteria";
 
 export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     private _model: T;
     private criteria: RequestCriteria;
+    private errorMsg = `[SailsSocketIO]: the data is not an instance of ${this.modelClass.name}.
+        You could SailsModel.serialize<${this.modelClass.name}>(${this.modelClass.name}, data) before doing a SailsQuery action.`;
 
     private set model(model: T) {
         this._model = model;
@@ -24,10 +26,10 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
 
     find(): Promise<T[]> {
         this.addParam("where", this.getRequestCriteria());
-        let url = `/${this.model.getEndPoint().toLowerCase()}`;
+        let url = `/${this.model.getEndPoint()}`;
         return this.get(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return marshalData<T>(this.modelClass, res.getData()) as T[];
+                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T[];
             }
             throw res;
         });
@@ -35,31 +37,33 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
 
     findById(id: string): Promise<T> {
         this.addParam("where", this.getRequestCriteria());
-        let url = `/${this.model.getEndPoint().toLowerCase()}/${id}`;
+        let url = `/${this.model.getEndPoint()}/${id}`;
         return this.get(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return marshalData<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
     }
 
     save(model: T): Promise<T> {
-        let url = `/${model.getEndPoint().toLowerCase()}`;
-        const data = Object.assign({}, model);
+        if (!(model instanceof this.modelClass)) {
+            throw new TypeError(this.errorMsg);
+        }
 
+        let url = `/${model.getEndPoint()}`;
+        const data = Object.assign({}, model);
         if (model.id === null) {
             return this.post(url, data).then((res: SailsResponse) => {
                 if (res.getCode() === "CREATED") {
-                    return marshalData<T>(this.modelClass, res.getData()) as T;
+                    return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
         } else {
             return this.put(url.concat(`/${model.id}`), data).then((res: SailsResponse) => {
-                console.log(url, data, res.getCode());
                 if (res.getCode() === "CREATED") {
-                    return marshalData<T>(this.modelClass, res.getData()) as T;
+                    return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
@@ -67,22 +71,31 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     }
 
     update(model: T): Promise<T> {
-        let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+        if (!(model instanceof this.modelClass)) {
+            throw new TypeError(this.errorMsg);
+        }
+
+        let url = `/${model.getEndPoint()}/${model.id}`;
         delete model.createdAt;
         delete model.updatedAt;
-        return this.put(url, Object.assign({}, this)).then((res: SailsResponse) => {
+        const data = Object.assign({}, model);
+        return this.put(url, data).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return marshalData<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
     }
 
     remove(model: T): Promise<T> {
-        let url = `/${model.getEndPoint().toLowerCase()}/${model.id}`;
+        if (!(model instanceof this.modelClass)) {
+            throw new TypeError(this.errorMsg);
+        }
+
+        let url = `/${model.getEndPoint()}/${model.id}`;
         return this.delete(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return marshalData<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });

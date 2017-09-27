@@ -1,5 +1,6 @@
 import { Sails } from "./sails";
 import { SailsResponse } from "./sails.response";
+import { SailsIOClient } from "./sails.io.client";
 
 class QueryBuilder {
     constructor(private query: string = "") { }
@@ -22,56 +23,64 @@ class QueryBuilder {
     }
 }
 
-export class Method {
-    static GET = "get";
-    static POST = "post";
-    static PUT = "put";
-    static DELETE = "delete";
-    static PATCH = "patch";
-}
+export const Method = {
+    GET: "get",
+    POST: "post",
+    PUT: "put",
+    DELETE: "delete",
+    PATCH: "patch",
+};
 
 export class SailsRequest {
+    private headers: SailsIOClient.JWR.Header = {};
     private parameters: string[] = [];
 
     constructor(private sails: Sails) { }
 
-    public get(url: string): Promise<SailsResponse | void> {
-        return this.sails.request(Method.GET, this.buildQuery(url));
+    public get(url: string): Promise<SailsResponse> {
+        return this._request(Method.GET, url);
     }
 
-    public post(url: string, data: object): Promise<SailsResponse | void> {
-        return this.sails.request(Method.POST, this.buildQuery(url), data);
+    public post(url: string, data: object): Promise<SailsResponse> {
+        return this._request(Method.POST, url, data);
     }
 
-    public put(url: string, data: object): Promise<SailsResponse | void> {
-        return this.sails.request(Method.PUT, this.buildQuery(url), data);
+    public put(url: string, data: object): Promise<SailsResponse> {
+        return this._request(Method.PUT, url, data);
     }
 
-    public delete(url: string): Promise<SailsResponse | void> {
-        return this.sails.request(Method.DELETE, this.buildQuery(url));
+    public delete(url: string): Promise<SailsResponse> {
+        return this._request(Method.DELETE, url);
     }
 
-    public on(eventName): Promise<any> {
-        return this.sails.on(eventName.toLowerCase()).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
-                return res.getData();
-            }
-            return res;
-        });
+    public patch(url: string): Promise<SailsResponse> {
+        return this._request(Method.PATCH, url);
     }
 
-    public off(eventName): Promise<any> {
-        return this.sails.off(eventName.toLowerCase()).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
-                return res.getData();
-            }
-            return res;
-        });
+    private _request(method: string, url: string, data?: Object) {
+        return this.sails.request(method, this.buildQuery(url), data, this.getHeaders());
+    }
+
+    public on(eventName): Promise<SailsResponse> {
+        return this.sails.on(eventName.toLowerCase());
+    }
+
+    public off(eventName): Promise<SailsResponse> {
+        return this.sails.off(eventName.toLowerCase());
+    }
+
+    public addHeader(name: string, value: any): this {
+        this.headers[name] = value;
+        return this;
+    }
+
+    private getHeaders(): SailsIOClient.JWR.Header {
+        return this.headers;
     }
 
     public addParam(name: string, value: boolean | number | string | { toString(): string }): this {
-        if (value) {
-            this.parameters.push(`${name}=${value.toString()}`);
+        if (value.toString().length) {
+            this.parameters.push(`${name}=${value}`);
         }
         return this;
     }
@@ -81,7 +90,6 @@ export class SailsRequest {
     }
 
     private buildQuery(url: string): string {
-        let queryBuilder = new QueryBuilder(this.getParams());
-        return url + queryBuilder.toString();
+        return url.toLowerCase() + new QueryBuilder(this.getParams());
     }
 }
