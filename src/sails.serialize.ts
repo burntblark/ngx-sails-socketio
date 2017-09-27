@@ -1,10 +1,10 @@
 import { ObjectMapper } from "json-object-mapper";
 
-export function serialize<T>(clazz: { new(): T }, data: any): T {
+export function unserialize<T>(clazz: { new(): T }, data: any): T {
     return ObjectMapper.deserialize(clazz, data);
 }
 
-export function unserialize<T>(instance: T): String {
+export function serialize<T>(instance: T): String {
     return ObjectMapper.serialize(instance);
 }
 

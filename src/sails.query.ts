@@ -9,7 +9,9 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     private _model: T;
     private criteria: RequestCriteria;
     private errorMsg = `[SailsSocketIO]: the data is not an instance of ${this.modelClass.name}.
-        You could SailsModel.serialize<${this.modelClass.name}>(${this.modelClass.name}, data) before doing a SailsQuery action.`;
+        You could SailsModel.unserialize(${this.modelClass.name}, data) as ${this.modelClass.name}[] (Array of Models), Or
+        SailsModel.unserialize(${this.modelClass.name}, data) as ${this.modelClass.name} (Single Models)
+        after fetching the data with SailsRequest.`;
 
     private set model(model: T) {
         this._model = model;
@@ -29,7 +31,7 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         let url = `/${this.model.getEndPoint()}`;
         return this.get(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T[];
+                return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T[];
             }
             throw res;
         });
@@ -40,7 +42,7 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         let url = `/${this.model.getEndPoint()}/${id}`;
         return this.get(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
@@ -52,18 +54,19 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         }
 
         let url = `/${model.getEndPoint()}`;
-        const data = Object.assign({}, model);
+
+        const data = SailsModel.serialize(model);
         if (model.id === null) {
             return this.post(url, data).then((res: SailsResponse) => {
                 if (res.getCode() === "CREATED") {
-                    return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
+                    return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
         } else {
             return this.put(url.concat(`/${model.id}`), data).then((res: SailsResponse) => {
                 if (res.getCode() === "CREATED") {
-                    return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
+                    return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
@@ -78,10 +81,10 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         let url = `/${model.getEndPoint()}/${model.id}`;
         delete model.createdAt;
         delete model.updatedAt;
-        const data = Object.assign({}, model);
+        const data = SailsModel.serialize(model);
         return this.put(url, data).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
@@ -95,7 +98,7 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         let url = `/${model.getEndPoint()}/${model.id}`;
         return this.delete(url).then((res: SailsResponse) => {
             if (res.getCode() === "OK") {
-                return SailsModel.serialize<T>(this.modelClass, res.getData()) as T;
+                return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
