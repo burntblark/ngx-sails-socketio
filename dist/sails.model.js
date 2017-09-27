@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Property, serialize, unserialize } from "./sails.serialize";
+import { Property, unserialize } from "./sails.serialize";
 import { Endpoint } from "./sails.decorator.endpoint";
 import { isObject } from "./utils";
 var SailsModel = /** @class */ (function () {
@@ -16,21 +16,29 @@ var SailsModel = /** @class */ (function () {
         this.createdAt = null;
         this.updatedAt = null;
     }
+    SailsModel_1 = SailsModel;
     SailsModel.prototype.getEndPoint = function () {
         return this.getEndPoint();
     };
-    SailsModel.unserialize = function (model) {
-        return unserialize(model);
+    SailsModel.serialize = function (model) {
+        var data = Object.assign({}, model);
+        for (var name_1 in data) {
+            var prop = data[name_1];
+            if (prop && prop instanceof SailsModel_1 && prop.id !== null) {
+                data[name_1] = prop.id;
+            }
+        }
+        return data;
     };
-    SailsModel.serialize = function (modelClazz, data) {
-        var callFn = function (model) { return serialize(modelClazz, model); };
+    SailsModel.unserialize = function (modelClazz, data) {
+        var callFn = function (model) { return unserialize(modelClazz, model); };
         if (Array.isArray(data)) {
             return data.map(callFn);
         }
         else if (isObject(data)) {
             return callFn(data);
         }
-        throw new Error("SailsModel.serialize requires a data parameter of either a Literal Object or an Array of Literal Objects");
+        throw new Error("SailsModel.unserialize requires a data parameter of either a Literal Object or an Array of Literal Objects");
     };
     __decorate([
         Property(),
@@ -44,9 +52,10 @@ var SailsModel = /** @class */ (function () {
         Property({ type: Date }),
         __metadata("design:type", Date)
     ], SailsModel.prototype, "updatedAt", void 0);
-    SailsModel = __decorate([
+    SailsModel = SailsModel_1 = __decorate([
         Endpoint()
     ], SailsModel);
     return SailsModel;
+    var SailsModel_1;
 }());
 export { SailsModel };
