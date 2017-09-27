@@ -1,11 +1,12 @@
 import { SailsResponse, SailsInterceptorInterface } from "ngx-sails-socketio";
 import { Router } from "@angular/router";
 import { Injectable } from "@angular/core";
+import { JobsService } from "../services/jobs.service";
 
 @Injectable()
 export class AuthInterceptor implements SailsInterceptorInterface {
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private jobs: JobsService) {
     }
 
     canIntercept(response: SailsResponse): boolean {

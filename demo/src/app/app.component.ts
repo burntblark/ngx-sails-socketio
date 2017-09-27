@@ -34,8 +34,8 @@ export class AppComponent implements OnInit {
             .then(data => {
                 console.log(data);
 
-                const model = data[0];
-                this.jobs.save(model).catch(e => console.log(e));
+                // const model = data[0];
+                // this.jobs.save(model).catch(e => console.log(e));
             });
     }
 }
