@@ -1,0 +1,8 @@
+import { ObjectMapper } from "json-object-mapper";
+export function serialize(clazz, data) {
+    return ObjectMapper.deserialize(clazz, data);
+}
+export function unserialize(instance) {
+    return ObjectMapper.serialize(instance);
+}
+export { JsonIgnore as Ignore, JsonProperty as Property } from "json-object-mapper";
