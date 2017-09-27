@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
+        // this.jobs.getJobs()
         this.jobs.getQueried()
             .catch(e => {
                 console.log(e);
@@ -34,8 +35,9 @@ export class AppComponent implements OnInit {
             .then(data => {
                 console.log(data);
 
-                // const model = data[0];
-                // this.jobs.save(model).catch(e => console.log(e));
+                const model = data[0];
+                // this.jobs.updateJob(model).catch(e => console.log(e));
+                this.jobs.saveBoq(model).catch(e => console.log(e));
             });
     }
 }
