@@ -16,6 +16,21 @@ export class AppComponent implements OnInit {
             console.dir(data);
         });
 
+        sails.addEventListener(SailsListener.RECONNECTING, data => {
+            console.log("RECONNECTING...");
+            console.dir(data);
+        });
+
+        sails.addEventListener(SailsListener.RECONNECT, data => {
+            console.log("RECONNECT...");
+            console.dir(data);
+        });
+
+        sails.addEventListener(SailsListener.DISCONNECT, data => {
+            console.log("DISCONNECT...");
+            console.dir(data);
+        });
+
         sails.addEventListener(SailsListener.CONNECT, data => {
             console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉");
             console.log("CONNECTED!!!");

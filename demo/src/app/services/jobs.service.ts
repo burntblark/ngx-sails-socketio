@@ -18,7 +18,7 @@ export class JobsService {
         //     .whereLessThanOrEqualTo("createdAt", new Date);
 
         // req.addParam("where", criteria.build());
-        req.addParam("populate", `[${["customer", "job", "category", "fixer"].join(",")}]`)
+        req.addParam("populate", `[${["customer", "createdBy", "job", "category", "fixer"].join(",")}]`)
             .addParam("limit", 25);
 
         return req.get("/boq").then<BoqModel[]>((response: SailsResponse) => {
