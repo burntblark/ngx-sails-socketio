@@ -10,12 +10,14 @@ export declare const SailsEnvironment: {
     PROD: string;
 };
 export declare const SailsListener: {
+    ERROR: string;
     CONNECT: string;
+    RECONNECT: string;
+    CONNECTING: string;
+    DISCONNECT: string;
+    RECONNECTING: string;
     CONNECT_ERROR: string;
     CONNECT_TIMEOUT: string;
-    CONNECTING: string;
-    RECONNECT: string;
-    DISCONNECT: string;
 };
 export declare class Sails {
     private injector;

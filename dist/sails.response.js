@@ -2,6 +2,21 @@ var SailsResponse = /** @class */ (function () {
     function SailsResponse(JWR) {
         this.JWR = JWR;
     }
+    SailsResponse.prototype.isOk = function () {
+        return this.getStatusCode() >= 200 && this.getStatusCode() < 300;
+    };
+    SailsResponse.prototype.isCreated = function () {
+        return this.getStatusCode() === 203;
+    };
+    SailsResponse.prototype.isError = function () {
+        return this.isClientError() || this.isServerError();
+    };
+    SailsResponse.prototype.isClientError = function () {
+        return this.getStatusCode() >= 400 && !this.isServerError();
+    };
+    SailsResponse.prototype.isServerError = function () {
+        return this.getStatusCode() >= 500;
+    };
     SailsResponse.prototype.getCode = function () {
         return this.getBody().code;
     };

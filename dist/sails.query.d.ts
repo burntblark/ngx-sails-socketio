@@ -4,10 +4,9 @@ import { SailsModelInterface } from "./sails.model.interface";
 import { RequestCriteria } from "./sails.request.criteria";
 export declare class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
     private modelClass;
-    private _model;
+    private model;
     private criteria;
     private errorMsg;
-    private model;
     constructor(sails: Sails, modelClass: {
         new (): T;
     });

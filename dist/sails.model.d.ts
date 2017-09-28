@@ -4,6 +4,6 @@ export declare abstract class SailsModel implements SailsModelInterface {
     createdAt: Date;
     updatedAt: Date;
     getEndPoint(): string;
-    static serialize<U extends SailsModelInterface>(model: U): Object;
-    static unserialize<U extends SailsModelInterface>(modelClazz: any, data: Object | Object[]): U | U[];
+    static serialize<U extends SailsModelInterface>(model: U): U;
+    static unserialize<U extends SailsModelInterface>(modelClazz: any, data: U | U[]): U | U[];
 }

@@ -7,16 +7,18 @@ import { isString } from "./utils";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 export var SailsEnvironment = {
-    DEV: "dev",
-    PROD: "prod"
+    DEV: "development",
+    PROD: "production"
 };
 export var SailsListener = {
+    ERROR: "error",
     CONNECT: "connect",
+    RECONNECT: "reconnect",
+    CONNECTING: "connecting",
+    DISCONNECT: "disconnect",
+    RECONNECTING: "reconnecting",
     CONNECT_ERROR: "connect_error",
     CONNECT_TIMEOUT: "connect_timeout",
-    CONNECTING: "connecting",
-    RECONNECT: "reconnect",
-    DISCONNECT: "disconnect",
 };
 var Sails = /** @class */ (function () {
     function Sails(injector, options, Interceptors) {
@@ -30,7 +32,9 @@ var Sails = /** @class */ (function () {
             _a[SailsListener.CONNECT_TIMEOUT] = [],
             _a[SailsListener.CONNECTING] = [],
             _a[SailsListener.RECONNECT] = [],
+            _a[SailsListener.RECONNECTING] = [],
             _a[SailsListener.DISCONNECT] = [],
+            _a[SailsListener.ERROR] = [],
             _a);
         var io = SailsIO(SocketIO);
         var socket = io.socket;
@@ -44,6 +48,8 @@ var Sails = /** @class */ (function () {
         socket.on(SailsListener.CONNECT_TIMEOUT, handleListeners(SailsListener.CONNECT_TIMEOUT));
         socket.on(SailsListener.CONNECTING, handleListeners(SailsListener.CONNECTING));
         socket.on(SailsListener.RECONNECT, handleListeners(SailsListener.RECONNECT));
+        socket.on(SailsListener.ERROR, handleListeners(SailsListener.ERROR));
+        socket.on(SailsListener.RECONNECTING, handleListeners(SailsListener.RECONNECTING));
         socket.on(SailsListener.DISCONNECT, handleListeners(SailsListener.DISCONNECT));
         // Setup Config
         var Config = new SailsConfig(options);
