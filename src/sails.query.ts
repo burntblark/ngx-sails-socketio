@@ -6,66 +6,55 @@ import { SailsModelInterface } from "./sails.model.interface";
 import { RequestCriteria } from "./sails.request.criteria";
 
 export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
-    private _model: T;
+    private model: T;
     private criteria: RequestCriteria;
     private errorMsg = `[SailsSocketIO]: the data is not an instance of ${this.modelClass.name}.
         You could SailsModel.unserialize(${this.modelClass.name}, data) as ${this.modelClass.name}[] (Array of Models), Or
         SailsModel.unserialize(${this.modelClass.name}, data) as ${this.modelClass.name} (Single Models)
         after fetching the data with SailsRequest.`;
 
-    private set model(model: T) {
-        this._model = model;
-    }
-
-    private get model(): T {
-        return this._model;
-    }
-
     constructor(sails: Sails, private modelClass: { new(): T }) {
         super(sails);
         this.model = new modelClass();
     }
 
-    find(): Promise<T[]> {
+    public find(): Promise<T[]> {
         this.addParam("where", this.getRequestCriteria());
-        let url = `/${this.model.getEndPoint()}`;
-        return this.get(url).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
+        return this.get(`/${this.model.getEndPoint()}`).then(res => {
+            if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T[];
             }
             throw res;
         });
     }
 
-    findById(id: string): Promise<T> {
+    public findById(id: string): Promise<T> {
         this.addParam("where", this.getRequestCriteria());
-        let url = `/${this.model.getEndPoint()}/${id}`;
-        return this.get(url).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
+        return this.get(`/${this.model.getEndPoint()}/${id}`).then(res => {
+            if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
     }
 
-    save(model: T): Promise<T> {
+    public save(model: T): Promise<T> {
         if (!(model instanceof this.modelClass)) {
             throw new TypeError(this.errorMsg);
         }
 
-        let url = `/${model.getEndPoint()}`;
-
         const data = SailsModel.serialize(model);
+        const url = `/${model.getEndPoint()}`;
         if (model.id === null) {
-            return this.post(url, data).then((res: SailsResponse) => {
-                if (res.getCode() === "CREATED") {
+            return this.post(url, data).then(res => {
+                if (res.isCreated()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
         } else {
-            return this.put(url.concat(`/${model.id}`), data).then((res: SailsResponse) => {
-                if (res.getCode() === "CREATED") {
+            return this.put(url.concat("/", model.id), data).then(res => {
+                if (res.isCreated()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
@@ -73,31 +62,29 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         }
     }
 
-    update(model: T): Promise<T> {
+    public update(model: T): Promise<T> {
         if (!(model instanceof this.modelClass)) {
             throw new TypeError(this.errorMsg);
         }
 
-        let url = `/${model.getEndPoint()}/${model.id}`;
         delete model.createdAt;
         delete model.updatedAt;
         const data = SailsModel.serialize(model);
-        return this.put(url, data).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
+        return this.put(`/${model.getEndPoint()}/${model.id}`, data).then(res => {
+            if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;
         });
     }
 
-    remove(model: T): Promise<T> {
+    public remove(model: T): Promise<T> {
         if (!(model instanceof this.modelClass)) {
             throw new TypeError(this.errorMsg);
         }
 
-        let url = `/${model.getEndPoint()}/${model.id}`;
-        return this.delete(url).then((res: SailsResponse) => {
-            if (res.getCode() === "OK") {
+        return this.delete(`/${model.getEndPoint()}/${model.id}`).then(res => {
+            if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
             throw res;

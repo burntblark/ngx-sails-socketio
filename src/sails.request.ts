@@ -37,27 +37,27 @@ export class SailsRequest {
 
     constructor(private sails: Sails) { }
 
-    public get(url: string): Promise<SailsResponse> {
+    public get(url: string) {
         return this._request(Method.GET, url);
     }
 
-    public post(url: string, data: object): Promise<SailsResponse> {
+    public post(url: string, data: object) {
         return this._request(Method.POST, url, data);
     }
 
-    public put(url: string, data: object): Promise<SailsResponse> {
+    public put(url: string, data: object) {
         return this._request(Method.PUT, url, data);
     }
 
-    public delete(url: string): Promise<SailsResponse> {
+    public delete(url: string) {
         return this._request(Method.DELETE, url);
     }
 
-    public patch(url: string): Promise<SailsResponse> {
+    public patch(url: string) {
         return this._request(Method.PATCH, url);
     }
 
-    private _request(method: string, url: string, data?: Object) {
+    private _request(method: string, url: string, data?: Object): Promise<SailsResponse> {
         return this.sails.request(method, this.buildQuery(url), data, this.getHeaders());
     }
 

@@ -12,17 +12,19 @@ export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 
 export const SailsEnvironment = {
-    DEV: "dev",
-    PROD: "prod"
+    DEV: "development",
+    PROD: "production"
 };
 
 export const SailsListener = {
+    ERROR: "error",
     CONNECT: "connect",
+    RECONNECT: "reconnect",
+    CONNECTING: "connecting",
+    DISCONNECT: "disconnect",
+    RECONNECTING: "reconnecting",
     CONNECT_ERROR: "connect_error",
     CONNECT_TIMEOUT: "connect_timeout",
-    CONNECTING: "connecting",
-    RECONNECT: "reconnect",
-    DISCONNECT: "disconnect",
 };
 
 export class Sails {
@@ -34,7 +36,9 @@ export class Sails {
         [SailsListener.CONNECT_TIMEOUT]: [],
         [SailsListener.CONNECTING]: [],
         [SailsListener.RECONNECT]: [],
+        [SailsListener.RECONNECTING]: [],
         [SailsListener.DISCONNECT]: [],
+        [SailsListener.ERROR]: [],
     };
 
     private get socket(): SailsIOClient.Socket {
@@ -63,6 +67,8 @@ export class Sails {
         socket.on(SailsListener.CONNECT_TIMEOUT, handleListeners(SailsListener.CONNECT_TIMEOUT));
         socket.on(SailsListener.CONNECTING, handleListeners(SailsListener.CONNECTING));
         socket.on(SailsListener.RECONNECT, handleListeners(SailsListener.RECONNECT));
+        socket.on(SailsListener.ERROR, handleListeners(SailsListener.ERROR));
+        socket.on(SailsListener.RECONNECTING, handleListeners(SailsListener.RECONNECTING));
         socket.on(SailsListener.DISCONNECT, handleListeners(SailsListener.DISCONNECT));
 
         // Setup Config

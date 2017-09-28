@@ -13,7 +13,7 @@ export abstract class SailsModel implements SailsModelInterface {
         return this.getEndPoint();
     }
 
-    static serialize<U extends SailsModelInterface>(model: U): Object {
+    static serialize<U extends SailsModelInterface>(model: U): U {
         const data = Object.assign({}, model);
         for (const name in data) {
             const prop: U = data[name];
@@ -24,7 +24,7 @@ export abstract class SailsModel implements SailsModelInterface {
         return data;
     }
 
-    static unserialize<U extends SailsModelInterface>(modelClazz, data: Object | Object[]): U | U[] {
+    static unserialize<U extends SailsModelInterface>(modelClazz, data: U | U[]): U | U[] {
         const callFn = (model) => unserialize<U>(modelClazz, model) as U;
         if (Array.isArray(data)) {
             return data.map(callFn);
