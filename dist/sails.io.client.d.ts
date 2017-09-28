@@ -1,17 +1,13 @@
 export declare namespace SailsIOClient {
-
     interface Headers {
         [key: string]: string | boolean;
     }
-
     namespace JWR {
-
         interface Body {
             data: any;
             code: string;
             message: string;
         }
-
         interface Response {
             body: Body;
             error: any;
@@ -22,12 +18,10 @@ export declare namespace SailsIOClient {
             pipe: () => Error;
         }
     }
-
     interface IO {
         socket: Socket;
         sails: SailsSocket;
     }
-
     interface Options {
         url: string;
         query: string;
@@ -47,26 +41,21 @@ export declare namespace SailsIOClient {
         rejectUnauthorized?: boolean;
         randomizationFactor?: number;
     }
-
     interface SailsSocket extends Options {
         connect: (url, opts) => Socket;
     }
-
     interface RequestOptions {
         url: string;
         method?: string;
         params?: object;
         headers?: Headers;
     }
-
     interface EventCallback {
-        (response): void;
+        (response: any): void;
     }
-
     interface ResponseCallback {
         (body: JWR.Body, JWR: JWR.Response): void;
     }
-
     interface Socket {
         _connect(): void;
         reconnect(): any;
@@ -75,8 +64,8 @@ export declare namespace SailsIOClient {
         isConnecting(): boolean;
         mightBeAboutToAutoConnect(): boolean;
         replay(): Socket;
-        on(eventName, callback: EventCallback): Socket;
-        off(eventName, callback: EventCallback): Socket;
+        on(eventName: any, callback: EventCallback): Socket;
+        off(eventName: any, callback: EventCallback): Socket;
         removeAllListeners(): Socket;
         get(url: string, data: any, callback: ResponseCallback): void;
         post(url: string, data: any, callback: ResponseCallback): void;

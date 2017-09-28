@@ -1,6 +1,5 @@
 .vscode
 .history
 node_modules/
-dist/
 *.log
 package-lock.json

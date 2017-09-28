@@ -18,12 +18,13 @@ export class JobsService {
         //     .whereLessThanOrEqualTo("createdAt", new Date);
 
         // req.addParam("where", criteria.build());
-        req.addParam("populate", `"${["customer", "job", "category", "fixer"].join(",")}`)
+        req.addParam("populate", `[${["customer", "createdBy", "job", "category", "fixer"].join(",")}]`)
             .addParam("limit", 25);
 
         return req.get("/boq").then<BoqModel[]>((response: SailsResponse) => {
             if (response.getStatusCode() === 200) {
-                return response.getData();
+                // return response.getData();
+                return SailsModel.unserialize(BoqModel, response.getData()) as BoqModel[];
             }
             throw response;
         });
@@ -47,8 +48,13 @@ export class JobsService {
         return query.find();
     }
 
-    save(model) {
+    saveBoq(model) {
         const query = new SailsQuery(this.sails, BoqModel);
         return query.save(model);
+    }
+
+    updateJob(model) {
+        const query = new SailsQuery(this.sails, JobModel);
+        return query.update(model);
     }
 }

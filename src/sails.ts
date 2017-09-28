@@ -12,30 +12,33 @@ export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 
 export const SailsEnvironment = {
-    DEV: "dev",
-    PROD: "prod"
+    DEV: "development",
+    PROD: "production"
 };
 
 export const SailsListener = {
+    ERROR: "error",
     CONNECT: "connect",
+    RECONNECT: "reconnect",
+    CONNECTING: "connecting",
+    DISCONNECT: "disconnect",
+    RECONNECTING: "reconnecting",
     CONNECT_ERROR: "connect_error",
     CONNECT_TIMEOUT: "connect_timeout",
-    CONNECTING: "connecting",
-    RECONNECT: "reconnect",
-    DISCONNECT: "disconnect",
 };
 
 export class Sails {
     private Socket: SailsIOClient.Socket;
     private Config: SailsConfig;
-    private Interceptors: SailsInterceptorInterface[] = [];
     private Listeners: { [eventName: string]: ((data: any) => void)[] } = {
         [SailsListener.CONNECT]: [],
         [SailsListener.CONNECT_ERROR]: [],
         [SailsListener.CONNECT_TIMEOUT]: [],
         [SailsListener.CONNECTING]: [],
         [SailsListener.RECONNECT]: [],
+        [SailsListener.RECONNECTING]: [],
         [SailsListener.DISCONNECT]: [],
+        [SailsListener.ERROR]: [],
     };
 
     private get socket(): SailsIOClient.Socket {
@@ -47,23 +50,25 @@ export class Sails {
     }
 
     constructor(
-        @Inject(Injector) injector: Injector,
+        @Inject(Injector) private injector: Injector,
         @Inject(SAILS_OPTIONS) options: SailsOptions,
-        @Inject(SAILS_INTERCEPTORS) interceptors: SailsInterceptorConstructor[]) {
-        // Set up interceptors
-        this.Interceptors = interceptors.map(interceptor => injector.get(interceptor));
+        @Inject(SAILS_INTERCEPTORS) private Interceptors: SailsInterceptorConstructor[] = []) {
 
         const io: SailsIOClient.IO = SailsIO(SocketIO);
         const socket = io.socket;
 
         // Helper function for Listeners
-        const handleListeners = (eventName: string) => data => this.Listeners[eventName].forEach(callback => callback(data));
+        const handleListeners = eventName => data => {
+            this.Listeners[eventName].forEach(callback => callback(data));
+        };
         // Set up Event Listeners
         socket.on(SailsListener.CONNECT, handleListeners(SailsListener.CONNECT));
         socket.on(SailsListener.CONNECT_ERROR, handleListeners(SailsListener.CONNECT_ERROR));
         socket.on(SailsListener.CONNECT_TIMEOUT, handleListeners(SailsListener.CONNECT_TIMEOUT));
         socket.on(SailsListener.CONNECTING, handleListeners(SailsListener.CONNECTING));
         socket.on(SailsListener.RECONNECT, handleListeners(SailsListener.RECONNECT));
+        socket.on(SailsListener.ERROR, handleListeners(SailsListener.ERROR));
+        socket.on(SailsListener.RECONNECTING, handleListeners(SailsListener.RECONNECTING));
         socket.on(SailsListener.DISCONNECT, handleListeners(SailsListener.DISCONNECT));
 
         // Setup Config
@@ -118,7 +123,7 @@ export class Sails {
         return this;
     }
 
-    public request(method: string, url: string, params?: object, headers?: SailsIOClient.JWR.Header): Promise<SailsResponse> {
+    public request(method: string, url: string, params?: object, headers?: SailsIOClient.Headers): Promise<SailsResponse> {
         const request = { url: this.Config.prefix + url, method, params, headers: Object.assign({}, this.Config.headers, headers) };
         return new Promise(resolve => {
             this.socket.request(request, (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
@@ -155,10 +160,21 @@ export class Sails {
         });
     }
 
+    public addHeader(name: string, value: any) {
+        Object.assign(this.Config.headers, { name: value });
+    }
+
+    public addOption(name: string, value: any) {
+        if (!this.Config[name]) {
+            throw new Error(`[Sails-SocketIO] Option name (${name}) is not available`);
+        }
+        this.Config = new SailsConfig(Object.assign({}, this.Config, { name: value }));
+    }
+
     private intercept(JWR: SailsIOClient.JWR.Response): SailsResponse | void {
         const response = new SailsResponse(JWR);
         const canContinue = this.Interceptors.reduce((acc, interceptor) => {
-            return acc && !interceptor.canIntercept(response);
+            return acc && !(this.injector.get(interceptor).canIntercept(response));
         }, true);
 
         return canContinue === true ? response : void 0;

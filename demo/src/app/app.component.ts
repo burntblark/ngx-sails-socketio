@@ -16,6 +16,21 @@ export class AppComponent implements OnInit {
             console.dir(data);
         });
 
+        sails.addEventListener(SailsListener.RECONNECTING, data => {
+            console.log("RECONNECTING...");
+            console.dir(data);
+        });
+
+        sails.addEventListener(SailsListener.RECONNECT, data => {
+            console.log("RECONNECT...");
+            console.dir(data);
+        });
+
+        sails.addEventListener(SailsListener.DISCONNECT, data => {
+            console.log("DISCONNECT...");
+            console.dir(data);
+        });
+
         sails.addEventListener(SailsListener.CONNECT, data => {
             console.log("🎉🎉🎉 IT WORKS!!! 🎉🎉🎉");
             console.log("CONNECTED!!!");
@@ -26,6 +41,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
+        // this.jobs.getJobs()
         this.jobs.getQueried()
             .catch(e => {
                 console.log(e);
@@ -35,7 +51,8 @@ export class AppComponent implements OnInit {
                 console.log(data);
 
                 const model = data[0];
-                this.jobs.save(model).catch(e => console.log(e));
+                // this.jobs.updateJob(model).catch(e => console.log(e));
+                this.jobs.saveBoq(model).catch(e => console.log(e));
             });
     }
 }
