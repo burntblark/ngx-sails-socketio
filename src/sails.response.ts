@@ -8,7 +8,7 @@ export class SailsResponse {
     }
 
     public isCreated(): boolean {
-        return this.getStatusCode() === 203;
+        return this.getStatusCode() === 201;
     }
 
     public isError(): boolean {

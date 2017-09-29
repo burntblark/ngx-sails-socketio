@@ -6,7 +6,7 @@ var SailsResponse = /** @class */ (function () {
         return this.getStatusCode() >= 200 && this.getStatusCode() < 300;
     };
     SailsResponse.prototype.isCreated = function () {
-        return this.getStatusCode() === 203;
+        return this.getStatusCode() === 201;
     };
     SailsResponse.prototype.isError = function () {
         return this.isClientError() || this.isServerError();

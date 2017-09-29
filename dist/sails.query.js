@@ -49,7 +49,7 @@ var SailsQuery = /** @class */ (function (_super) {
         var url = "/" + model.getEndPoint();
         if (model.id === null) {
             return this.post(url, data).then(function (res) {
-                if (res.isCreated()) {
+                if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
@@ -57,7 +57,7 @@ var SailsQuery = /** @class */ (function (_super) {
         }
         else {
             return this.put(url.concat("/", model.id), data).then(function (res) {
-                if (res.isCreated()) {
+                if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
