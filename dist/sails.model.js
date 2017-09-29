@@ -21,14 +21,21 @@ var SailsModel = /** @class */ (function () {
         return this.getEndPoint();
     };
     SailsModel.serialize = function (model) {
-        var data = Object.assign({}, model);
-        for (var name_1 in data) {
-            var prop = data[name_1];
-            if (prop && prop instanceof SailsModel_1 && prop.id !== null) {
-                data[name_1] = prop.id;
+        var recr = function (obj) {
+            for (var key in obj) {
+                var prop = obj[key];
+                // Ignore NULL values
+                if (prop === null || typeof prop === "function") {
+                    delete obj[key];
+                }
+                // Convert Property Models to their ID representations
+                if (prop && prop instanceof SailsModel_1 && prop.id !== null) {
+                    obj[key] = prop.id;
+                }
             }
-        }
-        return data;
+            return obj;
+        };
+        return recr(Object.assign({}, model));
     };
     SailsModel.unserialize = function (modelClazz, data) {
         var callFn = function (model) { return unserialize(modelClazz, model); };
