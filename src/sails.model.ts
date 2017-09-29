@@ -14,14 +14,22 @@ export abstract class SailsModel implements SailsModelInterface {
     }
 
     static serialize<U extends SailsModelInterface>(model: U): U {
-        const data = Object.assign({}, model);
-        for (const name in data) {
-            const prop: U = data[name];
-            if (prop && prop instanceof SailsModel && prop.id !== null) {
-                data[name] = prop.id;
+        const recr = (obj) => {
+            for (const key in obj) {
+                const prop: U = obj[key];
+                // Ignore NULL values
+                if (prop === null || typeof prop === "function") {
+                    delete obj[key];
+                }
+
+                // Convert Property Models to their ID representations
+                if (prop && prop instanceof SailsModel && prop.id !== null) {
+                    obj[key] = prop.id;
+                }
             }
-        }
-        return data;
+            return obj;
+        };
+        return recr(Object.assign({}, model));
     }
 
     static unserialize<U extends SailsModelInterface>(modelClazz, data: U | U[]): U | U[] {
