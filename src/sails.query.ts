@@ -47,14 +47,14 @@ export class SailsQuery<T extends SailsModelInterface> extends SailsRequest {
         const url = `/${model.getEndPoint()}`;
         if (model.id === null) {
             return this.post(url, data).then(res => {
-                if (res.isCreated()) {
+                if (res.isOk()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
         } else {
             return this.put(url.concat("/", model.id), data).then(res => {
-                if (res.isCreated()) {
+                if (res.isOk()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
