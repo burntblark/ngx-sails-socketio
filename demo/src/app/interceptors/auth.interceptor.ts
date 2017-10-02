@@ -11,6 +11,9 @@ export class AuthInterceptor implements SailsInterceptorInterface {
 
     canIntercept(response: SailsResponse): boolean {
         console.log("Auth: ", response);
+        if (response.getStatusCode() === 401) {
+            this.router.navigateByUrl("login");
+        }
         // Try playing with the return value
         return false;
     }

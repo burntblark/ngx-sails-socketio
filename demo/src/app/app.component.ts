@@ -10,7 +10,7 @@ import { Router } from "@angular/router";
 })
 export class AppComponent implements OnInit {
 
-    constructor(sails: Sails, private jobs: JobsService) {
+    constructor(private sails: Sails, private jobs: JobsService) {
         sails.addEventListener(SailsListener.CONNECTING, data => {
             console.log("CONNECTING...");
             console.dir(data);
@@ -51,8 +51,10 @@ export class AppComponent implements OnInit {
                 console.log(data);
 
                 const model = data[0];
-                // this.jobs.updateJob(model).catch(e => console.log(e));
-                this.jobs.saveBoq(model).catch(e => console.log(e));
+                if (model) {
+                    // this.jobs.updateJob(model).catch(e => console.log(e));
+                    this.jobs.saveBoq(model).catch(e => console.log(e));
+                }
             });
     }
 }
