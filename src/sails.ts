@@ -129,13 +129,16 @@ export class Sails {
             url: this.Config.prefix + _request.url,
             headers: Object.assign({}, this.Config.headers, _request.headers)
         });
-        return new Promise(resolve => {
+
+        return this.handle(request);
+    }
+
+    private async handle(request: SailsRequestOptions): Promise<SailsResponse> {
+        return await new Promise<SailsResponse>(resolve => {
             this.socket.request(request, (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
-                const resolved = this.intercept(response);
-                if (resolved) {
-                    resolve(resolved);
-                    this.debugReqRes(request, resolved);
-                }
+                const resolved = new SailsResponse(response);
+                resolve(resolved);
+                this.debugReqRes(request, resolved);
             });
         });
     }
@@ -163,6 +166,7 @@ export class Sails {
             });
         });
     }
+
     public addHeader(name: string, value: any): this {
         Object.assign(this.Config.headers, { name: value });
         return this;
