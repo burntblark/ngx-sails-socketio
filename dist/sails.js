@@ -38,6 +38,7 @@ import * as SocketIO from "socket.io-client";
 import { SailsResponse } from "./sails.response";
 import { SailsConfig } from "./sails.config";
 import { Inject, InjectionToken, Injector } from "@angular/core";
+import { SailsInterceptorHandler } from "./sails.interceptor.handler";
 import { isString } from "./utils";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -139,35 +140,12 @@ var Sails = /** @class */ (function () {
         }
         return this;
     };
-    Sails.prototype.request = function (_request) {
-        var request = _request.clone({
-            url: this.Config.prefix + _request.url,
-            headers: Object.assign({}, this.Config.headers, _request.headers)
-        });
-        return this.handle(request);
-    };
-    Sails.prototype.handle = function (request) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, new Promise(function (resolve) {
-                            _this.socket.request(request, function (body, response) {
-                                var resolved = new SailsResponse(response);
-                                resolve(resolved);
-                                _this.debugReqRes(request, resolved);
-                            });
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
     Sails.prototype.on = function (eventName) {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.on(eventName, function (response) {
-                var resolved = _this.intercept(response);
+                // const resolved = this.intercept(response);
+                var resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     _this.debugReqRes(eventName, resolved);
@@ -179,7 +157,8 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.off(eventName, function (response) {
-                var resolved = _this.intercept(response);
+                // const resolved = this.intercept(response);
+                var resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     _this.debugReqRes(eventName, resolved);
@@ -187,31 +166,49 @@ var Sails = /** @class */ (function () {
             });
         });
     };
-    Sails.prototype.addHeader = function (name, value) {
-        Object.assign(this.Config.headers, { name: value });
-        return this;
+    Sails.prototype.request = function (request) {
+        var req = request.clone({
+            url: this.Config.prefix + request.url,
+        });
+        return this.intercept(req);
     };
-    Sails.prototype.removeHeader = function (name) {
-        delete this.Config.headers[name];
-        return this;
+    Sails.prototype.intercept = function (request, next) {
+        if (next === void 0) { next = this; }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var handler;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        handler = this.Interceptors.reduceRight(function (next, interceptor) {
+                            return new SailsInterceptorHandler(next, _this.injector.get(interceptor));
+                        }, next);
+                        return [4 /*yield*/, handler.handle(request)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
     };
-    Sails.prototype.addOption = function (name, value) {
-        if (!this.Config[name]) {
-            throw new Error("[Sails-SocketIO] Option name (" + name + ") is not available");
-        }
-        this.Config = new SailsConfig(Object.assign({}, this.Config, { name: value }));
-    };
-    Sails.prototype.intercept = function (JWR) {
-        var _this = this;
-        var response = new SailsResponse(JWR);
-        var canContinue = this.Interceptors.reduce(function (acc, interceptor) {
-            return acc && !(_this.injector.get(interceptor).canIntercept(response));
-        }, true);
-        return canContinue === true ? response : void 0;
+    Sails.prototype.handle = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, new Promise(function (resolve) {
+                            _this.socket.request(request.serialize(), function (body, response) {
+                                var resolved = new SailsResponse(response);
+                                resolve(resolved);
+                                _this.debugReqRes(request, resolved);
+                            });
+                        })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
     };
     Sails.prototype.debugReqRes = function (request, response) {
         if (this.Config.environment === SailsEnvironment.DEV) {
-            console.groupCollapsed("SailsSocketIO: [Request, Response]");
+            console.groupCollapsed("[SailsSocketIO] > Debug Output");
             isString(request) ? console.log(request) : console.dir(request);
             console.dir(response);
             console.groupEnd();

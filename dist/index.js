@@ -5,5 +5,7 @@ export * from "./sails.module";
 export * from "./sails.request";
 export * from "./sails.response";
 export * from "./sails.serialize";
+export * from "./sails.request.options";
 export * from "./sails.request.criteria";
 export * from "./sails.decorator.endpoint";
+export * from "./sails.interceptor.handler";
