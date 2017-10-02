@@ -104,9 +104,12 @@ var Sails = /** @class */ (function () {
         }
         return this;
     };
-    Sails.prototype.request = function (method, url, params, headers) {
+    Sails.prototype.request = function (_request) {
         var _this = this;
-        var request = { url: this.Config.prefix + url, method: method, params: params, headers: Object.assign({}, this.Config.headers, headers) };
+        var request = _request.clone({
+            url: this.Config.prefix + _request.url,
+            headers: Object.assign({}, this.Config.headers, _request.headers)
+        });
         return new Promise(function (resolve) {
             _this.socket.request(request, function (body, response) {
                 var resolved = _this.intercept(response);

@@ -1,3 +1,51 @@
+var SailsRequestOptions = /** @class */ (function () {
+    function SailsRequestOptions(options) {
+        if (options === void 0) { options = {
+            url: "",
+            method: "",
+            params: {},
+            headers: {}
+        }; }
+        this.options = options;
+    }
+    SailsRequestOptions.prototype.clone = function (options) {
+        Object.assign(this, { options: options });
+        return this;
+    };
+    Object.defineProperty(SailsRequestOptions.prototype, "method", {
+        get: function () {
+            return this.options.method;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SailsRequestOptions.prototype, "url", {
+        get: function () {
+            return this.options.url;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SailsRequestOptions.prototype, "params", {
+        get: function () {
+            return this.options.params;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SailsRequestOptions.prototype, "headers", {
+        get: function () {
+            return this.options.headers;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SailsRequestOptions.prototype.getOptions = function () {
+        return this.options;
+    };
+    return SailsRequestOptions;
+}());
+export { SailsRequestOptions };
 var QueryBuilder = /** @class */ (function () {
     function QueryBuilder(query) {
         if (query === void 0) { query = ""; }
@@ -36,11 +84,11 @@ var SailsRequest = /** @class */ (function () {
     SailsRequest.prototype.get = function (url) {
         return this._request(Method.GET, url);
     };
-    SailsRequest.prototype.post = function (url, data) {
-        return this._request(Method.POST, url, data);
+    SailsRequest.prototype.post = function (url, params) {
+        return this._request(Method.POST, url, params);
     };
-    SailsRequest.prototype.put = function (url, data) {
-        return this._request(Method.PUT, url, data);
+    SailsRequest.prototype.put = function (url, params) {
+        return this._request(Method.PUT, url, params);
     };
     SailsRequest.prototype.delete = function (url) {
         return this._request(Method.DELETE, url);
@@ -48,8 +96,9 @@ var SailsRequest = /** @class */ (function () {
     SailsRequest.prototype.patch = function (url) {
         return this._request(Method.PATCH, url);
     };
-    SailsRequest.prototype._request = function (method, url, data) {
-        return this.sails.request(method, this.buildQuery(url), data, this.getHeaders());
+    SailsRequest.prototype._request = function (method, url, params) {
+        var request = new SailsRequestOptions({ method: method, url: this.buildQuery(url), params: params, headers: this.getHeaders() });
+        return this.sails.request(request);
     };
     SailsRequest.prototype.on = function (eventName) {
         return this.sails.on(eventName.toLowerCase());
