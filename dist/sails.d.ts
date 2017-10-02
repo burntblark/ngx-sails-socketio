@@ -36,7 +36,8 @@ export declare class Sails {
     request(method: string, url: string, params?: object, headers?: SailsIOClient.Headers): Promise<SailsResponse>;
     on(eventName: string): Promise<SailsResponse>;
     off(eventName: string): Promise<SailsResponse>;
-    addHeader(name: string, value: any): void;
+    addHeader(name: string, value: any): this;
+    removeHeader(name: any): this;
     addOption(name: string, value: any): void;
     private intercept(JWR);
     private debugReqRes(request, response);

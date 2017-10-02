@@ -143,6 +143,11 @@ var Sails = /** @class */ (function () {
     };
     Sails.prototype.addHeader = function (name, value) {
         Object.assign(this.Config.headers, { name: value });
+        return this;
+    };
+    Sails.prototype.removeHeader = function (name) {
+        delete this.Config.headers[name];
+        return this;
     };
     Sails.prototype.addOption = function (name, value) {
         if (!this.Config[name]) {
