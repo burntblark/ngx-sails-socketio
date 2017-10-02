@@ -2,6 +2,47 @@ import { Sails } from "./sails";
 import { SailsResponse } from "./sails.response";
 import { SailsIOClient } from "./sails.io.client";
 
+export class SailsRequestOptions {
+    constructor(private options: {
+        url: string;
+        method: string;
+        params: any;
+        headers: SailsIOClient.Headers
+    } = {
+            url: "",
+            method: "",
+            params: {},
+            headers: {}
+        }) { }
+
+    clone(options: {
+        url?: string;
+        method?: string;
+        params?: any;
+        headers?: SailsIOClient.Headers
+    }): this {
+        Object.assign(this, { options });
+        return this;
+    }
+
+    get method(): string {
+        return this.options.method;
+    }
+    get url(): string {
+        return this.options.url;
+    }
+    get params(): Object {
+        return this.options.params;
+    }
+    get headers(): SailsIOClient.Headers {
+        return this.options.headers;
+    }
+
+    getOptions() {
+        return this.options;
+    }
+}
+
 class QueryBuilder {
     constructor(private query: string = "") { }
 
@@ -41,12 +82,12 @@ export class SailsRequest {
         return this._request(Method.GET, url);
     }
 
-    public post(url: string, data: object) {
-        return this._request(Method.POST, url, data);
+    public post(url: string, params: object) {
+        return this._request(Method.POST, url, params);
     }
 
-    public put(url: string, data: object) {
-        return this._request(Method.PUT, url, data);
+    public put(url: string, params: object) {
+        return this._request(Method.PUT, url, params);
     }
 
     public delete(url: string) {
@@ -57,8 +98,9 @@ export class SailsRequest {
         return this._request(Method.PATCH, url);
     }
 
-    private _request(method: string, url: string, data?: Object): Promise<SailsResponse> {
-        return this.sails.request(method, this.buildQuery(url), data, this.getHeaders());
+    private _request(method: string, url: string, params?: Object): Promise<SailsResponse> {
+        const request = new SailsRequestOptions({ method, url: this.buildQuery(url), params, headers: this.getHeaders() });
+        return this.sails.request(request);
     }
 
     public on(eventName): Promise<SailsResponse> {

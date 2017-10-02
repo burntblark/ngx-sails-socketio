@@ -7,6 +7,7 @@ import { SailsIOClient } from "./sails.io.client";
 import { SailsInterceptorInterface, SailsInterceptorConstructor } from "./sails.interceptor.interface";
 import { SailsOptions } from "./sails.options";
 import { isString } from "./utils";
+import { SailsRequestOptions } from "./sails.request";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -123,8 +124,11 @@ export class Sails {
         return this;
     }
 
-    public request(method: string, url: string, params?: object, headers?: SailsIOClient.Headers): Promise<SailsResponse> {
-        const request = { url: this.Config.prefix + url, method, params, headers: Object.assign({}, this.Config.headers, headers) };
+    public request(_request: SailsRequestOptions): Promise<SailsResponse> {
+        const request = _request.clone({
+            url: this.Config.prefix + _request.url,
+            headers: Object.assign({}, this.Config.headers, _request.headers)
+        });
         return new Promise(resolve => {
             this.socket.request(request, (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
                 const resolved = this.intercept(response);
