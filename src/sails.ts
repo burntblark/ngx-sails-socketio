@@ -159,9 +159,14 @@ export class Sails {
             });
         });
     }
-
-    public addHeader(name: string, value: any) {
+    public addHeader(name: string, value: any): this {
         Object.assign(this.Config.headers, { name: value });
+        return this;
+    }
+
+    public removeHeader(name): this {
+        delete this.Config.headers[name];
+        return this;
     }
 
     public addOption(name: string, value: any) {
