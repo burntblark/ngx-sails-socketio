@@ -21,8 +21,7 @@ export class LoginComponent implements OnInit {
 
         setTimeout(() => {
             localStorage.setItem("token", token);
-            this.sails.addHeader("Authorize", token);
             this.router.navigateByUrl("/");
-        }, 2000);
+        }, 1000);
     }
 }

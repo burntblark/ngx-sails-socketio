@@ -1,7 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Sails, SailsListener } from "ngx-sails-socketio";
-import { JobsService } from "./services/jobs.service";
-import { Router } from "@angular/router";
 
 @Component({
     selector: "app-root",
@@ -10,7 +8,7 @@ import { Router } from "@angular/router";
 })
 export class AppComponent implements OnInit {
 
-    constructor(private sails: Sails, private jobs: JobsService) {
+    constructor(private sails: Sails) {
         sails.addEventListener(SailsListener.CONNECTING, data => {
             console.log("CONNECTING...");
             console.dir(data);
@@ -41,20 +39,6 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-        // this.jobs.getJobs()
-        this.jobs.getQueried()
-            .catch(e => {
-                console.log(e);
-                return [];
-            })
-            .then(data => {
-                console.log(data);
 
-                const model = data[0];
-                if (model) {
-                    // this.jobs.updateJob(model).catch(e => console.log(e));
-                    this.jobs.saveBoq(model).catch(e => console.log(e));
-                }
-            });
     }
 }

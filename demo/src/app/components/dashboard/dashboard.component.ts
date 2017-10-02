@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { Sails } from "ngx-sails-socketio";
+import { JobsService } from "../../services/jobs.service";
 
 @Component({
     selector: "dashboard",
@@ -10,18 +11,32 @@ import { Sails } from "ngx-sails-socketio";
 
 export class DashboardComponent implements OnInit {
 
-    constructor(private router: Router, private sails: Sails) { }
+    constructor(private router: Router, private sails: Sails, private jobs: JobsService) { }
 
-    ngOnInit() { }
+    ngOnInit() {        // this.jobs.getJobs()
+        this.jobs.getQueried()
+            .catch(e => {
+                console.log(e);
+                return [];
+            })
+            .then(data => {
+                console.log(data);
+
+                const model = data[0];
+                if (model) {
+                    // this.jobs.updateJob(model).catch(e => console.log(e));
+                    this.jobs.saveBoq(model).catch(e => console.log(e));
+                }
+            });
+    }
 
     onLogout(e: Event) {
         e.preventDefault();
 
         setTimeout(() => {
             localStorage.clear();
-            this.sails.removeHeader("Authorize");
             this.router.navigateByUrl("/login");
-        }, 2000);
+        }, 1000);
     }
 
 }
