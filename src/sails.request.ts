@@ -1,47 +1,7 @@
 import { Sails } from "./sails";
 import { SailsResponse } from "./sails.response";
 import { SailsIOClient } from "./sails.io.client";
-
-export class SailsRequestOptions {
-    constructor(private options: {
-        url: string;
-        method: string;
-        params: any;
-        headers: SailsIOClient.Headers
-    } = {
-            url: "",
-            method: "",
-            params: {},
-            headers: {}
-        }) { }
-
-    clone(options: {
-        url?: string;
-        method?: string;
-        params?: any;
-        headers?: SailsIOClient.Headers
-    }): this {
-        Object.assign(this, { options });
-        return this;
-    }
-
-    get method(): string {
-        return this.options.method;
-    }
-    get url(): string {
-        return this.options.url;
-    }
-    get params(): Object {
-        return this.options.params;
-    }
-    get headers(): SailsIOClient.Headers {
-        return this.options.headers;
-    }
-
-    getOptions() {
-        return this.options;
-    }
-}
+import { SailsRequestOptions } from "./sails.request.options";
 
 class QueryBuilder {
     constructor(private query: string = "") { }
@@ -78,28 +38,28 @@ export class SailsRequest {
 
     constructor(private sails: Sails) { }
 
-    public get(url: string) {
-        return this._request(Method.GET, url);
+    public get(url: string, headers?: SailsIOClient.Headers) {
+        return this._request(Method.GET, url, headers);
     }
 
-    public post(url: string, params: object) {
-        return this._request(Method.POST, url, params);
+    public post(url: string, params: object, headers?: SailsIOClient.Headers) {
+        return this._request(Method.POST, url, params, headers);
     }
 
-    public put(url: string, params: object) {
-        return this._request(Method.PUT, url, params);
+    public put(url: string, params: object, headers?: SailsIOClient.Headers) {
+        return this._request(Method.PUT, url, params, headers);
     }
 
-    public delete(url: string) {
-        return this._request(Method.DELETE, url);
+    public delete(url: string, headers?: SailsIOClient.Headers) {
+        return this._request(Method.DELETE, url, headers);
     }
 
-    public patch(url: string) {
-        return this._request(Method.PATCH, url);
+    public patch(url: string, headers?: SailsIOClient.Headers) {
+        return this._request(Method.PATCH, url, headers);
     }
 
-    private _request(method: string, url: string, params?: Object): Promise<SailsResponse> {
-        const request = new SailsRequestOptions({ method, url: this.buildQuery(url), params, headers: this.getHeaders() });
+    private _request(method: string, url: string, params?: Object, headers?: SailsIOClient.Headers): Promise<SailsResponse> {
+        const request = new SailsRequestOptions({ method, url: this.buildQuery(url), params, headers });
         return this.sails.request(request);
     }
 
@@ -109,15 +69,6 @@ export class SailsRequest {
 
     public off(eventName): Promise<SailsResponse> {
         return this.sails.off(eventName.toLowerCase());
-    }
-
-    public addHeader(name: string, value: any): this {
-        this.headers[name] = value;
-        return this;
-    }
-
-    private getHeaders(): SailsIOClient.Headers {
-        return this.headers;
     }
 
     public addParam(name: string, value: boolean | number | string | { toString(): string }): this {

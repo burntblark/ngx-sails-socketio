@@ -4,10 +4,11 @@ import { SailsResponse } from "./sails.response";
 import { SailsConfig } from "./sails.config";
 import { Inject, InjectionToken, Injector } from "@angular/core";
 import { SailsIOClient } from "./sails.io.client";
-import { SailsInterceptorInterface, SailsInterceptorConstructor } from "./sails.interceptor.interface";
+import { SailsInterceptorConstructor, SailsInterceptorInterface } from "./sails.interceptor";
+import { SailsInterceptorHandler, SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
 import { SailsOptions } from "./sails.options";
 import { isString } from "./utils";
-import { SailsRequestOptions } from "./sails.request";
+import { SailsRequestOptions } from "./sails.request.options";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -28,7 +29,7 @@ export const SailsListener = {
     CONNECT_TIMEOUT: "connect_timeout",
 };
 
-export class Sails {
+export class Sails implements SailsInterceptorInterface, SailsInterceptorHandlerInterface {
     private Socket: SailsIOClient.Socket;
     private Config: SailsConfig;
     private Listeners: { [eventName: string]: ((data: any) => void)[] } = {
@@ -124,29 +125,11 @@ export class Sails {
         return this;
     }
 
-    public request(_request: SailsRequestOptions): Promise<SailsResponse> {
-        const request = _request.clone({
-            url: this.Config.prefix + _request.url,
-            headers: Object.assign({}, this.Config.headers, _request.headers)
-        });
-
-        return this.handle(request);
-    }
-
-    private async handle(request: SailsRequestOptions): Promise<SailsResponse> {
-        return await new Promise<SailsResponse>(resolve => {
-            this.socket.request(request, (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
-                const resolved = new SailsResponse(response);
-                resolve(resolved);
-                this.debugReqRes(request, resolved);
-            });
-        });
-    }
-
     public on(eventName: string): Promise<SailsResponse> {
         return new Promise(resolve => {
             this.socket.on(eventName, response => {
-                const resolved = this.intercept(response);
+                // const resolved = this.intercept(response);
+                const resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     this.debugReqRes(eventName, resolved);
@@ -158,7 +141,8 @@ export class Sails {
     public off(eventName: string): Promise<SailsResponse> {
         return new Promise(resolve => {
             this.socket.off(eventName, response => {
-                const resolved = this.intercept(response);
+                // const resolved = this.intercept(response);
+                const resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     this.debugReqRes(eventName, resolved);
@@ -167,35 +151,35 @@ export class Sails {
         });
     }
 
-    public addHeader(name: string, value: any): this {
-        Object.assign(this.Config.headers, { name: value });
-        return this;
+    public request(request: SailsRequestOptions): Promise<SailsResponse> {
+        const req = request.clone({
+            url: this.Config.prefix + request.url,
+        });
+
+        return this.intercept(req);
     }
 
-    public removeHeader(name): this {
-        delete this.Config.headers[name];
-        return this;
+    async intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface = this): Promise<SailsResponse> {
+        const handler = this.Interceptors.reduceRight((next: SailsInterceptorHandlerInterface, interceptor) => {
+            return new SailsInterceptorHandler(next, this.injector.get(interceptor));
+        }, next);
+
+        return await handler.handle(request);
     }
 
-    public addOption(name: string, value: any) {
-        if (!this.Config[name]) {
-            throw new Error(`[Sails-SocketIO] Option name (${name}) is not available`);
-        }
-        this.Config = new SailsConfig(Object.assign({}, this.Config, { name: value }));
-    }
-
-    private intercept(JWR: SailsIOClient.JWR.Response): SailsResponse | void {
-        const response = new SailsResponse(JWR);
-        const canContinue = this.Interceptors.reduce((acc, interceptor) => {
-            return acc && !(this.injector.get(interceptor).canIntercept(response));
-        }, true);
-
-        return canContinue === true ? response : void 0;
+    async handle(request: SailsRequestOptions): Promise<SailsResponse> {
+        return await new Promise<SailsResponse>(resolve => {
+            this.socket.request(request.serialize(), (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
+                const resolved = new SailsResponse(response);
+                resolve(resolved);
+                this.debugReqRes(request, resolved);
+            });
+        });
     }
 
     private debugReqRes(request, response) {
         if (this.Config.environment === SailsEnvironment.DEV) {
-            console.groupCollapsed("SailsSocketIO: [Request, Response]");
+            console.groupCollapsed("[SailsSocketIO] > Debug Output");
             isString(request) ? console.log(request) : console.dir(request);
             console.dir(response);
             console.groupEnd();
