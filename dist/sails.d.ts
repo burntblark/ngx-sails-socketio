@@ -34,6 +34,7 @@ export declare class Sails {
     addEventListener(eventName: string, callback: (data: string) => void): this;
     removeEventListener(eventName: string, callback: any): this;
     request(_request: SailsRequestOptions): Promise<SailsResponse>;
+    private handle(request);
     on(eventName: string): Promise<SailsResponse>;
     off(eventName: string): Promise<SailsResponse>;
     addHeader(name: string, value: any): this;
