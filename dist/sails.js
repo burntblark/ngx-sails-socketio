@@ -1,8 +1,44 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 import SailsIO from "sails.io.js";
 import * as SocketIO from "socket.io-client";
 import { SailsResponse } from "./sails.response";
 import { SailsConfig } from "./sails.config";
 import { Inject, InjectionToken, Injector } from "@angular/core";
+import { SailsInterceptorHandler } from "./sails.interceptor.handler";
 import { isString } from "./utils";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -104,24 +140,12 @@ var Sails = /** @class */ (function () {
         }
         return this;
     };
-    Sails.prototype.request = function (method, url, params, headers) {
-        var _this = this;
-        var request = { url: this.Config.prefix + url, method: method, params: params, headers: Object.assign({}, this.Config.headers, headers) };
-        return new Promise(function (resolve) {
-            _this.socket.request(request, function (body, response) {
-                var resolved = _this.intercept(response);
-                if (resolved) {
-                    resolve(resolved);
-                    _this.debugReqRes(request, resolved);
-                }
-            });
-        });
-    };
     Sails.prototype.on = function (eventName) {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.on(eventName, function (response) {
-                var resolved = _this.intercept(response);
+                // const resolved = this.intercept(response);
+                var resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     _this.debugReqRes(eventName, resolved);
@@ -133,7 +157,8 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.off(eventName, function (response) {
-                var resolved = _this.intercept(response);
+                // const resolved = this.intercept(response);
+                var resolved = response;
                 if (resolved) {
                     resolve(resolved);
                     _this.debugReqRes(eventName, resolved);
@@ -141,26 +166,49 @@ var Sails = /** @class */ (function () {
             });
         });
     };
-    Sails.prototype.addHeader = function (name, value) {
-        Object.assign(this.Config.headers, { name: value });
+    Sails.prototype.request = function (request) {
+        var req = request.clone({
+            url: this.Config.prefix + request.url,
+        });
+        return this.intercept(req);
     };
-    Sails.prototype.addOption = function (name, value) {
-        if (!this.Config[name]) {
-            throw new Error("[Sails-SocketIO] Option name (" + name + ") is not available");
-        }
-        this.Config = new SailsConfig(Object.assign({}, this.Config, { name: value }));
+    Sails.prototype.intercept = function (request, next) {
+        if (next === void 0) { next = this; }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var handler;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        handler = this.Interceptors.reduceRight(function (next, interceptor) {
+                            return new SailsInterceptorHandler(next, _this.injector.get(interceptor));
+                        }, next);
+                        return [4 /*yield*/, handler.handle(request)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
     };
-    Sails.prototype.intercept = function (JWR) {
-        var _this = this;
-        var response = new SailsResponse(JWR);
-        var canContinue = this.Interceptors.reduce(function (acc, interceptor) {
-            return acc && !(_this.injector.get(interceptor).canIntercept(response));
-        }, true);
-        return canContinue === true ? response : void 0;
+    Sails.prototype.handle = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, new Promise(function (resolve) {
+                            _this.socket.request(request.serialize(), function (body, response) {
+                                var resolved = new SailsResponse(response);
+                                resolve(resolved);
+                                _this.debugReqRes(request, resolved);
+                            });
+                        })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
     };
     Sails.prototype.debugReqRes = function (request, response) {
         if (this.Config.environment === SailsEnvironment.DEV) {
-            console.groupCollapsed("SailsSocketIO: [Request, Response]");
+            console.groupCollapsed("[SailsSocketIO] > Debug Output");
             isString(request) ? console.log(request) : console.dir(request);
             console.dir(response);
             console.groupEnd();
