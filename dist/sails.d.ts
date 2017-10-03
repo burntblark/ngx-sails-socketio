@@ -1,8 +1,9 @@
 import { SailsResponse } from "./sails.response";
 import { InjectionToken, Injector } from "@angular/core";
-import { SailsIOClient } from "./sails.io.client";
-import { SailsInterceptorConstructor } from "./sails.interceptor.interface";
+import { SailsInterceptorConstructor, SailsInterceptorInterface } from "./sails.interceptor";
+import { SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
 import { SailsOptions } from "./sails.options";
+import { SailsRequestOptions } from "./sails.request.options";
 export declare const SAILS_OPTIONS: InjectionToken<{}>;
 export declare const SAILS_INTERCEPTORS: InjectionToken<{}>;
 export declare const SailsEnvironment: {
@@ -19,7 +20,7 @@ export declare const SailsListener: {
     CONNECT_ERROR: string;
     CONNECT_TIMEOUT: string;
 };
-export declare class Sails {
+export declare class Sails implements SailsInterceptorInterface, SailsInterceptorHandlerInterface {
     private injector;
     private Interceptors;
     private Socket;
@@ -33,11 +34,10 @@ export declare class Sails {
     disconnect(): Sails;
     addEventListener(eventName: string, callback: (data: string) => void): this;
     removeEventListener(eventName: string, callback: any): this;
-    request(method: string, url: string, params?: object, headers?: SailsIOClient.Headers): Promise<SailsResponse>;
     on(eventName: string): Promise<SailsResponse>;
     off(eventName: string): Promise<SailsResponse>;
-    addHeader(name: string, value: any): void;
-    addOption(name: string, value: any): void;
-    private intercept(JWR);
+    request(request: SailsRequestOptions): Promise<SailsResponse>;
+    intercept(request: SailsRequestOptions, next?: SailsInterceptorHandlerInterface): Promise<SailsResponse>;
+    handle(request: SailsRequestOptions): Promise<SailsResponse>;
     private debugReqRes(request, response);
 }

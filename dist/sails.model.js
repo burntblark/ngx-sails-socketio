@@ -32,6 +32,17 @@ var SailsModel = /** @class */ (function () {
                 if (prop && prop instanceof SailsModel_1 && prop.id !== null) {
                     obj[key] = prop.id;
                 }
+                if (prop && prop instanceof SailsModel_1) {
+                    obj[key] = SailsModel_1.serialize(prop);
+                }
+                if (prop && prop instanceof Array) {
+                    obj[key] = prop.map(function (ob) {
+                        if (ob instanceof SailsModel_1) {
+                            return SailsModel_1.serialize(ob);
+                        }
+                        return ob;
+                    });
+                }
             }
             return obj;
         };

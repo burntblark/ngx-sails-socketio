@@ -26,6 +26,20 @@ export abstract class SailsModel implements SailsModelInterface {
                 if (prop && prop instanceof SailsModel && prop.id !== null) {
                     obj[key] = prop.id;
                 }
+
+                if (prop && prop instanceof SailsModel) {
+                    obj[key] = SailsModel.serialize(prop);
+                }
+
+                if (prop && prop instanceof Array) {
+                    obj[key] = prop.map( ob => {
+                        if (ob instanceof SailsModel) {
+                            return SailsModel.serialize(ob);
+                        }
+
+                        return ob;
+                    });
+                }
             }
             return obj;
         };
