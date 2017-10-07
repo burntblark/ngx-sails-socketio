@@ -15,6 +15,8 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {        // this.jobs.getJobs()
         this.jobs.getQueried()
+            // this.jobs.getJobs()
+            // this.jobs.getBoqs()
             .catch(e => {
                 console.log(e);
                 return [];
@@ -22,11 +24,11 @@ export class DashboardComponent implements OnInit {
             .then(data => {
                 console.log(data);
 
-                const model = data[0];
-                if (model) {
-                    // this.jobs.updateJob(model).catch(e => console.log(e));
-                    this.jobs.saveBoq(model).catch(e => console.log(e));
-                }
+                // const model = data[0];
+                // if (model) {
+                //     // this.jobs.updateJob(model).catch(e => console.log(e));
+                //     this.jobs.saveBoq(model).catch(e => console.log(e));
+                // }
             });
     }
 

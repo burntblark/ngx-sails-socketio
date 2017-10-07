@@ -12,12 +12,12 @@ export class JobsService {
 
     getQueried(): Promise<BoqModel[]> {
         const req = new SailsRequest(this.sails);
-        // const criteria = (new RequestCriteria())
-        //     .whereGreaterThan("createdAt", new Date(0))
-        //     .or()
-        //     .whereLessThanOrEqualTo("createdAt", new Date);
+        const criteria = (new RequestCriteria())
+            .whereGreaterThan("createdAt", new Date("Fri Sep 29 2017 08:13:03 GMT+0100 (WAT)"))
+        // .or()
+        // .whereLessThanOrEqualTo("createdAt", new Date("Fri Sep 29 2017 08:13:03 GMT+0100 (WAT)"));
 
-        // req.addParam("where", criteria.build());
+        req.addParam("where", criteria);
         req.addParam("populate", `[${["customer", "createdBy", "job", "category", "fixer"].join(",")}]`)
             .addParam("limit", 25);
 

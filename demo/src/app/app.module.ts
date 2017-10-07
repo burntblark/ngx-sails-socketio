@@ -16,10 +16,10 @@ const options: SailsOptions = {
     query: "__sails_io_sdk_version=0.11.0&__sails_io_sdk_platform=windows&__sails_io_sdk_language=javascript",
     reconnection: true,
     autoConnect: false,
-    headers: {
-        // tslint:disable-next-line:max-line-length
-        Authorization: localStorage.getItem("token")
-    },
+    // headers: {
+    //     // tslint:disable-next-line:max-line-length
+    //     Authorization: localStorage.getItem("token")
+    // },
     // timeout: 3000,
 };
 
