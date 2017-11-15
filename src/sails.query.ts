@@ -1,7 +1,6 @@
 import { Sails } from "./sails";
 import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
-import { SailsResponse } from "./sails.response";
 import { SailsModelInterface } from "./sails.model.interface";
 import { RequestCriteria } from "./sails.request.criteria";
 
