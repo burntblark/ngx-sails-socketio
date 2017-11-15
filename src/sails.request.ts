@@ -33,7 +33,6 @@ export const Method = {
 };
 
 export class SailsRequest {
-    private headers: SailsIOClient.Headers = {};
     private parameters: string[] = [];
 
     constructor(private sails: Sails) { }
