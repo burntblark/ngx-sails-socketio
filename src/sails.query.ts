@@ -78,12 +78,8 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    public remove(model: T): Promise<T> {
-        if (!(model instanceof this.modelClass)) {
-            throw new TypeError(this.errorMsg);
-        }
-
-        return this.request.delete(`/${this.model.getEndPoint()}/${model.id}`).then(res => {
+    public remove(id: string): Promise<T> {
+        return this.request.delete(`/${this.model.getEndPoint()}/${id}`).then(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
