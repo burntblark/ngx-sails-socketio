@@ -62,15 +62,15 @@ export class SailsQuery<T extends SailsModelInterface> {
         }
     }
 
-    public update(model: T): Promise<T> {
-        if (!(model instanceof this.modelClass)) {
-            throw new TypeError(this.errorMsg);
+    public update(id: string, model: Partial<T>): Promise<T> {
+        if (model.createdAt) {
+            delete model.createdAt;
         }
-
-        delete model.createdAt;
-        delete model.updatedAt;
-        const data = SailsModel.serialize(model);
-        return this.request.put(`/${model.getEndPoint()}/${model.id}`, data).then(res => {
+        if (model.updatedAt) {
+            delete model.updatedAt;
+        }
+        const data = model instanceof SailsModel ? SailsModel.serialize(model) : Object.assign({}, model);
+        return this.request.put(`/${this.model.getEndPoint()}/${id}`, data).then(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
@@ -83,7 +83,7 @@ export class SailsQuery<T extends SailsModelInterface> {
             throw new TypeError(this.errorMsg);
         }
 
-        return this.request.delete(`/${model.getEndPoint()}/${model.id}`).then(res => {
+        return this.request.delete(`/${this.model.getEndPoint()}/${model.id}`).then(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
