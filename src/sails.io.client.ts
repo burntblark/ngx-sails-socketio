@@ -13,7 +13,7 @@ export declare namespace SailsIOClient {
         }
 
         interface Response {
-            body: Body;
+            body: any;
             error: any;
             headers: Headers;
             statusCode: number;
