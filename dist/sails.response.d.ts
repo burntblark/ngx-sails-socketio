@@ -10,7 +10,7 @@ export declare class SailsResponse {
     getCode(): string;
     getData(): any;
     getMessage(): string;
-    getBody(): SailsIOClient.JWR.Body;
+    getBody(): any;
     getHeaders(): SailsIOClient.Headers;
     getError(): string;
     getStatusCode(): number;
