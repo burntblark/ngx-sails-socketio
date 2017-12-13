@@ -35,7 +35,7 @@ export class SailsResponse {
         return this.getBody().message;
     }
 
-    public getBody(): SailsIOClient.JWR.Body {
+    public getBody(): any {
         return this.JWR.body;
     }
 
