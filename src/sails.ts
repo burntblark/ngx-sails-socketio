@@ -103,7 +103,6 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         if (this.connected()) {
             this.socket.disconnect();
         }
-
         return this;
     }
 

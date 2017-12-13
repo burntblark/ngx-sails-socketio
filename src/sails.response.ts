@@ -28,7 +28,7 @@ export class SailsResponse {
     }
 
     public getData(): any {
-        return this.getBody().data;
+        return this.getBody().data || this.getBody();
     }
 
     public getMessage(): string {
