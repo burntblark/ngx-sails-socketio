@@ -141,26 +141,17 @@ var Sails = /** @class */ (function () {
         }
         return this;
     };
-    Sails.prototype.on = function (eventName) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            _this.socket.on(eventName, function (response) {
-                if (response) {
-                    var event_1 = new SailsEvent(response);
-                    resolve(event_1);
-                    _this.debugReqRes(eventName, event_1);
-                }
-            });
-        });
+    Sails.prototype.on = function (eventName, cb) {
+        this.socket.on(eventName, cb);
     };
     Sails.prototype.off = function (eventName) {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.off(eventName, function (response) {
                 if (response) {
-                    var event_2 = new SailsEvent(response);
-                    resolve(event_2);
-                    _this.debugReqRes(eventName, event_2);
+                    var event_1 = new SailsEvent(response);
+                    resolve(event_1);
+                    _this.debugReqRes(eventName, event_1);
                 }
             });
         });

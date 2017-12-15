@@ -125,16 +125,8 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         return this;
     }
 
-    public on(eventName: string): Promise<SailsEvent> {
-        return new Promise(resolve => {
-            this.socket.on(eventName, response => {
-                if (response) {
-                    const event = new SailsEvent(response);
-                    resolve(event);
-                    this.debugReqRes(eventName, event);
-                }
-            });
-        });
+    public on(eventName: string, cb) {
+        this.socket.on(eventName, cb);
     }
 
     public off(eventName: string): Promise<SailsEvent> {
