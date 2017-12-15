@@ -128,10 +128,10 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
     public on(eventName: string): Promise<SailsEvent> {
         return new Promise(resolve => {
             this.socket.on(eventName, response => {
-                const resolved = response;
-                if (resolved) {
-                    resolve(resolved);
-                    this.debugReqRes(eventName, resolved);
+                if (response) {
+                    const event = new SailsEvent(response);
+                    resolve(event);
+                    this.debugReqRes(eventName, event);
                 }
             });
         });
@@ -140,10 +140,10 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
     public off(eventName: string): Promise<SailsEvent> {
         return new Promise(resolve => {
             this.socket.off(eventName, response => {
-                const resolved = response;
-                if (resolved) {
-                    resolve(resolved);
-                    this.debugReqRes(eventName, resolved);
+                if (response) {
+                    const event = new SailsEvent(response);
+                    resolve(event);
+                    this.debugReqRes(eventName, event);
                 }
             });
         });

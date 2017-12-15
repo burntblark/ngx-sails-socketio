@@ -40,6 +40,7 @@ import { SailsConfig } from "./sails.config";
 import { Inject, InjectionToken, Injector } from "@angular/core";
 import { SailsInterceptorHandler } from "./sails.interceptor.handler";
 import { isString } from "./utils";
+import { SailsEvent } from "./sails.event";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 export var SailsEnvironment = {
@@ -144,10 +145,10 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.on(eventName, function (response) {
-                var resolved = response;
-                if (resolved) {
-                    resolve(resolved);
-                    _this.debugReqRes(eventName, resolved);
+                if (response) {
+                    var event_1 = new SailsEvent(response);
+                    resolve(event_1);
+                    _this.debugReqRes(eventName, event_1);
                 }
             });
         });
@@ -156,10 +157,10 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.off(eventName, function (response) {
-                var resolved = response;
-                if (resolved) {
-                    resolve(resolved);
-                    _this.debugReqRes(eventName, resolved);
+                if (response) {
+                    var event_2 = new SailsEvent(response);
+                    resolve(event_2);
+                    _this.debugReqRes(eventName, event_2);
                 }
             });
         });
