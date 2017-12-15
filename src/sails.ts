@@ -9,6 +9,7 @@ import { SailsInterceptorHandler, SailsInterceptorHandlerInterface } from "./sai
 import { SailsOptions } from "./sails.options";
 import { isString } from "./utils";
 import { SailsRequestOptions } from "./sails.request.options";
+import { SailsEvent } from "./sails.event";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -124,10 +125,9 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         return this;
     }
 
-    public on(eventName: string): Promise<SailsResponse> {
+    public on(eventName: string): Promise<SailsEvent> {
         return new Promise(resolve => {
             this.socket.on(eventName, response => {
-                // const resolved = this.intercept(response);
                 const resolved = response;
                 if (resolved) {
                     resolve(resolved);
@@ -137,10 +137,9 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         });
     }
 
-    public off(eventName: string): Promise<SailsResponse> {
+    public off(eventName: string): Promise<SailsEvent> {
         return new Promise(resolve => {
             this.socket.off(eventName, response => {
-                // const resolved = this.intercept(response);
                 const resolved = response;
                 if (resolved) {
                     resolve(resolved);
