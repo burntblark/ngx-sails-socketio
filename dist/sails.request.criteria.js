@@ -59,6 +59,17 @@ var RequestCriteria = /** @class */ (function () {
         }
         throw new Error("DuplicateError: contains clause has already been used in this query");
     };
+    RequestCriteria.prototype.whereIn = function (key) {
+        var value = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            value[_i - 1] = arguments[_i];
+        }
+        if (isUndefined(this.criteria[key]) || isString(this.criteria[key])) {
+            this.criteria[key] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: contains clause has already been used in this query");
+    };
     RequestCriteria.prototype.whereStartsWith = function (key, value) {
         if (isString(this.criteria[key])) {
             this.criteria[key] = { "startsWith": value };

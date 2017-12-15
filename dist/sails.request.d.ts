@@ -10,7 +10,6 @@ export declare const Method: {
 };
 export declare class SailsRequest {
     private sails;
-    private headers;
     private parameters;
     constructor(sails: Sails);
     get(url: string, headers?: SailsIOClient.Headers): Promise<SailsResponse>;

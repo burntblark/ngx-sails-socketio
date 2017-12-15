@@ -21,7 +21,7 @@ var SailsResponse = /** @class */ (function () {
         return this.getBody().code;
     };
     SailsResponse.prototype.getData = function () {
-        return this.getBody().data;
+        return this.getBody().data || this.getBody();
     };
     SailsResponse.prototype.getMessage = function () {
         return this.getBody().message;

@@ -4,6 +4,7 @@ export declare class RequestCriteria {
     whereLike(key: string, value: string): RequestCriteria;
     whereEqualTo(key: string, value: string): RequestCriteria;
     whereContains(key: string, value: string): RequestCriteria;
+    whereIn(key: string, ...value: string[]): RequestCriteria;
     whereStartsWith(key: string, value: string): RequestCriteria;
     whereEndsWith(key: string, value: string): RequestCriteria;
     whereNotIn(key: string, value: string): RequestCriteria;

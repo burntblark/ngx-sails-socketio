@@ -168,7 +168,7 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
 
     async handle(request: SailsRequestOptions): Promise<SailsResponse> {
         return await new Promise<SailsResponse>(resolve => {
-            this.socket.request(request.serialize(), (body: SailsIOClient.JWR.Body, response: SailsIOClient.JWR.Response) => {
+            this.socket.request(request.serialize(), (body: any, response: SailsIOClient.JWR.Response) => {
                 const resolved = new SailsResponse(response);
                 resolve(resolved);
                 this.debugReqRes(request, resolved);
