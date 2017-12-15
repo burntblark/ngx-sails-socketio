@@ -12,6 +12,11 @@ export declare namespace SailsIOClient {
             toPOJO: () => object;
             pipe: () => Error;
         }
+        interface Event {
+            verb: any;
+            id: any;
+            data: object;
+        }
     }
     interface IO {
         socket: Socket;

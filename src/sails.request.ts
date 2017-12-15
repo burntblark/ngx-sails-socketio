@@ -62,14 +62,6 @@ export class SailsRequest {
         return this.sails.request(request);
     }
 
-    public on(eventName): Promise<SailsResponse> {
-        return this.sails.on(eventName.toLowerCase());
-    }
-
-    public off(eventName): Promise<SailsResponse> {
-        return this.sails.off(eventName.toLowerCase());
-    }
-
     public addParam(name: string, value: boolean | number | string | { toString(): string }): this {
         if (value.toString().length) {
             this.parameters.push(`${name}=${value}`);

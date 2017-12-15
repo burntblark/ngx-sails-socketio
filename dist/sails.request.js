@@ -52,12 +52,6 @@ var SailsRequest = /** @class */ (function () {
         var request = new SailsRequestOptions({ method: method, url: this.buildQuery(url), params: params, headers: headers });
         return this.sails.request(request);
     };
-    SailsRequest.prototype.on = function (eventName) {
-        return this.sails.on(eventName.toLowerCase());
-    };
-    SailsRequest.prototype.off = function (eventName) {
-        return this.sails.off(eventName.toLowerCase());
-    };
     SailsRequest.prototype.addParam = function (name, value) {
         if (value.toString().length) {
             this.parameters.push(name + "=" + value);
