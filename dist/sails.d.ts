@@ -4,6 +4,7 @@ import { SailsInterceptorConstructor, SailsInterceptorInterface } from "./sails.
 import { SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
 import { SailsOptions } from "./sails.options";
 import { SailsRequestOptions } from "./sails.request.options";
+import { SailsEvent } from "./sails.event";
 export declare const SAILS_OPTIONS: InjectionToken<{}>;
 export declare const SAILS_INTERCEPTORS: InjectionToken<{}>;
 export declare const SailsEnvironment: {
@@ -34,8 +35,8 @@ export declare class Sails implements SailsInterceptorInterface, SailsIntercepto
     disconnect(): Sails;
     addEventListener(eventName: string, callback: (data: string) => void): this;
     removeEventListener(eventName: string, callback: any): this;
-    on(eventName: string): Promise<SailsResponse>;
-    off(eventName: string): Promise<SailsResponse>;
+    on(eventName: string): Promise<SailsEvent>;
+    off(eventName: string): Promise<SailsEvent>;
     request(request: SailsRequestOptions): Promise<SailsResponse>;
     intercept(request: SailsRequestOptions, next?: SailsInterceptorHandlerInterface): Promise<SailsResponse>;
     handle(request: SailsRequestOptions): Promise<SailsResponse>;

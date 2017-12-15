@@ -144,7 +144,6 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.on(eventName, function (response) {
-                // const resolved = this.intercept(response);
                 var resolved = response;
                 if (resolved) {
                     resolve(resolved);
@@ -157,7 +156,6 @@ var Sails = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.socket.off(eventName, function (response) {
-                // const resolved = this.intercept(response);
                 var resolved = response;
                 if (resolved) {
                     resolve(resolved);

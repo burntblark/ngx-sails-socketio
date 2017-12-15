@@ -18,8 +18,6 @@ export declare class SailsRequest {
     delete(url: string, headers?: SailsIOClient.Headers): Promise<SailsResponse>;
     patch(url: string, headers?: SailsIOClient.Headers): Promise<SailsResponse>;
     private _request(method, url, params?, headers?);
-    on(eventName: any): Promise<SailsResponse>;
-    off(eventName: any): Promise<SailsResponse>;
     addParam(name: string, value: boolean | number | string | {
         toString(): string;
     }): this;
