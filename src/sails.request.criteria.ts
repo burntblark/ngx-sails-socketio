@@ -61,6 +61,14 @@ export class RequestCriteria {
         throw new Error("DuplicateError: contains clause has already been used in this query");
     }
 
+    public whereIn(key: string, ...value: string[]): RequestCriteria {
+        if (isUndefined(this.criteria[key]) || isString(this.criteria[key])) {
+            this.criteria[key] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: contains clause has already been used in this query");
+    }
+
     public whereStartsWith(key: string, value: string): RequestCriteria {
         if (isString(this.criteria[key])) {
             this.criteria[key] = { "startsWith": value };

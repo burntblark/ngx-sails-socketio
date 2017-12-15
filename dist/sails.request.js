@@ -31,7 +31,6 @@ export var Method = {
 var SailsRequest = /** @class */ (function () {
     function SailsRequest(sails) {
         this.sails = sails;
-        this.headers = {};
         this.parameters = [];
     }
     SailsRequest.prototype.get = function (url, headers) {
