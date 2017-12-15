@@ -35,7 +35,7 @@ export declare class Sails implements SailsInterceptorInterface, SailsIntercepto
     disconnect(): Sails;
     addEventListener(eventName: string, callback: (data: string) => void): this;
     removeEventListener(eventName: string, callback: any): this;
-    on(eventName: string): Promise<SailsEvent>;
+    on(eventName: string, cb: any): void;
     off(eventName: string): Promise<SailsEvent>;
     request(request: SailsRequestOptions): Promise<SailsResponse>;
     intercept(request: SailsRequestOptions, next?: SailsInterceptorHandlerInterface): Promise<SailsResponse>;

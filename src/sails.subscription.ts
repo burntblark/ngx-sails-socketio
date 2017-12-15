@@ -8,8 +8,8 @@ export class SailsSubscription {
 
     constructor(private sails: Sails) { }
 
-    public on(eventName): Promise<SailsEvent> {
-        return this.sails.on(eventName.toLowerCase());
+    public on(eventName, cb) {
+        this.sails.on(eventName.toLowerCase(), cb);
     }
 
     public off(eventName): Promise<SailsEvent> {
