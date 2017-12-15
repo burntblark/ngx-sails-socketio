@@ -6,12 +6,6 @@ export declare namespace SailsIOClient {
 
     namespace JWR {
 
-        interface Body {
-            data: any;
-            code: string;
-            message: string;
-        }
-
         interface Response {
             body: any;
             error: any;
@@ -64,7 +58,7 @@ export declare namespace SailsIOClient {
     }
 
     interface ResponseCallback {
-        (body: JWR.Body, JWR: JWR.Response): void;
+        (body: any, JWR: JWR.Response): void;
     }
 
     interface Socket {
