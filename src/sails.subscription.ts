@@ -1,18 +1,16 @@
 import { Sails } from "./sails";
-import { SailsResponse } from "./sails.response";
-import { SailsIOClient } from "./sails.io.client";
-import { SailsRequestOptions } from "./sails.request.options";
 import { SailsEvent } from "./sails.event";
+import { Observable } from "rxjs/Observable";
 
 export class SailsSubscription {
 
     constructor(private sails: Sails) { }
 
-    public on(eventName, cb) {
-        this.sails.on(eventName.toLowerCase(), cb);
+    public on(eventName): Observable<SailsEvent> {
+        return this.sails.on(eventName.toLowerCase());
     }
 
-    public off(eventName): Promise<SailsEvent> {
+    public off(eventName): Observable<SailsEvent> {
         return this.sails.off(eventName.toLowerCase());
     }
 }

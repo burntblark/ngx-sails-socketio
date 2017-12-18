@@ -2,6 +2,7 @@ import { Sails } from "./sails";
 import { SailsResponse } from "./sails.response";
 import { SailsIOClient } from "./sails.io.client";
 import { SailsRequestOptions } from "./sails.request.options";
+import { Observable } from "rxjs/Observable";
 
 class QueryBuilder {
     constructor(private query: string = "") { }
@@ -57,7 +58,7 @@ export class SailsRequest {
         return this._request(Method.PATCH, url, headers);
     }
 
-    private _request(method: string, url: string, params?: Object, headers?: SailsIOClient.Headers): Promise<SailsResponse> {
+    private _request(method: string, url: string, params?: Object, headers?: SailsIOClient.Headers): Observable<SailsResponse> {
         const request = new SailsRequestOptions({ method, url: this.buildQuery(url), params, headers });
         return this.sails.request(request);
     }

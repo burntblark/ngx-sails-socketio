@@ -1,6 +1,7 @@
 import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
 import { RequestCriteria } from "./sails.request.criteria";
+import "rxjs/add/operator/map";
 var SailsQuery = /** @class */ (function () {
     function SailsQuery(sails, modelClass) {
         this.modelClass = modelClass;
@@ -11,7 +12,7 @@ var SailsQuery = /** @class */ (function () {
     SailsQuery.prototype.find = function () {
         var _this = this;
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get("/" + this.model.getEndPoint()).then(function (res) {
+        return this.request.get("/" + this.model.getEndPoint()).map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
@@ -21,7 +22,7 @@ var SailsQuery = /** @class */ (function () {
     SailsQuery.prototype.findById = function (id) {
         var _this = this;
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get("/" + this.model.getEndPoint() + "/" + id).then(function (res) {
+        return this.request.get("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
@@ -36,7 +37,7 @@ var SailsQuery = /** @class */ (function () {
         var data = SailsModel.serialize(model);
         var url = "/" + model.getEndPoint();
         if (model.id === null) {
-            return this.request.post(url, data).then(function (res) {
+            return this.request.post(url, data).map(function (res) {
                 if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
@@ -44,7 +45,7 @@ var SailsQuery = /** @class */ (function () {
             });
         }
         else {
-            return this.request.put(url.concat("/", model.id), data).then(function (res) {
+            return this.request.put(url.concat("/", model.id), data).map(function (res) {
                 if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
@@ -61,7 +62,7 @@ var SailsQuery = /** @class */ (function () {
             delete model.updatedAt;
         }
         var data = model instanceof SailsModel ? SailsModel.serialize(model) : Object.assign({}, model);
-        return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).then(function (res) {
+        return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
@@ -70,7 +71,7 @@ var SailsQuery = /** @class */ (function () {
     };
     SailsQuery.prototype.remove = function (id) {
         var _this = this;
-        return this.request.delete("/" + this.model.getEndPoint() + "/" + id).then(function (res) {
+        return this.request.delete("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }

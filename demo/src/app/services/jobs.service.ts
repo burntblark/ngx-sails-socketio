@@ -2,7 +2,12 @@ import { SailsModel, Sails, SailsQuery, RequestCriteria } from "ngx-sails-socket
 import { Injectable } from "@angular/core";
 import { JobModel } from "../models/job.model";
 import { BoqModel } from "../models/boq.model";
-import { SailsRequest, SailsResponse } from "ngx-sails-socketio";
+import { SailsRequest, SailsResponse, SailsSubscription } from "ngx-sails-socketio";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/observable/of";
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/switchMap";
 
 @Injectable()
 export class JobsService {
@@ -10,10 +15,10 @@ export class JobsService {
     constructor(private sails: Sails) {
     }
 
-    getQueried(): Promise<BoqModel[]> {
+    getQueried(): Observable<BoqModel[]> {
         const req = new SailsRequest(this.sails);
         const criteria = (new RequestCriteria())
-            .whereGreaterThan("createdAt", new Date("Fri Sep 29 2017 08:13:03 GMT+0100 (WAT)"))
+            .whereGreaterThan("createdAt", new Date("Fri Sep 29 2017 08:13:03 GMT+0100 (WAT)"));
         // .or()
         // .whereLessThanOrEqualTo("createdAt", new Date("Fri Sep 29 2017 08:13:03 GMT+0100 (WAT)"));
 
@@ -21,7 +26,7 @@ export class JobsService {
         req.addParam("populate", `[${["customer", "createdBy", "job", "category", "fixer"].join(",")}]`)
             .addParam("limit", 25);
 
-        return req.get("/boq").then<BoqModel[]>((response: SailsResponse) => {
+        return req.get("/boq").map((response: SailsResponse) => {
             if (response.getStatusCode() === 200) {
                 // return response.getData();
                 return SailsModel.unserialize(BoqModel, response.getData()) as BoqModel[];
@@ -34,6 +39,22 @@ export class JobsService {
         const query = new SailsQuery(this.sails, JobModel);
         query.setPopulation("customer", "fixer", "category");
         return query.find();
+    }
+
+    listenOne() {
+        return this.getQueried().switchMap(() => {
+            return (new SailsSubscription(this.sails)).on("boq").filter(event => event.isUpdated()).switchMap(event => {
+                return Observable.of("JUST UPDATED A NEW BOQ");
+            });
+        });
+    }
+
+    listenAll() {
+        return this.getQueried().switchMap(() => {
+            return (new SailsSubscription(this.sails)).on("boq").filter(event => event.isCreated()).switchMap(event => {
+                return Observable.of("JUST CREATED A NEW BOQ");
+            });
+        });
     }
 
     getBoqs() {
@@ -55,6 +76,6 @@ export class JobsService {
 
     updateJob(model) {
         const query = new SailsQuery(this.sails, JobModel);
-        return query.update(model);
+        return query.update(model.id, model);
     }
 }

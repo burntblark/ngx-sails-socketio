@@ -57,6 +57,7 @@
     "@angular/router": "^4.2.3",
     "@types/lodash": "^4.14.74",
     "@types/socket.io-client": "^1.4.30",
+    "rxjs": "^5.4.0",
     "tslint": "^5.4.3",
     "typescript": "2.4.0",
     "watch": "^1.0.2"
