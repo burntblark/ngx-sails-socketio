@@ -3,7 +3,7 @@ import { Sails } from "ngx-sails-socketio";
 import { Router } from "@angular/router";
 
 @Component({
-    selector: "login",
+    selector: "app-login",
     templateUrl: "./login.component.html",
     styleUrls: ["./login.component.css"]
 })

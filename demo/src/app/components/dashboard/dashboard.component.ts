@@ -2,9 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { Sails } from "ngx-sails-socketio";
 import { JobsService } from "../../services/jobs.service";
+import "rxjs/add/operator/catch";
 
 @Component({
-    selector: "dashboard",
+    selector: "app-dashboard",
     templateUrl: "./dashboard.component.html",
     styleUrls: ["./dashboard.component.css"]
 })
@@ -13,7 +14,8 @@ export class DashboardComponent implements OnInit {
 
     constructor(private router: Router, private sails: Sails, private jobs: JobsService) { }
 
-    ngOnInit() {        // this.jobs.getJobs()
+    ngOnInit() {
+        // this.jobs.getJobs()
         this.jobs.getQueried()
             // this.jobs.getJobs()
             // this.jobs.getBoqs()
@@ -21,7 +23,7 @@ export class DashboardComponent implements OnInit {
                 console.log(e);
                 return [];
             })
-            .then(data => {
+            .subscribe(data => {
                 console.log(data);
 
                 // const model = data[0];
@@ -30,6 +32,11 @@ export class DashboardComponent implements OnInit {
                 //     this.jobs.saveBoq(model).catch(e => console.log(e));
                 // }
             });
+
+        // Pub-Sub
+        this.jobs.listenOne().subscribe(info => console.log(info));
+        this.jobs.listenAll().subscribe(info => console.log(info));
+        // this.jobs.listen();
     }
 
     onLogout(e: Event) {
