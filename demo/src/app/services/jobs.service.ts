@@ -49,10 +49,12 @@ export class JobsService {
         });
     }
 
-    listenAll() {
+    listenAll(): Observable<BoqModel[]> {
         return this.getQueried().switchMap(() => {
             return (new SailsSubscription(this.sails)).on("boq").filter(event => event.isCreated()).switchMap(event => {
-                return Observable.of("JUST CREATED A NEW BOQ");
+                console.log("Refreshing...");
+                // return Observable.of("JUST CREATED A NEW BOQ");
+                return this.getQueried();
             });
         });
     }
