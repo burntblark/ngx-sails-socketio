@@ -3,6 +3,8 @@ import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
 import { SailsModelInterface } from "./sails.model.interface";
 import { RequestCriteria } from "./sails.request.criteria";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/map";
 
 export class SailsQuery<T extends SailsModelInterface> {
     private model: T;
@@ -18,9 +20,9 @@ export class SailsQuery<T extends SailsModelInterface> {
         this.model = new modelClass();
     }
 
-    public find(): Promise<T[]> {
+    public find(): Observable<T[]> {
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get(`/${this.model.getEndPoint()}`).then(res => {
+        return this.request.get(`/${this.model.getEndPoint()}`).map(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T[];
             }
@@ -28,9 +30,9 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    public findById(id: string): Promise<T> {
+    public findById(id: string): Observable<T> {
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get(`/${this.model.getEndPoint()}/${id}`).then(res => {
+        return this.request.get(`/${this.model.getEndPoint()}/${id}`).map(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
@@ -38,7 +40,7 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    public save(model: T): Promise<T> {
+    public save(model: T): Observable<T> {
         if (!(model instanceof this.modelClass)) {
             throw new TypeError(this.errorMsg);
         }
@@ -46,14 +48,14 @@ export class SailsQuery<T extends SailsModelInterface> {
         const data = SailsModel.serialize(model);
         const url = `/${model.getEndPoint()}`;
         if (model.id === null) {
-            return this.request.post(url, data).then(res => {
+            return this.request.post(url, data).map(res => {
                 if (res.isOk()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
                 throw res;
             });
         } else {
-            return this.request.put(url.concat("/", model.id), data).then(res => {
+            return this.request.put(url.concat("/", model.id), data).map(res => {
                 if (res.isOk()) {
                     return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
                 }
@@ -62,7 +64,7 @@ export class SailsQuery<T extends SailsModelInterface> {
         }
     }
 
-    public update(id: string, model: Partial<T>): Promise<T> {
+    public update(id: string, model: Partial<T>): Observable<T> {
         if (model.createdAt) {
             delete model.createdAt;
         }
@@ -70,7 +72,7 @@ export class SailsQuery<T extends SailsModelInterface> {
             delete model.updatedAt;
         }
         const data = model instanceof SailsModel ? SailsModel.serialize(model) : Object.assign({}, model);
-        return this.request.put(`/${this.model.getEndPoint()}/${id}`, data).then(res => {
+        return this.request.put(`/${this.model.getEndPoint()}/${id}`, data).map(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
@@ -78,8 +80,8 @@ export class SailsQuery<T extends SailsModelInterface> {
         });
     }
 
-    public remove(id: string): Promise<T> {
-        return this.request.delete(`/${this.model.getEndPoint()}/${id}`).then(res => {
+    public remove(id: string): Observable<T> {
+        return this.request.delete(`/${this.model.getEndPoint()}/${id}`).map(res => {
             if (res.isOk()) {
                 return SailsModel.unserialize<T>(this.modelClass, res.getData()) as T;
             }
