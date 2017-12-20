@@ -41,7 +41,7 @@ Add `SailsModule` to your application module.
 export class AppModule { }
  ```
 
- Inject the `Sails` into your components/services and instatiate classes specific to your objective.
+Inject the `Sails` into your components/services and instatiate classes specific to your objective.
 
  ```ts
 class ExampleComponent implements OnInit {
@@ -64,11 +64,21 @@ class ExampleComponent implements OnInit {
 
 ### SailsRequest
 
+Makes a request for a resource to the configured sails server.
+
 * get(url: `string`): `Observable<SailsResponse>`
 * post(url: `string`, data: `any`): `Observable<SailsResponse>`
 * put(url: `string`, data: `any`): `Observable<SailsResponse>`
 * patch(url: `string`, body: `any`): `Observable<SailsResponse>`
 * delete(url: `string`): `Observable<SailsResponse>`
-* on(event: `string`): `Observable<any>`
-* off(event: `string`): `Observable<any>`
+* on(event: `string`): `Observable<SailsEvent>`
+* off(event: `string`): `Observable<SailsEvent>`
+
+### SailsEvent
+
+A class representing an event on a model from the server. This follows the information as describe by the sailsjs Pub-Sub event.
+
+### SailsQuery
+
+A class for querying records from the server. Similar to `SailsRequests` but has methods mapping actions as detail on waterline api used by sailsjs.
 ```
