@@ -8,7 +8,7 @@ An Angular module for connecting to your SailsJs Backend/API through SocketIO.
 ## Installation
 
  ```bash
- npm install ngx-sails-socketio
+ npm i ngx-sails-socketio
  ```
 
 ## Usage
@@ -31,7 +31,7 @@ Add `SailsModule` to your application module.
     AppComponent
   ],
   imports: [
-    SailsModule.forRoot(options, INTERCEPTORS)
+    SailsModule.forRoot(options, [AuthInterceptor,])
     ...
   ],
   providers: [],
@@ -53,7 +53,7 @@ class ExampleComponent implements OnInit {
   ngOnInit() {
     const req = new SailsRequest(this.sails);
     req.get('/model/action').subscribe(res => {
-      this.data = res.data;
+      this.data = res.getBody();
     });
   }
 
@@ -62,7 +62,7 @@ class ExampleComponent implements OnInit {
 
 ## API
 
-### SailsRequest
+### class SailsRequest
 
 Makes a request for a resource to the configured sails server.
 
@@ -74,11 +74,42 @@ Makes a request for a resource to the configured sails server.
 * on(event: `string`): `Observable<SailsEvent>`
 * off(event: `string`): `Observable<SailsEvent>`
 
-### SailsEvent
+### class SailsEvent
 
 A class representing an event on a model from the server. This follows the information as describe by the sailsjs Pub-Sub event.
 
-### SailsQuery
+### class SailsQuery
 
 A class for querying records from the server. Similar to `SailsRequests` but has methods mapping actions as detail on waterline api used by sailsjs.
+
+### interface SailsInterceptorInterface
+
+An interface to construct an iterceptor to use for requests.
+
+#### Example
+
+An authentication interceptor to set the *Authorization* header on every request.
+
+```ts
+@Injectable()
+export class AuthInterceptor implements SailsInterceptorInterface {
+
+    constructor(private router: Router) {
+    }
+
+    intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface): Promise<SailsResponse> {
+        request.clone({
+            headers: request.headers.set("Authorization", token)
+        });
+        
+        const response = next.handle(request);
+
+        return response.then(res => {
+            if (res.getStatusCode() === 401) {
+                this.router.navigateByUrl("login");
+            }
+            return res;
+        });
+    }
+}
 ```
