@@ -85,7 +85,7 @@ A class for subscribing to resourceful Pub-Sub events emitted from a sailsjs bac
 
 #### Example(s)
 
-
+*Under construction*
 
 ### class SailsEvent
 
@@ -99,9 +99,7 @@ A class for querying records from the server. Similar to `SailsRequests` but has
 
 An interface to construct an iterceptor to use for requests.
 
-#### Example
-
-*Under construction*
+#### Example(s)
 
 An authentication interceptor to set the *Authorization* header on every request.
 
