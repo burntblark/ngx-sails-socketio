@@ -64,19 +64,32 @@ class ExampleComponent implements OnInit {
 
 ### class SailsRequest
 
-Makes a request for a resource to the configured sails server.
+Makes a request for a resource to the configured sails server. Has methods that maps to the various supported RESTful API verbs.
+
+#### Methods
 
 * get(url: `string`): `Observable<SailsResponse>`
 * post(url: `string`, data: `any`): `Observable<SailsResponse>`
 * put(url: `string`, data: `any`): `Observable<SailsResponse>`
 * patch(url: `string`, body: `any`): `Observable<SailsResponse>`
 * delete(url: `string`): `Observable<SailsResponse>`
-* on(event: `string`): `Observable<SailsEvent>`
-* off(event: `string`): `Observable<SailsEvent>`
+
+### class SailsSubscription
+
+A class for subscribing to resourceful Pub-Sub events emitted from a sailsjs backend.
+
+#### Methods
+
+* on(eventName: `string`): `Observable<SailsEvent>`
+* off(eventName: `string`): `Observable<SailsEvent>`
+
+#### Example(s)
+
+
 
 ### class SailsEvent
 
-A class representing an event on a model from the server. This follows the information as describe by the sailsjs Pub-Sub event.
+A class representing an event on a resource from the server. This follows the structure as described in the sailsjs Pub-Sub event documentation.
 
 ### class SailsQuery
 
@@ -87,6 +100,8 @@ A class for querying records from the server. Similar to `SailsRequests` but has
 An interface to construct an iterceptor to use for requests.
 
 #### Example
+
+*Under construction*
 
 An authentication interceptor to set the *Authorization* header on every request.
 
