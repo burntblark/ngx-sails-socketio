@@ -10,6 +10,7 @@ import { SailsOptions } from "./sails.options";
 import { isString } from "./utils";
 import { SailsRequestOptions } from "./sails.request.options";
 import { SailsEvent } from "./sails.event";
+import { Observable } from "rxjs/Observable";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
@@ -125,29 +126,33 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         return this;
     }
 
-    public on(eventName: string, cb) {
-        this.socket.on(eventName, response => {
-            if (response) {
-                const event = new SailsEvent(response);
-                cb(event);
-                this.debugReqRes(eventName, event);
-            }
+    public on(eventName: string): Observable<SailsEvent> {
+        return new Observable((obs) => {
+            this.socket.on(eventName, response => {
+                if (response) {
+                    const event = new SailsEvent(response);
+                    obs.next(event);
+                    this.debugReqRes(eventName, event);
+                }
+            });
+            return () => this.socket.off(eventName, () => { });
         });
     }
 
-    public off(eventName: string): Promise<SailsEvent> {
-        return new Promise(resolve => {
+    public off(eventName: string): Observable<SailsEvent> {
+        return new Observable((obs) => {
             this.socket.off(eventName, response => {
                 if (response) {
                     const event = new SailsEvent(response);
-                    resolve(event);
+                    obs.next(event);
                     this.debugReqRes(eventName, event);
                 }
+                return () => { };
             });
         });
     }
 
-    public request(request: SailsRequestOptions): Promise<SailsResponse> {
+    public request(request: SailsRequestOptions): Observable<SailsResponse> {
         const req = request.clone({
             url: this.Config.prefix + request.url,
         });
@@ -155,19 +160,19 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         return this.intercept(req);
     }
 
-    async intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface = this): Promise<SailsResponse> {
+    intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface = this): Observable<SailsResponse> {
         const handler = this.Interceptors.reduceRight((next: SailsInterceptorHandlerInterface, interceptor) => {
             return new SailsInterceptorHandler(next, this.injector.get(interceptor));
         }, next);
 
-        return await handler.handle(request);
+        return handler.handle(request);
     }
 
-    async handle(request: SailsRequestOptions): Promise<SailsResponse> {
-        return await new Promise<SailsResponse>(resolve => {
+    handle(request: SailsRequestOptions): Observable<SailsResponse> {
+        return new Observable<SailsResponse>((obs) => {
             this.socket.request(request.serialize(), (body: any, response: SailsIOClient.JWR.Response) => {
                 const resolved = new SailsResponse(response);
-                resolve(resolved);
+                obs.next(resolved);
                 this.debugReqRes(request, resolved);
             });
         });

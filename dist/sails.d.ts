@@ -5,6 +5,7 @@ import { SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
 import { SailsOptions } from "./sails.options";
 import { SailsRequestOptions } from "./sails.request.options";
 import { SailsEvent } from "./sails.event";
+import { Observable } from "rxjs/Observable";
 export declare const SAILS_OPTIONS: InjectionToken<{}>;
 export declare const SAILS_INTERCEPTORS: InjectionToken<{}>;
 export declare const SailsEnvironment: {
@@ -35,10 +36,10 @@ export declare class Sails implements SailsInterceptorInterface, SailsIntercepto
     disconnect(): Sails;
     addEventListener(eventName: string, callback: (data: string) => void): this;
     removeEventListener(eventName: string, callback: any): this;
-    on(eventName: string, cb: any): void;
-    off(eventName: string): Promise<SailsEvent>;
-    request(request: SailsRequestOptions): Promise<SailsResponse>;
-    intercept(request: SailsRequestOptions, next?: SailsInterceptorHandlerInterface): Promise<SailsResponse>;
-    handle(request: SailsRequestOptions): Promise<SailsResponse>;
+    on(eventName: string): Observable<SailsEvent>;
+    off(eventName: string): Observable<SailsEvent>;
+    request(request: SailsRequestOptions): Observable<SailsResponse>;
+    intercept(request: SailsRequestOptions, next?: SailsInterceptorHandlerInterface): Observable<SailsResponse>;
+    handle(request: SailsRequestOptions): Observable<SailsResponse>;
     private debugReqRes(request, response);
 }
