@@ -24,7 +24,7 @@
     "Query"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "ngc -p .",
     "lint": "tslint --project ./tsconfig.json --type-check --fix",
     "demo:watch": "watch 'npm run demo' ./src",
