@@ -24,7 +24,7 @@
     "Query"
   ],
   "scripts": {
-    "test": "mocha",
+    "test": "",
     "build": "ngc -p .",
     "lint": "tslint --project ./tsconfig.json --type-check --fix",
     "demo:watch": "watch 'npm run demo' ./src",
