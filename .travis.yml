@@ -14,5 +14,5 @@ node_js:
   - "7.4.0"
   
 before_install:
-  - npm install -g --quiet  gulp-cli yo @angular/cli
+  - npm install -g --quiet mocha @angular/cli
   - npm link
