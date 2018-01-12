@@ -1,5 +1,8 @@
+.vscode
+.history
 node_modules/
 package-lock.json
 *.DS_Store*
 .vscode
 *.log
+package-lock.json

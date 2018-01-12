@@ -1,97 +1,189 @@
-import { SailsModelInterface } from "./sails.model.interface";
-import { SailsOptions } from "./sails.options";
-import { SailsQuery } from "./sails.query";
-import { Observable } from "rxjs";
-import * as SocketIOClient from "socket.io-client";
-import * as SailsIOClient from "sails.io.js";
-import { Component, OnInit, Injectable } from "@angular/core";
-import { SailsResponseCallback } from "./sails.response.callback";
+import SailsIO from "sails.io.js";
+import * as SocketIO from "socket.io-client";
 import { SailsResponse } from "./sails.response";
-import * as _ from "lodash";
+import { SailsConfig } from "./sails.config";
+import { Inject, InjectionToken, Injector } from "@angular/core";
+import { SailsIOClient } from "./sails.io.client";
+import { SailsInterceptorConstructor, SailsInterceptorInterface } from "./sails.interceptor";
+import { SailsInterceptorHandler, SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
+import { SailsOptions } from "./sails.options";
+import { isString } from "./utils";
+import { SailsRequestOptions } from "./sails.request.options";
+import { SailsEvent } from "./sails.event";
+import { Observable } from "rxjs/Observable";
 
-declare var window;
+export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
+export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 
-@Injectable()
-export class Sails {
+export const SailsEnvironment = {
+    DEV: "development",
+    PROD: "production"
+};
 
-    constructor(private sailsOptions: SailsOptions) { 
-        this.connect();
+export const SailsListener = {
+    ERROR: "error",
+    CONNECT: "connect",
+    RECONNECT: "reconnect",
+    CONNECTING: "connecting",
+    DISCONNECT: "disconnect",
+    RECONNECTING: "reconnecting",
+    CONNECT_ERROR: "connect_error",
+    CONNECT_TIMEOUT: "connect_timeout",
+};
+
+export class Sails implements SailsInterceptorInterface, SailsInterceptorHandlerInterface {
+    private Socket: SailsIOClient.Socket;
+    private Config: SailsConfig;
+    private Listeners: { [eventName: string]: ((data: any) => void)[] } = {
+        [SailsListener.CONNECT]: [],
+        [SailsListener.CONNECT_ERROR]: [],
+        [SailsListener.CONNECT_TIMEOUT]: [],
+        [SailsListener.CONNECTING]: [],
+        [SailsListener.RECONNECT]: [],
+        [SailsListener.RECONNECTING]: [],
+        [SailsListener.DISCONNECT]: [],
+        [SailsListener.ERROR]: [],
+    };
+
+    private get socket(): SailsIOClient.Socket {
+        return this.Socket;
+    }
+
+    private set socket(Socket: SailsIOClient.Socket) {
+        this.Socket = Socket;
+    }
+
+    constructor(
+        @Inject(Injector) private injector: Injector,
+        @Inject(SAILS_OPTIONS) options: SailsOptions,
+        @Inject(SAILS_INTERCEPTORS) private Interceptors: SailsInterceptorConstructor[] = []) {
+
+        const io: SailsIOClient.IO = SailsIO(SocketIO);
+        const socket = io.socket;
+
+        // Helper function for Listeners
+        const handleListeners = eventName => data => {
+            this.Listeners[eventName].forEach(callback => callback(data));
+        };
+        // Set up Event Listeners
+        socket.on(SailsListener.CONNECT, handleListeners(SailsListener.CONNECT));
+        socket.on(SailsListener.CONNECT_ERROR, handleListeners(SailsListener.CONNECT_ERROR));
+        socket.on(SailsListener.CONNECT_TIMEOUT, handleListeners(SailsListener.CONNECT_TIMEOUT));
+        socket.on(SailsListener.CONNECTING, handleListeners(SailsListener.CONNECTING));
+        socket.on(SailsListener.RECONNECT, handleListeners(SailsListener.RECONNECT));
+        socket.on(SailsListener.ERROR, handleListeners(SailsListener.ERROR));
+        socket.on(SailsListener.RECONNECTING, handleListeners(SailsListener.RECONNECTING));
+        socket.on(SailsListener.DISCONNECT, handleListeners(SailsListener.DISCONNECT));
+
+        // Setup Config
+        const Config = new SailsConfig(options);
+        // Merge Config with Sails
+        Object.assign(io.sails, Config);
+
+        this.socket = socket;
+        this.Config = Config;
+    }
+
+    public connect(): Sails {
+        if (!this.connected()) {
+            this.socket._connect();
+        }
+
+        return this;
     }
 
     private connected(): boolean {
-        return window.io.socketpoint.isConnected() || false;
+        return this.socket.isConnected();
     }
 
-    public connect(): SocketIOClient {
-        if (window.io == undefined) {
-            window.io = SailsIOClient(SocketIOClient);
-            window.io.sails.autoConnect = this.sailsOptions.getAutoConnect();
-            window.io.sails.url = this.sailsOptions.getWebsocketUrl();
-            window.io.sails.transports = this.sailsOptions.getTransports();
-            window.io.sails.useCORSRouteToGetCookie = this.sailsOptions.getUseCORSRouteToGetCookie();
-            window.io.sails.headers = this.sailsOptions.getHeaders();
-            window.io.sails.timeout = this.sailsOptions.getTimeOut();
-            window.io.socketpoint = (window.io.sails && window.io.sails.connect || window.io.connect)(window.io.sails.url);
-            window.io.socketpoint.on('connect', () => {
-                if (this.sailsOptions.getOnConnectCallback !== null) {
-                    this.sailsOptions.getOnConnectCallback();
-                }
-            });
-            window.io.socketpoint.on('disconnect', () => {
-                if (this.sailsOptions.getOnDisconnectCallback !== null) {
-                    this.sailsOptions.getOnDisconnectCallback();
-                }
-            });
-        } else if (window.io.socketpoint._raw.disconnected) {
-            window.io.socketpoint.reconnect();
-        }
-        window.io.socketpoint.headers = this.sailsOptions.getHeaders();
-        return window.io.socketpoint;
-    }
-
-    public isConnecting(): boolean {
-        return window.io.socketpoint.isConnecting() || false;
+    public isConnecting(): Sails {
+        this.socket.isConnecting();
+        return this;
     }
 
     public disconnect(): Sails {
-        if (window.io.socketpoint && window.io.socketpoint.isConnected()) {
-            window.io.socketpoint.disconnect();
+        if (this.connected()) {
+            this.socket.disconnect();
         }
         return this;
     }
 
-    public get(url: string, callback: SailsResponseCallback): void {
-        this.connect().get(url, {}, (response) => this._intercept(callback, response));
+    public addEventListener(eventName: string, callback: (data: string) => void): this {
+        if (!this.Listeners[eventName]) {
+            throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
+        }
+        this.Listeners[eventName].push(callback);
+        return this;
     }
 
-    public post(url: string, data: object, callback: SailsResponseCallback): void {
-        this.connect().post(url, data, (response) => this._intercept(callback, response));
+    public removeEventListener(eventName: string, callback): this {
+        if (!this.Listeners[eventName]) {
+            throw new Error(`The event [${eventName}] has not yet been supported by this library.`);
+        }
+        if (this.Listeners[eventName].indexOf(callback) > -1) {
+            this.Listeners[eventName].splice(this.Listeners[eventName].indexOf(callback), 1);
+        }
+        return this;
     }
 
-    public put(url: string, data: object, callback: SailsResponseCallback): void {
-        this.connect().put(url, data, (response) => this._intercept(callback, response));
+    public on(eventName: string): Observable<SailsEvent> {
+        return new Observable((obs) => {
+            this.socket.on(eventName, response => {
+                if (response) {
+                    const event = new SailsEvent(response);
+                    obs.next(event);
+                    this.debugReqRes(eventName, event);
+                }
+            });
+            return () => this.socket.off(eventName, () => { });
+        });
     }
 
-    public delete(url: string, callback: SailsResponseCallback): void {
-        this.connect().delete(url, {}, (response) => this._intercept(callback, response));
+    public off(eventName: string): Observable<SailsEvent> {
+        return new Observable((obs) => {
+            this.socket.off(eventName, response => {
+                if (response) {
+                    const event = new SailsEvent(response);
+                    obs.next(event);
+                    this.debugReqRes(eventName, event);
+                }
+                return () => { };
+            });
+        });
     }
 
-    public on(eventName: string, callback: SailsResponseCallback): any {
-        window.io.socketpoint.on(eventName, (response) => this._intercept(callback, response));
+    public request(request: SailsRequestOptions): Observable<SailsResponse> {
+        const req = request.clone({
+            url: this.Config.prefix + request.url,
+        });
+
+        return this.intercept(req);
     }
 
-    public off(eventName: string, callback: SailsResponseCallback): Sails {
-        return window.io.socketpoint.off(eventName, (response) => this._intercept(callback, response));
+    intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface = this): Observable<SailsResponse> {
+        const handler = this.Interceptors.reduceRight((next: SailsInterceptorHandlerInterface, interceptor) => {
+            return new SailsInterceptorHandler(next, this.injector.get(interceptor));
+        }, next);
+
+        return handler.handle(request);
     }
 
-    private _intercept(callback, response) {
-        const state = this.sailsOptions.getSocketInterceptor().reduce(
-            (acc, interceptor) => {
-                return acc && interceptor(response);
-            }, true);
+    handle(request: SailsRequestOptions): Observable<SailsResponse> {
+        return new Observable<SailsResponse>((obs) => {
+            this.socket.request(request.serialize(), (body: any, response: SailsIOClient.JWR.Response) => {
+                const resolved = new SailsResponse(response);
+                obs.next(resolved);
+                this.debugReqRes(request, resolved);
+            });
+        });
+    }
 
-        if (state === true) {
-            callback.done(new SailsResponse(response));
+    private debugReqRes(request, response) {
+        if (this.Config.environment === SailsEnvironment.DEV) {
+            console.groupCollapsed("[SailsSocketIO] > Debug Output");
+            isString(request) ? console.log(request) : console.dir(request);
+            console.dir(response);
+            console.groupEnd();
         }
     }
 }
