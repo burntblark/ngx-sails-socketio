@@ -11,6 +11,18 @@ export class SailsResponse {
         return this.getStatusCode() === 201;
     }
 
+    public isUnauthorized(): boolean {
+        return this.getStatusCode() === 401;
+    }
+
+    public isForbidden(): boolean {
+        return this.getStatusCode() === 403;
+    }
+
+    public isNotFound(): boolean {
+        return this.getStatusCode() === 404;
+    }
+
     public isError(): boolean {
         return this.isClientError() || this.isServerError();
     }

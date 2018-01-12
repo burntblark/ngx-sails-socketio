@@ -3,6 +3,10 @@ import { Router } from "@angular/router";
 import { Sails } from "ngx-sails-socketio";
 import { JobsService } from "../../services/jobs.service";
 import "rxjs/add/operator/catch";
+import "rxjs/add/observable/merge";
+import "rxjs/add/operator/do";
+import { Observable } from "rxjs/Observable";
+import { BoqModel } from "../../models/boq.model";
 
 @Component({
     selector: "app-dashboard",
@@ -11,32 +15,15 @@ import "rxjs/add/operator/catch";
 })
 
 export class DashboardComponent implements OnInit {
+    boqs$;
 
     constructor(private router: Router, private sails: Sails, private jobs: JobsService) { }
 
     ngOnInit() {
-        // this.jobs.getJobs()
-        this.jobs.getQueried()
-            // this.jobs.getJobs()
-            // this.jobs.getBoqs()
-            .catch(e => {
-                console.log(e);
-                return [];
-            })
-            .subscribe(data => {
-                console.log(data);
-
-                // const model = data[0];
-                // if (model) {
-                //     // this.jobs.updateJob(model).catch(e => console.log(e));
-                //     this.jobs.saveBoq(model).catch(e => console.log(e));
-                // }
-            });
-
-        // Pub-Sub
-        this.jobs.listenOne().subscribe(info => console.log(info));
-        this.jobs.listenAll().subscribe(info => console.log(info));
-        // this.jobs.listen();
+        this.boqs$ = Observable.merge(
+            this.jobs.listenAll().do(() => console.log("Second")),
+            this.jobs.getQueried().do(() => console.log("First")),
+        );
     }
 
     onLogout(e: Event) {
