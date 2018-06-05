@@ -1,4 +1,4 @@
-var SailsResponse = /** @class */ (function () {
+var SailsResponse = (function () {
     function SailsResponse(JWR) {
         this.JWR = JWR;
     }
@@ -7,6 +7,18 @@ var SailsResponse = /** @class */ (function () {
     };
     SailsResponse.prototype.isCreated = function () {
         return this.getStatusCode() === 201;
+    };
+    SailsResponse.prototype.isUnauthorized = function () {
+        return this.getStatusCode() === 401;
+    };
+    SailsResponse.prototype.isForbidden = function () {
+        return this.getStatusCode() === 403;
+    };
+    SailsResponse.prototype.isNotFound = function () {
+        return this.getStatusCode() === 404;
+    };
+    SailsResponse.prototype.isBadRequest = function () {
+        return this.getStatusCode() === 400;
     };
     SailsResponse.prototype.isError = function () {
         return this.isClientError() || this.isServerError();

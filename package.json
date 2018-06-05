@@ -41,12 +41,14 @@
   },
   "dependencies": {
     "json-object-mapper": "^1.5.1",
+    "rxjs": "^5.5.11",
     "sails.io.js": "^1.1.12"
   },
   "peerDependencies": {
     "@angular/core": "^4.2.3",
     "@angular/common": "^4.2.3",
-    "@angular/router": "^4.2.3"
+    "@angular/router": "^4.2.3",
+    "rxjs": "^5.4.0"
   },
   "devDependencies": {
     "@angular/cli": "^1.4.2",
@@ -57,9 +59,8 @@
     "@angular/router": "^4.2.3",
     "@types/lodash": "^4.14.74",
     "@types/socket.io-client": "^1.4.30",
-    "rxjs": "^5.4.0",
     "tslint": "^5.4.3",
-    "typescript": "2.4.0",
+    "typescript": "~2.3.3",
     "watch": "^1.0.2"
   }
 }

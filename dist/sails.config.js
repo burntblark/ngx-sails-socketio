@@ -1,6 +1,6 @@
 var __SAILS_VERSION__ = "0.11.0";
 var __OS_PLATFORM__ = "windows";
-var SailsConfig = /** @class */ (function () {
+var SailsConfig = (function () {
     function SailsConfig(options) {
         this.url = "ws://localhost:1337";
         this.query = "__sails_io_sdk_version=" + __SAILS_VERSION__ + "&__sails_io_sdk_platform=" + __OS_PLATFORM__ + "&__sails_io_sdk_language=javascript";

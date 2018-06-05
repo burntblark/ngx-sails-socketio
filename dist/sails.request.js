@@ -1,5 +1,5 @@
 import { SailsRequestOptions } from "./sails.request.options";
-var QueryBuilder = /** @class */ (function () {
+var QueryBuilder = (function () {
     function QueryBuilder(query) {
         if (query === void 0) { query = ""; }
         this.query = query;
@@ -28,7 +28,7 @@ export var Method = {
     DELETE: "delete",
     PATCH: "patch",
 };
-var SailsRequest = /** @class */ (function () {
+var SailsRequest = (function () {
     function SailsRequest(sails) {
         this.sails = sails;
         this.parameters = [];

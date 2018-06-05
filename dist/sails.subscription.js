@@ -1,4 +1,4 @@
-var SailsSubscription = /** @class */ (function () {
+var SailsSubscription = (function () {
     function SailsSubscription(sails) {
         this.sails = sails;
     }

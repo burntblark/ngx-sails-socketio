@@ -23,6 +23,10 @@ export class SailsResponse {
         return this.getStatusCode() === 404;
     }
 
+    public isBadRequest(): boolean {
+        return this.getStatusCode() === 400;
+    }
+
     public isError(): boolean {
         return this.isClientError() || this.isServerError();
     }

@@ -4,6 +4,10 @@ export declare class SailsResponse {
     constructor(JWR: SailsIOClient.JWR.Response);
     isOk(): boolean;
     isCreated(): boolean;
+    isUnauthorized(): boolean;
+    isForbidden(): boolean;
+    isNotFound(): boolean;
+    isBadRequest(): boolean;
     isError(): boolean;
     isClientError(): boolean;
     isServerError(): boolean;

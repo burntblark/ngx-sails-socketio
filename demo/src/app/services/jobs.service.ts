@@ -1,8 +1,7 @@
-import { SailsModel, Sails, SailsQuery, RequestCriteria } from "ngx-sails-socketio";
+import { SailsModel, Sails, SailsQuery, RequestCriteria, SailsRequest, SailsResponse, SailsSubscription } from "ngx-sails-socketio";
 import { Injectable } from "@angular/core";
 import { JobModel } from "../models/job.model";
 import { BoqModel } from "../models/boq.model";
-import { SailsRequest, SailsResponse, SailsSubscription } from "ngx-sails-socketio";
 import { Observable } from "rxjs/Observable";
 import "rxjs/add/observable/of";
 import "rxjs/add/operator/filter";
@@ -27,11 +26,7 @@ export class JobsService {
             .addParam("limit", 25);
 
         return req.get("/boq").map((response: SailsResponse) => {
-            if (response.getStatusCode() === 200) {
-                // return response.getData();
-                return SailsModel.unserialize(BoqModel, response.getData()) as BoqModel[];
-            }
-            throw response;
+            return SailsModel.unserialize(BoqModel, response.getData()) as BoqModel[];
         });
     }
 
