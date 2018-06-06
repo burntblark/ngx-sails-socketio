@@ -40,27 +40,29 @@
     "url": "https://github.com/burntblark/ngx-sails-socketio/issues"
   },
   "dependencies": {
-    "json-object-mapper": "^1.5.1",
-    "rxjs": "^5.5.11",
-    "sails.io.js": "^1.1.12"
+    "json-object-mapper": "~1.5.1",
+    "sails.io.js": "~1.1.12"
   },
   "peerDependencies": {
-    "@angular/core": "^4.2.3",
-    "@angular/common": "^4.2.3",
-    "@angular/router": "^4.2.3",
-    "rxjs": "^5.4.0"
+    "@angular/core": "~5.2.0",
+    "@angular/common": "~5.2.0",
+    "@angular/router": "~5.2.0",
+    "socket.io-client": "~2.0.0",
+    "rxjs": "~5.5.6"
   },
   "devDependencies": {
-    "@angular/cli": "^1.4.2",
-    "@angular/common": "^4.2.3",
-    "@angular/compiler": "^4.2.3",
-    "@angular/compiler-cli": "^4.2.3",
-    "@angular/core": "^4.2.3",
-    "@angular/router": "^4.2.3",
-    "@types/lodash": "^4.14.74",
-    "@types/socket.io-client": "^1.4.30",
+    "@angular/cli": "~1.7.0",
+    "@angular/common": "~5.2.0",
+    "@angular/compiler": "~5.2.0",
+    "@angular/compiler-cli": "~5.2.0",
+    "@angular/core": "~5.2.0",
+    "@angular/router": "~5.2.0",
+    "@types/lodash": "~4.14.74",
+    "@types/socket.io-client": "~1.4.30",
+    "socket.io-client": "~2.0.0",
+    "rxjs": "~5.5.6",
     "tslint": "^5.4.3",
-    "typescript": "~2.3.3",
-    "watch": "^1.0.2"
+    "typescript": "~2.6.2",
+    "watch": "~1.0.2"
   }
 }
