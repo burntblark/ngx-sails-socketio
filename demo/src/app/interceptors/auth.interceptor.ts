@@ -1,14 +1,12 @@
 import { SailsRequestOptions, SailsResponse, SailsInterceptorInterface, SailsInterceptorHandlerInterface } from "ngx-sails-socketio";
 import { Router } from "@angular/router";
 import { Injectable } from "@angular/core";
-import { JobsService } from "../services/jobs.service";
 import { Observable } from "rxjs/Observable";
-import "rxjs/add/operator/map";
 
 @Injectable()
 export class AuthInterceptor implements SailsInterceptorInterface {
 
-    constructor(private router: Router, private jobs: JobsService) {
+    constructor(private router: Router) {
     }
 
     intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface): Observable<SailsResponse> {
@@ -17,9 +15,7 @@ export class AuthInterceptor implements SailsInterceptorInterface {
         });
         const response = next.handle(request);
 
-        console.log("Auth: ", request);
-
-        return response.map(res => {
+        return response.map((res: SailsResponse) => {
             if (res.getStatusCode() === 401) {
                 this.router.navigateByUrl("login");
             }

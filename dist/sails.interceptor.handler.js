@@ -1,4 +1,4 @@
-var SailsInterceptorHandler = /** @class */ (function () {
+var SailsInterceptorHandler = (function () {
     function SailsInterceptorHandler(next, interceptor) {
         this.next = next;
         this.interceptor = interceptor;
@@ -9,3 +9,4 @@ var SailsInterceptorHandler = /** @class */ (function () {
     return SailsInterceptorHandler;
 }());
 export { SailsInterceptorHandler };
+//# sourceMappingURL=sails.interceptor.handler.js.map

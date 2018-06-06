@@ -1,4 +1,4 @@
-var SailsRequestOptions = /** @class */ (function () {
+var SailsRequestOptions = (function () {
     function SailsRequestOptions(_a) {
         var url = _a.url, method = _a.method, params = _a.params, headers = _a.headers;
         this.options = { url: url, method: method, params: this.toMap(params), headers: this.toMap(headers) };
@@ -64,3 +64,4 @@ var SailsRequestOptions = /** @class */ (function () {
     return SailsRequestOptions;
 }());
 export { SailsRequestOptions };
+//# sourceMappingURL=sails.request.options.js.map

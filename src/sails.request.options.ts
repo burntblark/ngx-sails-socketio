@@ -38,19 +38,19 @@ export class SailsRequestOptions {
         return obj;
     }
 
-    get method(): string {
+    get method(): string | undefined {
         return this.options.method;
     }
 
-    get url(): string {
+    get url(): string | undefined {
         return this.options.url;
     }
 
-    get params(): Map<string, string> {
+    get params(): Map<string, string> | undefined {
         return this.options.params;
     }
 
-    get headers(): Map<string, string> {
+    get headers(): Map<string, string> | undefined {
         return this.options.headers;
     }
 

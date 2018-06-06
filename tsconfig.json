@@ -4,22 +4,30 @@
     "outDir": "dist",
     "baseUrl": ".",
     "declaration": true,
+    "stripInternal": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
     "lib": [
       "es2016",
       "dom"
     ],
     "module": "es2015",
     "moduleResolution": "node",
-    "sourceMap": false,
+    "sourceMap": true,
+    "inlineSources": true,
     "target": "es5",
+    "skipLibCheck": true,
     "typeRoots": [
       "../node_modules/@types"
     ],
     "paths": {
       "@angular/*": [
         "../node_modules/@angular/*"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
       ]
     }
   },

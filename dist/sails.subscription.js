@@ -1,4 +1,4 @@
-var SailsSubscription = /** @class */ (function () {
+var SailsSubscription = (function () {
     function SailsSubscription(sails) {
         this.sails = sails;
     }
@@ -11,3 +11,4 @@ var SailsSubscription = /** @class */ (function () {
     return SailsSubscription;
 }());
 export { SailsSubscription };
+//# sourceMappingURL=sails.subscription.js.map

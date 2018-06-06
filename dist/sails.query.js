@@ -2,7 +2,7 @@ import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
 import { RequestCriteria } from "./sails.request.criteria";
 import "rxjs/add/operator/map";
-var SailsQuery = /** @class */ (function () {
+var SailsQuery = (function () {
     function SailsQuery(sails, modelClass) {
         this.modelClass = modelClass;
         this.errorMsg = "[SailsSocketIO]: the data is not an instance of " + this.modelClass.name + ".\n        You could SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + "[] (Array of Models), Or\n        SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + " (Single Models)\n        after fetching the data with SailsRequest.";
@@ -108,3 +108,4 @@ var SailsQuery = /** @class */ (function () {
     return SailsQuery;
 }());
 export { SailsQuery };
+//# sourceMappingURL=sails.query.js.map

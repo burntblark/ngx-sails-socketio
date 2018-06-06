@@ -23,7 +23,7 @@ export var SailsListener = {
     CONNECT_ERROR: "connect_error",
     CONNECT_TIMEOUT: "connect_timeout",
 };
-var Sails = /** @class */ (function () {
+var Sails = (function () {
     function Sails(injector, options, Interceptors) {
         if (Interceptors === void 0) { Interceptors = []; }
         var _this = this;
@@ -150,10 +150,16 @@ var Sails = /** @class */ (function () {
     Sails.prototype.handle = function (request) {
         var _this = this;
         return new Observable(function (obs) {
-            _this.socket.request(request.serialize(), function (body, response) {
-                var resolved = new SailsResponse(response);
-                obs.next(resolved);
-                _this.debugReqRes(request, resolved);
+            _this.socket.request(request.serialize(), function (body, jwr) {
+                var response = new SailsResponse(jwr);
+                if (response.isError()) {
+                    obs.error(response.getError());
+                }
+                else {
+                    obs.next(response);
+                }
+                obs.complete();
+                _this.debugReqRes(request, response);
             });
         });
     };
@@ -165,12 +171,13 @@ var Sails = /** @class */ (function () {
             console.groupEnd();
         }
     };
-    /** @nocollapse */
-    Sails.ctorParameters = function () { return [
-        { type: Injector, decorators: [{ type: Inject, args: [Injector,] },] },
-        { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
-        { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
-    ]; };
     return Sails;
 }());
 export { Sails };
+/** @nocollapse */
+Sails.ctorParameters = function () { return [
+    { type: Injector, decorators: [{ type: Inject, args: [Injector,] },] },
+    { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
+    { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
+]; };
+//# sourceMappingURL=sails.js.map

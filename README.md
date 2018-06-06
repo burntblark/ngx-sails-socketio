@@ -41,6 +41,31 @@ Add `SailsModule` to your application module.
 export class AppModule { }
  ```
 
+An implementation of the AuthInterceptor class
+
+ ```ts
+@Injectable()
+export class AuthInterceptor implements SailsInterceptorInterface {
+
+    constructor(private router: Router, private jobs: JobsService) {
+    }
+
+    intercept(request: SailsRequestOptions, next: SailsInterceptorHandlerInterface): Observable<SailsResponse> {
+        request.clone({
+            headers: request.headers.set("Authorization", [token]) // Replace [token] with your auth token
+        });
+        const response = next.handle(request);
+
+        return response.map(res => {
+            if (res.getStatusCode() === 401) {
+              // handle unauthorised request.
+            }
+            return res;
+        });
+    }
+}
+ ```
+
 Inject the `Sails` into your components/services and instatiate classes specific to your objective.
 
  ```ts

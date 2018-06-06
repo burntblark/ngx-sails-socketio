@@ -11,9 +11,9 @@ export declare class SailsRequestOptions {
     clone(options: SailsRequestOptionsInterface): this;
     private toMap(obj?);
     private toObject(map?);
-    readonly method: string;
-    readonly url: string;
-    readonly params: Map<string, string>;
-    readonly headers: Map<string, string>;
+    readonly method: string | undefined;
+    readonly url: string | undefined;
+    readonly params: Map<string, string> | undefined;
+    readonly headers: Map<string, string> | undefined;
     serialize(): SailsIOClient.RequestOptions;
 }

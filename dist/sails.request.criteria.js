@@ -1,5 +1,5 @@
 import { isUndefined, isString, isEmptyObject, isObject } from "./utils";
-var RequestCriteria = /** @class */ (function () {
+var RequestCriteria = (function () {
     function RequestCriteria() {
         this.criteria = {};
         this.orCriteria = {};
@@ -172,3 +172,4 @@ var RequestCriteria = /** @class */ (function () {
     return RequestCriteria;
 }());
 export { RequestCriteria };
+//# sourceMappingURL=sails.request.criteria.js.map

@@ -5,7 +5,7 @@ export var Verb = {
     DESTROYED: "destroyed",
     REMOVED: "removed",
 };
-var SailsEvent = /** @class */ (function () {
+var SailsEvent = (function () {
     function SailsEvent(JWR) {
         this.JWR = JWR;
     }
@@ -36,3 +36,4 @@ var SailsEvent = /** @class */ (function () {
     return SailsEvent;
 }());
 export { SailsEvent };
+//# sourceMappingURL=sails.event.js.map

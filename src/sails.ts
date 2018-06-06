@@ -170,10 +170,16 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
 
     handle(request: SailsRequestOptions): Observable<SailsResponse> {
         return new Observable<SailsResponse>((obs) => {
-            this.socket.request(request.serialize(), (body: any, response: SailsIOClient.JWR.Response) => {
-                const resolved = new SailsResponse(response);
-                obs.next(resolved);
-                this.debugReqRes(request, resolved);
+            this.socket.request(request.serialize(), (body: any, jwr: SailsIOClient.JWR.Response) => {
+                const response = new SailsResponse(jwr);
+                if (response.isError()) {
+                    obs.error(response.getError());
+                } else {
+                    obs.next(response);
+                }
+
+                obs.complete();
+                this.debugReqRes(request, response);
             });
         });
     }
