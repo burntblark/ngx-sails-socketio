@@ -7,7 +7,6 @@ import { Sails, SailsListener } from "ngx-sails-socketio";
     styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
-
     constructor(private sails: Sails) {
         sails.addEventListener(SailsListener.CONNECTING, data => {
             console.log("CONNECTING...");
@@ -38,7 +37,5 @@ export class AppComponent implements OnInit {
         sails.connect();
     }
 
-    ngOnInit() {
-
-    }
+    ngOnInit() {}
 }
