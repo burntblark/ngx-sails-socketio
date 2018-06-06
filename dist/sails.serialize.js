@@ -6,3 +6,4 @@ export function serialize(instance) {
     return ObjectMapper.serialize(instance);
 }
 export { JsonIgnore as Ignore, JsonProperty as Property } from "json-object-mapper";
+//# sourceMappingURL=sails.serialize.js.map

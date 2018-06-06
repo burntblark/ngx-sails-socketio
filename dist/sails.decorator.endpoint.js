@@ -13,3 +13,4 @@
         };
     };
 }
+//# sourceMappingURL=sails.decorator.endpoint.js.map

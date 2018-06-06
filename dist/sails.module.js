@@ -23,3 +23,4 @@ SailsModule.decorators = [
 ];
 /** @nocollapse */
 SailsModule.ctorParameters = function () { return []; };
+//# sourceMappingURL=sails.module.js.map

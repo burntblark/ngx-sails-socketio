@@ -5,9 +5,9 @@ import { isObject } from "./utils";
 
 @Endpoint()
 export abstract class SailsModel implements SailsModelInterface {
-    @Property() id: string = null;
-    @Property({ type: Date }) createdAt: Date = null;
-    @Property({ type: Date }) updatedAt: Date = null;
+    @Property() id: string = "";
+    @Property({ type: Date }) createdAt: Date;
+    @Property({ type: Date }) updatedAt: Date;
 
     getEndPoint(): string {
         return this.getEndPoint();
@@ -32,7 +32,7 @@ export abstract class SailsModel implements SailsModelInterface {
                 }
 
                 if (prop && prop instanceof Array) {
-                    obj[key] = prop.map( ob => {
+                    obj[key] = prop.map(ob => {
                         if (ob instanceof SailsModel) {
                             return SailsModel.serialize(ob);
                         }

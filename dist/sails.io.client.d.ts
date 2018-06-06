@@ -45,7 +45,7 @@ export declare namespace SailsIOClient {
         connect: (url, opts) => Socket;
     }
     interface RequestOptions {
-        url: string;
+        url?: string;
         method?: string;
         params?: object;
         headers?: Headers;

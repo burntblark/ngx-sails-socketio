@@ -36,3 +36,4 @@ var SailsEvent = (function () {
     return SailsEvent;
 }());
 export { SailsEvent };
+//# sourceMappingURL=sails.event.js.map

@@ -10,3 +10,4 @@ export function isEmptyObject(value) {
 export function isObject(value) {
     return value instanceof Object;
 }
+//# sourceMappingURL=utils.js.map

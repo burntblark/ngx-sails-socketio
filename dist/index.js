@@ -11,3 +11,4 @@ export * from "./sails.request.options";
 export * from "./sails.request.criteria";
 export * from "./sails.decorator.endpoint";
 export * from "./sails.interceptor.handler";
+//# sourceMappingURL=index.js.map

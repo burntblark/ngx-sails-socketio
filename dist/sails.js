@@ -180,3 +180,4 @@ Sails.ctorParameters = function () { return [
     { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
     { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
 ]; };
+//# sourceMappingURL=sails.js.map

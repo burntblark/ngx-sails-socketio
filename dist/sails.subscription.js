@@ -11,3 +11,4 @@ var SailsSubscription = (function () {
     return SailsSubscription;
 }());
 export { SailsSubscription };
+//# sourceMappingURL=sails.subscription.js.map

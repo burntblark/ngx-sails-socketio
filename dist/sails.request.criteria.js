@@ -172,3 +172,4 @@ var RequestCriteria = (function () {
     return RequestCriteria;
 }());
 export { RequestCriteria };
+//# sourceMappingURL=sails.request.criteria.js.map

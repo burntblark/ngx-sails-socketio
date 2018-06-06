@@ -12,9 +12,7 @@ import { Endpoint } from "./sails.decorator.endpoint";
 import { isObject } from "./utils";
 var SailsModel = SailsModel_1 = (function () {
     function SailsModel() {
-        this.id = null;
-        this.createdAt = null;
-        this.updatedAt = null;
+        this.id = "";
     }
     SailsModel.prototype.getEndPoint = function () {
         return this.getEndPoint();
@@ -76,3 +74,4 @@ SailsModel = SailsModel_1 = __decorate([
 ], SailsModel);
 export { SailsModel };
 var SailsModel_1;
+//# sourceMappingURL=sails.model.js.map

@@ -17,3 +17,4 @@ var SailsConfig = (function () {
     return SailsConfig;
 }());
 export { SailsConfig };
+//# sourceMappingURL=sails.config.js.map

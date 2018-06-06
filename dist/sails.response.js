@@ -62,3 +62,4 @@ var SailsResponse = (function () {
     return SailsResponse;
 }());
 export { SailsResponse };
+//# sourceMappingURL=sails.response.js.map

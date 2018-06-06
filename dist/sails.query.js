@@ -108,3 +108,4 @@ var SailsQuery = (function () {
     return SailsQuery;
 }());
 export { SailsQuery };
+//# sourceMappingURL=sails.query.js.map

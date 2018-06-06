@@ -9,3 +9,4 @@ var SailsInterceptorHandler = (function () {
     return SailsInterceptorHandler;
 }());
 export { SailsInterceptorHandler };
+//# sourceMappingURL=sails.interceptor.handler.js.map

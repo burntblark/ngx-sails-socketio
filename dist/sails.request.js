@@ -67,3 +67,4 @@ var SailsRequest = (function () {
     return SailsRequest;
 }());
 export { SailsRequest };
+//# sourceMappingURL=sails.request.js.map
