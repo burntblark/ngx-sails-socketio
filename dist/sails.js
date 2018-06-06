@@ -1,14 +1,15 @@
+import { Inject, InjectionToken, Injector } from "@angular/core";
+import { Observable } from "rxjs/Observable";
 import SailsIO from "sails.io.js";
 import * as SocketIO from "socket.io-client";
-import { SailsResponse } from "./sails.response";
 import { SailsConfig } from "./sails.config";
-import { Inject, InjectionToken, Injector } from "@angular/core";
-import { SailsInterceptorHandler } from "./sails.interceptor.handler";
-import { isString } from "./utils";
 import { SailsEvent } from "./sails.event";
-import { Observable } from "rxjs/Observable";
+import { SailsInterceptorHandler } from "./sails.interceptor.handler";
+import { SailsResponse } from "./sails.response";
+import { isString } from "./utils";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
+// const i = Injector.create([]);
 export var SailsEnvironment = {
     DEV: "development",
     PROD: "production"
@@ -21,10 +22,12 @@ export var SailsListener = {
     DISCONNECT: "disconnect",
     RECONNECTING: "reconnecting",
     CONNECT_ERROR: "connect_error",
-    CONNECT_TIMEOUT: "connect_timeout",
+    CONNECT_TIMEOUT: "connect_timeout"
 };
-var Sails = (function () {
-    function Sails(injector, options, Interceptors) {
+var Sails = /** @class */ (function () {
+    function Sails(
+        // private injector: Injector,
+        injector, options, Interceptors) {
         if (Interceptors === void 0) { Interceptors = []; }
         var _this = this;
         this.injector = injector;
@@ -39,12 +42,18 @@ var Sails = (function () {
             _a[SailsListener.DISCONNECT] = [],
             _a[SailsListener.ERROR] = [],
             _a);
+        // this.injector = Injector.NULL;
+        // this.injector = Injector.create({
+        //   providers: Interceptors.map(i => ({ provide: i.name, useExisting: i }))
+        // });
         var io = SailsIO(SocketIO);
         var socket = io.socket;
         // Helper function for Listeners
-        var handleListeners = function (eventName) { return function (data) {
-            _this.Listeners[eventName].forEach(function (callback) { return callback(data); });
-        }; };
+        var handleListeners = function (eventName) {
+            return function (data) {
+                _this.Listeners[eventName].forEach(function (callback) { return callback(data); });
+            };
+        };
         // Set up Event Listeners
         socket.on(SailsListener.CONNECT, handleListeners(SailsListener.CONNECT));
         socket.on(SailsListener.CONNECT_ERROR, handleListeners(SailsListener.CONNECT_ERROR));
@@ -135,7 +144,7 @@ var Sails = (function () {
     };
     Sails.prototype.request = function (request) {
         var req = request.clone({
-            url: this.Config.prefix + request.url,
+            url: this.Config.prefix + request.url
         });
         return this.intercept(req);
     };
@@ -171,12 +180,12 @@ var Sails = (function () {
             console.groupEnd();
         }
     };
+    /** @nocollapse */
+    Sails.ctorParameters = function () { return [
+        { type: Injector, decorators: [{ type: Inject, args: [Injector,] },] },
+        { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
+        { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
+    ]; };
     return Sails;
 }());
 export { Sails };
-/** @nocollapse */
-Sails.ctorParameters = function () { return [
-    { type: Injector, decorators: [{ type: Inject, args: [Injector,] },] },
-    { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
-    { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
-]; };

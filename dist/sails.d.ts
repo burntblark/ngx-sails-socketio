@@ -1,11 +1,11 @@
-import { SailsResponse } from "./sails.response";
 import { InjectionToken, Injector } from "@angular/core";
+import { Observable } from "rxjs/Observable";
+import { SailsEvent } from "./sails.event";
 import { SailsInterceptorConstructor, SailsInterceptorInterface } from "./sails.interceptor";
 import { SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
 import { SailsOptions } from "./sails.options";
 import { SailsRequestOptions } from "./sails.request.options";
-import { SailsEvent } from "./sails.event";
-import { Observable } from "rxjs/Observable";
+import { SailsResponse } from "./sails.response";
 export declare const SAILS_OPTIONS: InjectionToken<{}>;
 export declare const SAILS_INTERCEPTORS: InjectionToken<{}>;
 export declare const SailsEnvironment: {

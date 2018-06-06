@@ -1,5 +1,5 @@
 import { isUndefined, isString, isEmptyObject, isObject } from "./utils";
-var RequestCriteria = (function () {
+var RequestCriteria = /** @class */ (function () {
     function RequestCriteria() {
         this.criteria = {};
         this.orCriteria = {};
