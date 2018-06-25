@@ -1,6 +1,6 @@
 {
   "name": "ngx-sails-socketio",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "./dist/index",
   "typings": "./dist/index.d.ts",
   "description": "An Angular module for connecting SailsJs backend through SocketIO.",
