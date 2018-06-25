@@ -92,7 +92,7 @@ export class Sails implements SailsInterceptorInterface, SailsInterceptorHandler
         return this;
     }
 
-    private connected(): boolean {
+    public connected(): boolean {
         return this.socket.isConnected();
     }
 
