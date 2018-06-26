@@ -75,6 +75,6 @@ export class SailsRequest {
     }
 
     private buildQuery(url: string): string {
-        return url.toLowerCase() + new QueryBuilder(this.getParams());
+        return url + new QueryBuilder(this.getParams());
     }
 }

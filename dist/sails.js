@@ -156,7 +156,7 @@ var Sails = (function () {
                     obs.error(response.getError());
                 }
                 else {
-                    obs.next(response);
+                    obs.next(response.getBody());
                 }
                 obs.complete();
                 _this.debugReqRes(request, response);
