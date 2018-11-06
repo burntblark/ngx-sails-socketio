@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"sails.options.js","sourceRoot":"","sourcesContent":[]}
+{"version":3,"file":"sails.options.js","sourceRoot":"","sources":["../src/sails.options.ts"],"names":[],"mappings":"","sourcesContent":["import { SailsIOClient } from \"./sails.io.client\";\n\n/**\n * Library specific configuration options\n * @extends SailsIOClient.Options\n */\nexport interface SailsOptions extends SailsIOClient.Options {\n    prefix?: string;\n}\n"]}

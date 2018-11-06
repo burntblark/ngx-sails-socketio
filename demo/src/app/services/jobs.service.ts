@@ -2,11 +2,8 @@ import { SailsModel, Sails, SailsQuery, RequestCriteria, SailsRequest, SailsResp
 import { Injectable } from "@angular/core";
 import { JobModel } from "../models/job.model";
 import { BoqModel } from "../models/boq.model";
-import { Observable } from "rxjs/Observable";
-import "rxjs/add/observable/of";
-import "rxjs/add/operator/filter";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/switchMap";
+import { Observable, of } from "rxjs";
+import { filter, switchMap, map } from "rxjs/operators";
 
 @Injectable()
 export class JobsService {
@@ -25,9 +22,9 @@ export class JobsService {
         req.addParam("populate", `[${["customer", "createdBy", "job", "category", "fixer"].join(",")}]`)
             .addParam("limit", 25);
 
-        return req.get("/boq").map((response: SailsResponse) => {
+        return req.get("/boq").pipe(map((response: SailsResponse) => {
             return SailsModel.unserialize(BoqModel, response.getData()) as BoqModel[];
-        });
+        }));
     }
 
     getJobs() {
@@ -37,21 +34,13 @@ export class JobsService {
     }
 
     listenOne() {
-        return this.getQueried().switchMap(() => {
-            return (new SailsSubscription(this.sails)).on("boq").filter(event => event.isUpdated()).switchMap(event => {
-                return Observable.of("JUST UPDATED A NEW BOQ");
-            });
-        });
+                return of("JUST UPDATED A NEW BOQ");
     }
 
     listenAll(): Observable<BoqModel[]> {
-        return this.getQueried().switchMap(() => {
-            return (new SailsSubscription(this.sails)).on("boq").filter(event => event.isCreated()).switchMap(event => {
                 console.log("Refreshing...");
-                // return Observable.of("JUST CREATED A NEW BOQ");
+                // return of("JUST CREATED A NEW BOQ");
                 return this.getQueried();
-            });
-        });
     }
 
     getBoqs() {

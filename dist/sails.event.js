@@ -5,7 +5,7 @@ export var Verb = {
     DESTROYED: "destroyed",
     REMOVED: "removed",
 };
-var SailsEvent = (function () {
+var SailsEvent = /** @class */ (function () {
     function SailsEvent(JWR) {
         this.JWR = JWR;
     }

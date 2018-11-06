@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"sails.model.interface.js","sourceRoot":"","sourcesContent":[]}
+{"version":3,"file":"sails.model.interface.js","sourceRoot":"","sources":["../src/sails.model.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface SailsModelInterface {\n    id: string;\n    createdAt: Date;\n    updatedAt: Date;\n\n    getEndPoint: () => string;\n}\n"]}

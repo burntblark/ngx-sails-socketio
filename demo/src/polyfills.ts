@@ -70,3 +70,9 @@ import "zone.js/dist/zone";  // Included with Angular CLI.
  * Need to import at least one locale-data with intl.
  */
 // import 'intl/locale-data/jsonp/en';
+
+/**
+ * Make te Library socket.io-client compatible with latest Angular 6
+ * See https://github.com/socketio/socket.io-client/issues/1206
+ */
+(window as any).global = window;

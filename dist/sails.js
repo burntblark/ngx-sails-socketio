@@ -6,7 +6,7 @@ import { Inject, InjectionToken, Injector } from "@angular/core";
 import { SailsInterceptorHandler } from "./sails.interceptor.handler";
 import { isString } from "./utils";
 import { SailsEvent } from "./sails.event";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 export var SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export var SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");
 export var SailsEnvironment = {
@@ -23,8 +23,9 @@ export var SailsListener = {
     CONNECT_ERROR: "connect_error",
     CONNECT_TIMEOUT: "connect_timeout",
 };
-var Sails = (function () {
+var Sails = /** @class */ (function () {
     function Sails(injector, options, Interceptors) {
+        var _a;
         if (Interceptors === void 0) { Interceptors = []; }
         var _this = this;
         this.injector = injector;
@@ -60,7 +61,6 @@ var Sails = (function () {
         Object.assign(io.sails, Config);
         this.socket = socket;
         this.Config = Config;
-        var _a;
     }
     Object.defineProperty(Sails.prototype, "socket", {
         get: function () {
@@ -171,13 +171,13 @@ var Sails = (function () {
             console.groupEnd();
         }
     };
+    /** @nocollapse */
+    Sails.ctorParameters = function () { return [
+        { type: Injector, decorators: [{ type: Inject, args: [Injector,] }] },
+        { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] }] },
+        { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] }] }
+    ]; };
     return Sails;
 }());
 export { Sails };
-/** @nocollapse */
-Sails.ctorParameters = function () { return [
-    { type: Injector, decorators: [{ type: Inject, args: [Injector,] },] },
-    { type: undefined, decorators: [{ type: Inject, args: [SAILS_OPTIONS,] },] },
-    { type: Array, decorators: [{ type: Inject, args: [SAILS_INTERCEPTORS,] },] },
-]; };
 //# sourceMappingURL=sails.js.map

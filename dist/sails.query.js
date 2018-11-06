@@ -1,8 +1,8 @@
 import { SailsModel } from "./sails.model";
 import { SailsRequest } from "./sails.request";
 import { RequestCriteria } from "./sails.request.criteria";
-import "rxjs/add/operator/map";
-var SailsQuery = (function () {
+import { map } from "rxjs/operators";
+var SailsQuery = /** @class */ (function () {
     function SailsQuery(sails, modelClass) {
         this.modelClass = modelClass;
         this.errorMsg = "[SailsSocketIO]: the data is not an instance of " + this.modelClass.name + ".\n        You could SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + "[] (Array of Models), Or\n        SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + " (Single Models)\n        after fetching the data with SailsRequest.";
@@ -12,22 +12,22 @@ var SailsQuery = (function () {
     SailsQuery.prototype.find = function () {
         var _this = this;
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get("/" + this.model.getEndPoint()).map(function (res) {
+        return this.request.get("/" + this.model.getEndPoint()).pipe(map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
             throw res;
-        });
+        }));
     };
     SailsQuery.prototype.findById = function (id) {
         var _this = this;
         this.request.addParam("where", this.getRequestCriteria());
-        return this.request.get("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
+        return this.request.get("/" + this.model.getEndPoint() + "/" + id).pipe(map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
             throw res;
-        });
+        }));
     };
     SailsQuery.prototype.save = function (model) {
         var _this = this;
@@ -37,20 +37,20 @@ var SailsQuery = (function () {
         var data = SailsModel.serialize(model);
         var url = "/" + model.getEndPoint();
         if (model.id === null) {
-            return this.request.post(url, data).map(function (res) {
+            return this.request.post(url, data).pipe(map(function (res) {
                 if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         }
         else {
-            return this.request.put(url.concat("/", model.id), data).map(function (res) {
+            return this.request.put(url.concat("/", model.id), data).pipe(map(function (res) {
                 if (res.isOk()) {
                     return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         }
     };
     SailsQuery.prototype.update = function (id, model) {
@@ -62,21 +62,21 @@ var SailsQuery = (function () {
             delete model.updatedAt;
         }
         var data = model instanceof SailsModel ? SailsModel.serialize(model) : Object.assign({}, model);
-        return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).map(function (res) {
+        return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).pipe(map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
             throw res;
-        });
+        }));
     };
     SailsQuery.prototype.remove = function (id) {
         var _this = this;
-        return this.request.delete("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
+        return this.request.delete("/" + this.model.getEndPoint() + "/" + id).pipe(map(function (res) {
             if (res.isOk()) {
                 return SailsModel.unserialize(_this.modelClass, res.getData());
             }
             throw res;
-        });
+        }));
     };
     SailsQuery.prototype.setLimit = function (limit) {
         this.request.addParam("limit", limit);

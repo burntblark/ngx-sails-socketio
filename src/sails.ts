@@ -10,7 +10,7 @@ import { SailsOptions } from "./sails.options";
 import { isString } from "./utils";
 import { SailsRequestOptions } from "./sails.request.options";
 import { SailsEvent } from "./sails.event";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 
 export const SAILS_OPTIONS = new InjectionToken("SAILS_OPTIONS");
 export const SAILS_INTERCEPTORS = new InjectionToken("SAILS_INTERCEPTORS");

@@ -1,15 +1,69 @@
 {
-  "name": "ngx-sails-socketio",
-  "version": "0.1.0",
-  "main": "./dist/index",
-  "typings": "./dist/index.d.ts",
-  "description": "An Angular module for connecting SailsJs backend through SocketIO.",
-  "license": "MIT",
-  "homepage": "https://github.com/burntblark/ngx-sails-socketio#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/burntblark/ngx-sails-socketio.git"
+  "_args": [
+    [
+      "ngx-sails-socketio@0.1.3",
+      "/home/thomas/Projects/Medecine-Online/repos/simply-doctor-webapp"
+    ]
+  ],
+  "_from": "ngx-sails-socketio@0.1.3",
+  "_id": "ngx-sails-socketio@0.1.3",
+  "_inBundle": false,
+  "_integrity": "sha512-T0orwNaNqW0EqFvlNew5VQ7pAC+hmDcHtsEE/rz6mlPGCqSlPi+Wv8/8OsC2+ubWNJmS3FtCzWrYpNkScJwJNA==",
+  "_location": "/ngx-sails-socketio",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "ngx-sails-socketio@0.1.3",
+    "name": "ngx-sails-socketio",
+    "escapedName": "ngx-sails-socketio",
+    "rawSpec": "0.1.3",
+    "saveSpec": null,
+    "fetchSpec": "0.1.3"
   },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ngx-sails-socketio/-/ngx-sails-socketio-0.1.3.tgz",
+  "_spec": "0.1.3",
+  "_where": "/home/thomas/Projects/Medecine-Online/repos/simply-doctor-webapp",
+  "author": {
+    "name": "burntblark"
+  },
+  "bugs": {
+    "url": "https://github.com/burntblark/ngx-sails-socketio/issues"
+  },
+  "contributors": [
+    {
+      "name": "Jeremiah Ogbomo"
+    }
+  ],
+  "dependencies": {
+    "@angular/platform-browser": "^6.1.10",
+    "json-object-mapper": "^1.5.1",
+    "rxjs": "^6.3.3",
+    "rxjs-compat": "^6.3.3",
+    "sails.io.js": "^1.1.12",
+    "socket.io-client": "^2.1.1",
+    "zone.js": "^0.8.26"
+  },
+  "description": "An Angular module for connecting SailsJs backend through SocketIO.",
+  "devDependencies": {
+    "@angular/cli": "~6.2.3",
+    "@angular/common": "^6.1.0",
+    "@angular/compiler": "^6.1.0",
+    "@angular/compiler-cli": "^6.1.0",
+    "@angular/core": "^6.1.0",
+    "@angular/router": "^6.1.0",
+    "@types/lodash": "^4.14.74",
+    "@types/socket.io-client": "^1.4.30",
+    "rollup": "^0.59.4",
+    "tslint": "^5.4.3",
+    "typescript": "^2.9.2",
+    "uglify-js": "^3.4.0",
+    "watch": "^1.0.2"
+  },
+  "homepage": "https://github.com/burntblark/ngx-sails-socketio#readme",
   "keywords": [
     "Ng",
     "Ngx",
@@ -23,48 +77,32 @@
     "Model",
     "Query"
   ],
-  "scripts": {
-    "transpile": "ngc",
-    "package": "rollup -c",
-    "minify": "uglifyjs dist/bundles/ngx.sails.socketio.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx.sails.socketio.min.js",
-    "build": "npm run transpile && npm run package && npm run minify",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "tslint --project ./tsconfig.json --type-check --fix",
-    "demo:watch": "watch 'npm run demo' ./src",
-    "demo": "npm run build && cd ./demo && npm i ../"
-  },
-  "contributors": [
-    "Jeremiah Ogbomo"
-  ],
-  "author": {
-    "name": "burntblark"
-  },
-  "bugs": {
-    "url": "https://github.com/burntblark/ngx-sails-socketio/issues"
-  },
-  "dependencies": {
-    "json-object-mapper": "^1.5.1",
-    "sails.io.js": "^1.1.12"
-  },
+  "license": "MIT",
+  "main": "./dist/index",
+  "name": "ngx-sails-socketio",
   "peerDependencies": {
-    "@angular/core": "^4.2.3",
-    "@angular/common": "^4.2.3",
-    "@angular/router": "^4.2.3",
-    "rxjs": "^5.4.0"
+    "@angular/core": "^6.1.0",
+    "@angular/common": "^6.1.0",
+    "@angular/platform-browser": "^6.1.0",
+    "@angular/router": "^6.1.0",
+    "typescript": "~2.9.2",
+    "zone.js": "~0.8.26",
+    "rxjs": "~6.2.0"
   },
-  "devDependencies": {
-    "@angular/cli": "^1.4.2",
-    "@angular/common": "^4.2.3",
-    "@angular/compiler": "^4.2.3",
-    "@angular/compiler-cli": "^4.2.3",
-    "@angular/core": "^4.2.3",
-    "@angular/router": "^4.2.3",
-    "@types/lodash": "^4.14.74",
-    "@types/socket.io-client": "^1.4.30",
-    "rollup": "^0.59.4",
-    "tslint": "^5.4.3",
-    "typescript": "~2.3.3",
-    "uglify-js": "^3.4.0",
-    "watch": "^1.0.2"
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burntblark/ngx-sails-socketio.git"
+  },
+  "scripts": {
+    "build": "npm run transpile && npm run package && npm run minify",
+    "demo": "npm run build && cd ./demo && npm i ../",
+    "demo:watch": "watch 'npm run demo' ./src",
+    "lint": "tslint --project ./tsconfig.json --type-check --fix",
+    "minify": "uglifyjs dist/bundles/ngx.sails.socketio.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx.sails.socketio.min.js",
+    "package": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transpile": "ngc"
+  },
+  "typings": "./dist/index.d.ts",
+  "version": "0.1.3"
 }

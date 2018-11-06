@@ -1,7 +1,7 @@
 import { SailsResponse } from "./sails.response";
 import { SailsRequestOptions } from "./sails.request.options";
 import { SailsInterceptorInterface } from "./sails.interceptor";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 export interface SailsInterceptorHandlerInterface {
     handle(request: SailsRequestOptions): Observable<SailsResponse>;
 }
