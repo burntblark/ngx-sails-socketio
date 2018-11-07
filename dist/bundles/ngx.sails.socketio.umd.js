@@ -300,7 +300,7 @@
                         obs.error(response.getError());
                     }
                     else {
-                        obs.next(response.getBody());
+                        obs.next(response);
                     }
                     obs.complete();
                     _this.debugReqRes(request, response);
