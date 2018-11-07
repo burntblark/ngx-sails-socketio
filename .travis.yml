@@ -11,8 +11,8 @@ addons:
 
 language: node_js
 node_js:
-  - "7.4.0"
-  
+  - "10.9.0"
+
 before_install:
   - npm install -g --quiet mocha @angular/cli
   - npm link
