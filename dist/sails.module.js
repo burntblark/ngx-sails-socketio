@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { Sails, SAILS_OPTIONS, SAILS_INTERCEPTORS } from "./sails";
-var SailsModule = (function () {
+var SailsModule = /** @class */ (function () {
     function SailsModule() {
     }
     SailsModule.forRoot = function (options, interceptors) {
@@ -15,12 +15,10 @@ var SailsModule = (function () {
             ])
         };
     };
+    SailsModule.decorators = [
+        { type: NgModule },
+    ];
     return SailsModule;
 }());
 export { SailsModule };
-SailsModule.decorators = [
-    { type: NgModule },
-];
-/** @nocollapse */
-SailsModule.ctorParameters = function () { return []; };
 //# sourceMappingURL=sails.module.js.map

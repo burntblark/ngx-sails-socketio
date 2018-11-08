@@ -10,10 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Property, unserialize } from "./sails.serialize";
 import { Endpoint } from "./sails.decorator.endpoint";
 import { isObject } from "./utils";
-var SailsModel = SailsModel_1 = (function () {
+var SailsModel = /** @class */ (function () {
     function SailsModel() {
         this.id = "";
     }
+    SailsModel_1 = SailsModel;
     SailsModel.prototype.getEndPoint = function () {
         return this.getEndPoint();
     };
@@ -55,23 +56,23 @@ var SailsModel = SailsModel_1 = (function () {
         }
         throw new Error("SailsModel.unserialize requires a data parameter of either a Literal Object or an Array of Literal Objects");
     };
+    var SailsModel_1;
+    __decorate([
+        Property(),
+        __metadata("design:type", String)
+    ], SailsModel.prototype, "id", void 0);
+    __decorate([
+        Property({ type: Date }),
+        __metadata("design:type", Date)
+    ], SailsModel.prototype, "createdAt", void 0);
+    __decorate([
+        Property({ type: Date }),
+        __metadata("design:type", Date)
+    ], SailsModel.prototype, "updatedAt", void 0);
+    SailsModel = SailsModel_1 = __decorate([
+        Endpoint()
+    ], SailsModel);
     return SailsModel;
 }());
-__decorate([
-    Property(),
-    __metadata("design:type", String)
-], SailsModel.prototype, "id", void 0);
-__decorate([
-    Property({ type: Date }),
-    __metadata("design:type", Date)
-], SailsModel.prototype, "createdAt", void 0);
-__decorate([
-    Property({ type: Date }),
-    __metadata("design:type", Date)
-], SailsModel.prototype, "updatedAt", void 0);
-SailsModel = SailsModel_1 = __decorate([
-    Endpoint()
-], SailsModel);
 export { SailsModel };
-var SailsModel_1;
 //# sourceMappingURL=sails.model.js.map

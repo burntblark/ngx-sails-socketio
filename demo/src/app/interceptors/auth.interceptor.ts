@@ -1,7 +1,8 @@
 import { SailsRequestOptions, SailsResponse, SailsInterceptorInterface, SailsInterceptorHandlerInterface } from "ngx-sails-socketio";
 import { Router } from "@angular/router";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Injectable()
 export class AuthInterceptor implements SailsInterceptorInterface {
@@ -15,11 +16,11 @@ export class AuthInterceptor implements SailsInterceptorInterface {
         });
         const response = next.handle(request);
 
-        return response.map((res: SailsResponse) => {
+        return response.pipe(map((res: SailsResponse) => {
             if (res.getStatusCode() === 401) {
                 this.router.navigateByUrl("login");
             }
             return res;
-        });
+        }));
     }
 }

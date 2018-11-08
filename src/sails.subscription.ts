@@ -1,6 +1,6 @@
 import { Sails } from "./sails";
 import { SailsEvent } from "./sails.event";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 
 export class SailsSubscription {
 

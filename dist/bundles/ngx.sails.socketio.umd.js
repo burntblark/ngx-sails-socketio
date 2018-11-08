@@ -1,12 +1,12 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('sails.io.js'), require('socket.io-client'), require('@angular/core'), require('rxjs/Observable'), require('json-object-mapper'), require('rxjs/add/operator/map')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'sails.io.js', 'socket.io-client', '@angular/core', 'rxjs/Observable', 'json-object-mapper', 'rxjs/add/operator/map'], factory) :
-    (factory((global.ng = global.ng || {}, global.ng.amazing = {}),null,null,global.ng.core,global.Rx,null));
-}(this, (function (exports,SailsIO,SocketIO,core,Observable,jsonObjectMapper) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('sails.io.js'), require('socket.io-client'), require('@angular/core'), require('rxjs'), require('json-object-mapper'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'sails.io.js', 'socket.io-client', '@angular/core', 'rxjs', 'json-object-mapper', 'rxjs/operators'], factory) :
+    (factory((global.ng = global.ng || {}, global.ng.amazing = {}),null,null,global.ng.core,null,null,null));
+}(this, (function (exports,SailsIO,SocketIO,core,rxjs,jsonObjectMapper,operators) { 'use strict';
 
     SailsIO = SailsIO && SailsIO.hasOwnProperty('default') ? SailsIO['default'] : SailsIO;
 
-    var SailsResponse = (function () {
+    var SailsResponse = /** @class */ (function () {
         function SailsResponse(JWR) {
             this.JWR = JWR;
         }
@@ -72,7 +72,7 @@
 
     var __SAILS_VERSION__ = "0.11.0";
     var __OS_PLATFORM__ = "windows";
-    var SailsConfig = (function () {
+    var SailsConfig = /** @class */ (function () {
         function SailsConfig(options) {
             this.url = "ws://localhost:1337";
             this.query = "__sails_io_sdk_version=" + __SAILS_VERSION__ + "&__sails_io_sdk_platform=" + __OS_PLATFORM__ + "&__sails_io_sdk_language=javascript";
@@ -89,7 +89,7 @@
         return SailsConfig;
     }());
 
-    var SailsInterceptorHandler = (function () {
+    var SailsInterceptorHandler = /** @class */ (function () {
         function SailsInterceptorHandler(next, interceptor) {
             this.next = next;
             this.interceptor = interceptor;
@@ -120,7 +120,7 @@
         DESTROYED: "destroyed",
         REMOVED: "removed",
     };
-    var SailsEvent = (function () {
+    var SailsEvent = /** @class */ (function () {
         function SailsEvent(JWR) {
             this.JWR = JWR;
         }
@@ -167,8 +167,9 @@
         CONNECT_ERROR: "connect_error",
         CONNECT_TIMEOUT: "connect_timeout",
     };
-    var Sails = (function () {
+    var Sails = /** @class */ (function () {
         function Sails(injector, options, Interceptors) {
+            var _a;
             if (Interceptors === void 0) { Interceptors = []; }
             var _this = this;
             this.injector = injector;
@@ -204,7 +205,6 @@
             Object.assign(io.sails, Config);
             this.socket = socket;
             this.Config = Config;
-            var _a;
         }
         Object.defineProperty(Sails.prototype, "socket", {
             get: function () {
@@ -253,7 +253,7 @@
         };
         Sails.prototype.on = function (eventName) {
             var _this = this;
-            return new Observable.Observable(function (obs) {
+            return new rxjs.Observable(function (obs) {
                 _this.socket.on(eventName, function (response) {
                     if (response) {
                         var event_1 = new SailsEvent(response);
@@ -266,7 +266,7 @@
         };
         Sails.prototype.off = function (eventName) {
             var _this = this;
-            return new Observable.Observable(function (obs) {
+            return new rxjs.Observable(function (obs) {
                 _this.socket.off(eventName, function (response) {
                     if (response) {
                         var event_2 = new SailsEvent(response);
@@ -293,14 +293,14 @@
         };
         Sails.prototype.handle = function (request) {
             var _this = this;
-            return new Observable.Observable(function (obs) {
+            return new rxjs.Observable(function (obs) {
                 _this.socket.request(request.serialize(), function (body, jwr) {
                     var response = new SailsResponse(jwr);
                     if (response.isError()) {
                         obs.error(response.getError());
                     }
                     else {
-                        obs.next(response.getBody());
+                        obs.next(response);
                     }
                     obs.complete();
                     _this.debugReqRes(request, response);
@@ -315,14 +315,14 @@
                 console.groupEnd();
             }
         };
+        /** @nocollapse */
+        Sails.ctorParameters = function () { return [
+            { type: core.Injector, decorators: [{ type: core.Inject, args: [core.Injector,] }] },
+            { type: undefined, decorators: [{ type: core.Inject, args: [SAILS_OPTIONS,] }] },
+            { type: Array, decorators: [{ type: core.Inject, args: [SAILS_INTERCEPTORS,] }] }
+        ]; };
         return Sails;
     }());
-    /** @nocollapse */
-    Sails.ctorParameters = function () { return [
-        { type: core.Injector, decorators: [{ type: core.Inject, args: [core.Injector,] },] },
-        { type: undefined, decorators: [{ type: core.Inject, args: [SAILS_OPTIONS,] },] },
-        { type: Array, decorators: [{ type: core.Inject, args: [SAILS_INTERCEPTORS,] },] },
-    ]; };
 
     function unserialize(clazz, data) {
         return jsonObjectMapper.ObjectMapper.deserialize(clazz, data);
@@ -335,10 +335,7 @@
      * Model's Query path Decorator
      * @param path Query Path for Model
      */
-    /**
-     * Model's Query path Decorator
-     * @param path Query Path for Model
-     */ function Endpoint(path) {
+    function Endpoint(path) {
         if (path === void 0) { path = ""; }
         return function (target) {
             target.prototype.getEndPoint = function () {
@@ -356,10 +353,11 @@
     var __metadata = (undefined && undefined.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    exports.SailsModel = SailsModel_1 = (function () {
+    var SailsModel = /** @class */ (function () {
         function SailsModel() {
             this.id = "";
         }
+        SailsModel_1 = SailsModel;
         SailsModel.prototype.getEndPoint = function () {
             return this.getEndPoint();
         };
@@ -401,26 +399,26 @@
             }
             throw new Error("SailsModel.unserialize requires a data parameter of either a Literal Object or an Array of Literal Objects");
         };
+        var SailsModel_1;
+        __decorate([
+            jsonObjectMapper.JsonProperty(),
+            __metadata("design:type", String)
+        ], SailsModel.prototype, "id", void 0);
+        __decorate([
+            jsonObjectMapper.JsonProperty({ type: Date }),
+            __metadata("design:type", Date)
+        ], SailsModel.prototype, "createdAt", void 0);
+        __decorate([
+            jsonObjectMapper.JsonProperty({ type: Date }),
+            __metadata("design:type", Date)
+        ], SailsModel.prototype, "updatedAt", void 0);
+        SailsModel = SailsModel_1 = __decorate([
+            Endpoint()
+        ], SailsModel);
         return SailsModel;
     }());
-    __decorate([
-        jsonObjectMapper.JsonProperty(),
-        __metadata("design:type", String)
-    ], exports.SailsModel.prototype, "id", void 0);
-    __decorate([
-        jsonObjectMapper.JsonProperty({ type: Date }),
-        __metadata("design:type", Date)
-    ], exports.SailsModel.prototype, "createdAt", void 0);
-    __decorate([
-        jsonObjectMapper.JsonProperty({ type: Date }),
-        __metadata("design:type", Date)
-    ], exports.SailsModel.prototype, "updatedAt", void 0);
-    exports.SailsModel = SailsModel_1 = __decorate([
-        Endpoint()
-    ], exports.SailsModel);
-    var SailsModel_1;
 
-    var SailsRequestOptions = (function () {
+    var SailsRequestOptions = /** @class */ (function () {
         function SailsRequestOptions(_a) {
             var url = _a.url, method = _a.method, params = _a.params, headers = _a.headers;
             this.options = { url: url, method: method, params: this.toMap(params), headers: this.toMap(headers) };
@@ -437,14 +435,14 @@
         };
         SailsRequestOptions.prototype.toMap = function (obj) {
             if (obj === void 0) { obj = {}; }
-            var map$$1 = new Map;
-            Object.keys(obj).forEach(function (k) { return (map$$1.set(k, obj[k])); });
-            return map$$1;
+            var map = new Map;
+            Object.keys(obj).forEach(function (k) { return (map.set(k, obj[k])); });
+            return map;
         };
-        SailsRequestOptions.prototype.toObject = function (map$$1) {
-            if (map$$1 === void 0) { map$$1 = new Map; }
+        SailsRequestOptions.prototype.toObject = function (map) {
+            if (map === void 0) { map = new Map; }
             var obj = {};
-            map$$1.forEach(function (v, k) { return (obj[k] = v); });
+            map.forEach(function (v, k) { return (obj[k] = v); });
             return obj;
         };
         Object.defineProperty(SailsRequestOptions.prototype, "method", {
@@ -486,7 +484,7 @@
         return SailsRequestOptions;
     }());
 
-    var QueryBuilder = (function () {
+    var QueryBuilder = /** @class */ (function () {
         function QueryBuilder(query) {
             if (query === void 0) { query = ""; }
             this.query = query;
@@ -515,7 +513,7 @@
         DELETE: "delete",
         PATCH: "patch",
     };
-    var SailsRequest = (function () {
+    var SailsRequest = /** @class */ (function () {
         function SailsRequest(sails) {
             this.sails = sails;
             this.parameters = [];
@@ -549,12 +547,12 @@
             return this.parameters.join("&");
         };
         SailsRequest.prototype.buildQuery = function (url) {
-            return url.toLowerCase() + new QueryBuilder(this.getParams());
+            return url + new QueryBuilder(this.getParams());
         };
         return SailsRequest;
     }());
 
-    var RequestCriteria = (function () {
+    var RequestCriteria = /** @class */ (function () {
         function RequestCriteria() {
             this.criteria = {};
             this.orCriteria = {};
@@ -727,7 +725,7 @@
         return RequestCriteria;
     }());
 
-    var SailsQuery = (function () {
+    var SailsQuery = /** @class */ (function () {
         function SailsQuery(sails, modelClass) {
             this.modelClass = modelClass;
             this.errorMsg = "[SailsSocketIO]: the data is not an instance of " + this.modelClass.name + ".\n        You could SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + "[] (Array of Models), Or\n        SailsModel.unserialize(" + this.modelClass.name + ", data) as " + this.modelClass.name + " (Single Models)\n        after fetching the data with SailsRequest.";
@@ -737,45 +735,45 @@
         SailsQuery.prototype.find = function () {
             var _this = this;
             this.request.addParam("where", this.getRequestCriteria());
-            return this.request.get("/" + this.model.getEndPoint()).map(function (res) {
+            return this.request.get("/" + this.model.getEndPoint()).pipe(operators.map(function (res) {
                 if (res.isOk()) {
-                    return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                    return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         };
         SailsQuery.prototype.findById = function (id) {
             var _this = this;
             this.request.addParam("where", this.getRequestCriteria());
-            return this.request.get("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
+            return this.request.get("/" + this.model.getEndPoint() + "/" + id).pipe(operators.map(function (res) {
                 if (res.isOk()) {
-                    return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                    return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         };
         SailsQuery.prototype.save = function (model) {
             var _this = this;
             if (!(model instanceof this.modelClass)) {
                 throw new TypeError(this.errorMsg);
             }
-            var data = exports.SailsModel.serialize(model);
+            var data = SailsModel.serialize(model);
             var url = "/" + model.getEndPoint();
             if (model.id === null) {
-                return this.request.post(url, data).map(function (res) {
+                return this.request.post(url, data).pipe(operators.map(function (res) {
                     if (res.isOk()) {
-                        return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                        return SailsModel.unserialize(_this.modelClass, res.getData());
                     }
                     throw res;
-                });
+                }));
             }
             else {
-                return this.request.put(url.concat("/", model.id), data).map(function (res) {
+                return this.request.put(url.concat("/", model.id), data).pipe(operators.map(function (res) {
                     if (res.isOk()) {
-                        return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                        return SailsModel.unserialize(_this.modelClass, res.getData());
                     }
                     throw res;
-                });
+                }));
             }
         };
         SailsQuery.prototype.update = function (id, model) {
@@ -786,22 +784,22 @@
             if (model.updatedAt) {
                 delete model.updatedAt;
             }
-            var data = model instanceof exports.SailsModel ? exports.SailsModel.serialize(model) : Object.assign({}, model);
-            return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).map(function (res) {
+            var data = model instanceof SailsModel ? SailsModel.serialize(model) : Object.assign({}, model);
+            return this.request.put("/" + this.model.getEndPoint() + "/" + id, data).pipe(operators.map(function (res) {
                 if (res.isOk()) {
-                    return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                    return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         };
         SailsQuery.prototype.remove = function (id) {
             var _this = this;
-            return this.request.delete("/" + this.model.getEndPoint() + "/" + id).map(function (res) {
+            return this.request.delete("/" + this.model.getEndPoint() + "/" + id).pipe(operators.map(function (res) {
                 if (res.isOk()) {
-                    return exports.SailsModel.unserialize(_this.modelClass, res.getData());
+                    return SailsModel.unserialize(_this.modelClass, res.getData());
                 }
                 throw res;
-            });
+            }));
         };
         SailsQuery.prototype.setLimit = function (limit) {
             this.request.addParam("limit", limit);
@@ -833,7 +831,7 @@
         return SailsQuery;
     }());
 
-    var SailsModule = (function () {
+    var SailsModule = /** @class */ (function () {
         function SailsModule() {
         }
         SailsModule.forRoot = function (options, interceptors) {
@@ -848,15 +846,13 @@
                 ])
             };
         };
+        SailsModule.decorators = [
+            { type: core.NgModule },
+        ];
         return SailsModule;
     }());
-    SailsModule.decorators = [
-        { type: core.NgModule },
-    ];
-    /** @nocollapse */
-    SailsModule.ctorParameters = function () { return []; };
 
-    var SailsSubscription = (function () {
+    var SailsSubscription = /** @class */ (function () {
         function SailsSubscription(sails) {
             this.sails = sails;
         }
@@ -876,6 +872,7 @@
     exports.SailsEnvironment = SailsEnvironment;
     exports.SailsListener = SailsListener;
     exports.Sails = Sails;
+    exports.SailsModel = SailsModel;
     exports.SailsQuery = SailsQuery;
     exports.SailsModule = SailsModule;
     exports.Method = Method;

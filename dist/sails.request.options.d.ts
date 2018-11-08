@@ -7,10 +7,10 @@ export interface SailsRequestOptionsInterface {
 }
 export declare class SailsRequestOptions {
     private readonly options;
-    constructor({url, method, params, headers}: SailsIOClient.RequestOptions);
+    constructor({ url, method, params, headers }: SailsIOClient.RequestOptions);
     clone(options: SailsRequestOptionsInterface): this;
-    private toMap(obj?);
-    private toObject(map?);
+    private toMap;
+    private toObject;
     readonly method: string | undefined;
     readonly url: string | undefined;
     readonly params: Map<string, string> | undefined;

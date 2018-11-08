@@ -1,7 +1,7 @@
 import { Sails } from "./sails";
 import { SailsResponse } from "./sails.response";
 import { SailsIOClient } from "./sails.io.client";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 export declare const Method: {
     GET: string;
     POST: string;
@@ -18,10 +18,10 @@ export declare class SailsRequest {
     put(url: string, params: object, headers?: SailsIOClient.Headers): Observable<SailsResponse>;
     delete(url: string, headers?: SailsIOClient.Headers): Observable<SailsResponse>;
     patch(url: string, headers?: SailsIOClient.Headers): Observable<SailsResponse>;
-    private _request(method, url, params?, headers?);
+    private _request;
     addParam(name: string, value: boolean | number | string | {
         toString(): string;
     }): this;
-    private getParams();
-    private buildQuery(url);
+    private getParams;
+    private buildQuery;
 }

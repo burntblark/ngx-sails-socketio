@@ -2,10 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { Sails } from "ngx-sails-socketio";
 import { JobsService } from "../../services/jobs.service";
-import "rxjs/add/operator/catch";
-import "rxjs/add/observable/merge";
-import "rxjs/add/operator/do";
-import { Observable } from "rxjs/Observable";
+import { merge } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { BoqModel } from "../../models/boq.model";
 
 @Component({
@@ -20,9 +18,9 @@ export class DashboardComponent implements OnInit {
     constructor(private router: Router, private sails: Sails, private jobs: JobsService) { }
 
     ngOnInit() {
-        this.boqs$ = Observable.merge(
-            this.jobs.listenAll().do(() => console.log("Second")),
-            this.jobs.getQueried().do(() => console.log("First")),
+        this.boqs$ = merge(
+            this.jobs.listenAll().pipe(tap(() => console.log("Second"))),
+            this.jobs.getQueried().pipe(tap(() => console.log("First")))
         );
     }
 

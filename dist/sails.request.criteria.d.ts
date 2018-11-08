@@ -14,6 +14,6 @@ export declare class RequestCriteria {
     whereGreaterThanOrEqualTo(key: string, value: string | number | boolean | Date): RequestCriteria;
     private criteria;
     private orCriteria;
-    private build();
+    private build;
     toString(): string;
 }

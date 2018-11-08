@@ -1,4 +1,4 @@
-var SailsInterceptorHandler = (function () {
+var SailsInterceptorHandler = /** @class */ (function () {
     function SailsInterceptorHandler(next, interceptor) {
         this.next = next;
         this.interceptor = interceptor;

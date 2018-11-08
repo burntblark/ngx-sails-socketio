@@ -1,8 +1,7 @@
 import { Sails } from "./sails";
 import { SailsModelInterface } from "./sails.model.interface";
 import { RequestCriteria } from "./sails.request.criteria";
-import { Observable } from "rxjs/Observable";
-import "rxjs/add/operator/map";
+import { Observable } from "rxjs";
 export declare class SailsQuery<T extends SailsModelInterface> {
     private modelClass;
     private model;
@@ -22,5 +21,5 @@ export declare class SailsQuery<T extends SailsModelInterface> {
     setSkip(skip: number): this;
     setPopulation(...population: string[]): this;
     setRequestCriteria(criteria: RequestCriteria): this;
-    private getRequestCriteria();
+    private getRequestCriteria;
 }

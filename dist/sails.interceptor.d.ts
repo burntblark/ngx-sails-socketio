@@ -1,7 +1,7 @@
 import { SailsResponse } from "./sails.response";
 import { SailsRequestOptions } from "./sails.request.options";
 import { SailsInterceptorHandlerInterface } from "./sails.interceptor.handler";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 export interface SailsInterceptorConstructor {
     /**
      * Allows Angular Dependency Injection

@@ -42,7 +42,7 @@ export declare namespace SailsIOClient {
         randomizationFactor?: number;
     }
     interface SailsSocket extends Options {
-        connect: (url, opts) => Socket;
+        connect: (url: any, opts: any) => Socket;
     }
     interface RequestOptions {
         url?: string;
